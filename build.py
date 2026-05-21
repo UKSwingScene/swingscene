@@ -1,21 +1,13 @@
-import json, base64, re
+import json, base64
 from datetime import datetime
 
-with open('events.json') as f:
-    events = json.load(f)
+# Load scraped events
+try:
+    with open('events.json') as f:
+        merged = json.load(f)
+except:
+    merged = []
 
-with open('events_static.json') as f:
-    static = json.load(f)
-
-# Merge scraped + static, deduplicate, sort
-all_events = static + events
-seen = set()
-merged = []
-for e in all_events:
-    key = (e['d'], e['club'], e.get('event',''))
-    if key not in seen:
-        seen.add(key)
-        merged.append(e)
 merged.sort(key=lambda x: x['d'])
 
 with open('gemini_logo.mp4', 'rb') as f:
@@ -24,10 +16,9 @@ with open('gemini_logo.mp4', 'rb') as f:
 video_tag = f'<video src="data:video/mp4;base64,{vid_b64}" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:contain;display:block;"></video>'
 
 updated = datetime.now().strftime("%-d %B %Y")
-
 events_js = json.dumps(merged, ensure_ascii=False)
 
-html = f'''<!DOCTYPE html>
+html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -102,6 +93,10 @@ body{{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min
   </div>
   <div class="filter-row">
     <button class="filter-btn active" onclick="setFilter('all',this)">All Events</button>
+    <button class="filter-btn" onclick="setFilter('jan',this)">Jan</button>
+    <button class="filter-btn" onclick="setFilter('feb',this)">Feb</button>
+    <button class="filter-btn" onclick="setFilter('mar',this)">Mar</button>
+    <button class="filter-btn" onclick="setFilter('apr',this)">Apr</button>
     <button class="filter-btn" onclick="setFilter('may',this)">May</button>
     <button class="filter-btn" onclick="setFilter('jun',this)">Jun</button>
     <button class="filter-btn" onclick="setFilter('jul',this)">Jul</button>
@@ -119,19 +114,19 @@ body{{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min
 </div>
 <footer class="site-footer">
   <strong>Last updated:</strong> {updated} · Sources: Club websites &amp; Ticket Tailor<br>
-  Always verify before attending — schedules can change. Tap any card to visit the club\'s website.
+  Always verify before attending — schedules can change. Tap any card to visit the club's website.
 </footer>
 <script>
 const EVENTS={events_js};
 const RECURRING=[
   {{club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",lines:["Sat: Mixed Swing Night 8:30pm–1:30am","Sun (fortnightly): Super Sexy Sunday 4pm–10pm","Wed (1st & 3rd): Greedy Girls Day 1pm–8pm","Fri: Intro Night (2nd Fri) · Black Friday (4th Fri)","⚠️ First visit MUST call Mary — 07835 870772"],url:"https://theno3club.co.uk/"}},
   {{club:"Cupids",city:"Swinton, Manchester",cls:"cupids",lines:["Open 7 nights a week","30+ year heritage","Relaxed dress-down policy","Couples & singles welcome"],url:"https://cupidsswingers.co.uk/"}},
-  {{club:"Chameleons",city:"Darlaston, West Midlands",cls:"chameleons",lines:["Open 7 days a week","Hot tub, sauna, themed playrooms","Residential weekends throughout year","Couples & singles welcome"],url:"https://www.chameleons.cc/"}},
+  {{club:"Chameleons",city:"Darlaston, West Midlands",cls:"chameleons",lines:["Open 7 days a week","Hot tub, sauna, themed playrooms","Couples & singles welcome"],url:"https://www.chameleons.cc/"}},
   {{club:"Townhouse",city:"Birkenhead, Wirral",cls:"townhouse",lines:["Regular Fri & Sat events","4 floors · Hot tubs · Dungeon","25,000+ members · LGBTQ+ friendly","Check Tickettailor for full schedule"],url:"https://www.tickettailor.com/events/townhousewirral"}},
-  {{club:"Xtasia",city:"West Bromwich",cls:"xtasia",lines:["UK\'s longest-established lifestyle club","Nightclub · Spa · Pool · Cinema · Hotel","Regular Sat events + themed nights","Dress code strictly enforced"],url:"https://www.xtasia.co.uk/"}},
-  {{club:"Infusion",city:"North West",cls:"infusion",lines:["North West\'s largest lifestyle venue","Multiple play areas & jacuzzi","Regular Saturday events","Couples welcome; singles on selected nights"],url:"https://www.infusionclub.co.uk/"}},
-  {{club:"Purple Mamba",city:"Nottingham",cls:"mamba",lines:["Weekly Saturday events","Premium Midlands lifestyle club","Smart dress code","Couples and singles welcome"],url:"https://www.purplemambaclub.com/"}},
-  {{club:"Shhh",city:"Newcastle",cls:"shhh",lines:["Regular weekend events","Friendly North East club","Easy online membership","Welcoming to newcomers"],url:"https://www.shhhclub.co.uk/"}},
+  {{club:"Xtasia",city:"West Bromwich",cls:"xtasia",lines:["UK's longest-established lifestyle club","Nightclub · Spa · Pool · Cinema · Hotel","Regular Sat events + themed nights"],url:"https://www.xtasia.co.uk/"}},
+  {{club:"Infusion",city:"North West",cls:"infusion",lines:["North West's largest lifestyle venue","Multiple play areas & jacuzzi","Regular Saturday events"],url:"https://www.infusionclub.co.uk/"}},
+  {{club:"Purple Mamba",city:"Nottingham",cls:"mamba",lines:["Weekly Saturday events","Premium lifestyle club","Smart dress code"],url:"https://www.purplemambaclub.com/"}},
+  {{club:"Shhh",city:"Newcastle",cls:"shhh",lines:["Regular weekend events","Friendly North East club","Easy online membership"],url:"https://www.shhhclub.co.uk/"}},
 ];
 let currentFilter='all';
 function setFilter(m,btn){{currentFilter=m;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}}
@@ -158,7 +153,7 @@ document.getElementById('recBody').innerHTML=RECURRING.map(r=>`<a class="rec-car
 render();
 </script>
 </body>
-</html>'''
+</html>"""
 
 with open('index.html', 'w') as f:
     f.write(html)
