@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwingScene UK – Lifestyle Events</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #09090F;
+  --card: #13131C;
+  --border: #2a2a3a;
+  --gold: #C9A84C;
+  --muted: #6b6b80;
+  --white: #f0f0f5;
+
+  --no3: #e63946;
+  --cupids: #f4a261;
+  --partners: #2a9d8f;
+  --pandoras: #e76f51;
+  --clubplay: #457b9d;
+  --xtasia: #9b5de5;
+  --pineapple: #f4d03f;
+  --attic: #52b788;
+  --townhouse: #e63946;
+  --swindon: #48cae4;
+  --alchemy: #c77dff;
+  --infusion: #ff6b6b;
+  --quest: #06d6a0;
+  --liberty: #ffd166;
+  --mamba: #7209b7;
+  --shhh: #3a86ff;
+  --decadence: #ef476f;
+  --gatehouse: #118ab2;
+  --boudoir: #f72585;
+  --chameleons: #80b918;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--white); font-family: 'Barlow', sans-serif; min-height: 100vh; }
+
+.site-header {
+  background: #09090F;
+  padding: 18px 16px 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo-container {
+  width: 250px;
+  height: 150px;
+  max-width: 92vw;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+}
+.header-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.header-sub {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-btn.active, .filter-btn:hover {
+  background: var(--gold);
+  color: #09090F;
+  border-color: var(--gold);
+}
+
+.events-grid {
+  padding: 12px 16px 32px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.event-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  transition: transform 0.15s, border-color 0.15s;
+  border-left: 4px solid var(--accent);
+}
+.event-card:hover { transform: translateY(-2px); }
+
+.card-top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+.card-date {
+  font-size: 13px;
+  color: var(--muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.card-club {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.card-event {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 5px;
+  line-height: 1.3;
+}
+.card-city {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.card-desc {
+  font-size: 15px;
+  color: #b0b0c0;
+  line-height: 1.5;
+}
+
+.rec-section {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+}
+.rec-btn {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rec-body {
+  display: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  padding: 12px 0;
+}
+.rec-body.open { display: block; }
+.rec-card {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  display: block;
+  border-left: 4px solid var(--accent);
+  margin: 6px 10px;
+  border-radius: 0 6px 6px 0;
+  background: rgba(255,255,255,0.02);
+}
+.rec-card:last-child { border-bottom: none; }
+.rec-club {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.rec-city { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+.rec-lines { list-style: none; }
+.rec-lines li { font-size: 15px; color: #b0b0c0; padding: 2px 0; }
+.rec-lines li::before { content: "· "; color: var(--gold); }
+
+.no-events {
+  text-align: center;
+  color: var(--muted);
+  padding: 40px 0;
+  font-size: 16px;
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo-container">🍍</div>
+  <div class="header-title">SwingScene UK</div>
+  <div class="header-sub">Lifestyle Events · May to July 2026</div>
+</header>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="setFilter('all')">All</button>
+  <button class="filter-btn" onclick="setFilter('may')">May</button>
+  <button class="filter-btn" onclick="setFilter('jun')">June</button>
+  <button class="filter-btn" onclick="setFilter('jul')">July</button>
+</div>
+
+<div class="events-grid" id="grid"></div>
+
+<div class="rec-section">
+  <button class="rec-btn" onclick="toggleRec()">
+    Regular &amp; Weekly Events
+    <span id="recArrow">▼</span>
+  </button>
+  <div class="rec-body" id="recBody"></div>
+</div>
+
+<script>
+const EVENTS = [
+  // ── MAY ──
+  {d:"2026-05-02",m:"may",day:"Sat 2 May",club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   event:"Mixed Swing Night",
+   desc:"Saturday swing night at The No.3. 8:30pm–1:30am in a luxurious, friendly venue. Smart casual on entry. Couples £20, Ladies £10.",
+   url:"https://theno3club.co.uk/"},
+  {d:"2026-05-08",m:"may",day:"Fri 8 May",club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   event:"Intro Night",
+   desc:"First-time visitor night at The No.3 — the perfect way to ease in. Call Mary first on 07835 870772 before attending. 8:30pm–1:30am.",
+   url:"https://theno3club.co.uk/"},
+  {d:"2026-05-09",m:"may",day:"Sat 9 May",club:"Townhouse",city:"Birkenhead, Wirral",cls:"townhouse",
+   event:"FCKD! – The Wildest Night of Your Life",
+   desc:"Heavy play party from Brett and Vee. One of Townhouse's most intense nights. Wild, anything-goes atmosphere in a safe and consensual environment. 8pm–2am.",
+   url:"https://www.tickettailor.com/events/townhousewirral"},
+  {d:"2026-05-10",m:"may",day:"Sun 10 May",club:"Townhouse",city:"Birkenhead, Wirral",cls:"townhouse",
+   event:"Branded at Townhouse – Invite Only Hardcore BDSM",
+   desc:"Exclusive invite-only BDSM event at Townhouse. Intense, curated and strictly for the adventurous. 2pm–8pm.",
+   url:"https://www.tickettailor.com/events/townhousewirral"},
+  {d:"2026-05-15",m:"may",day:"Fri 15 May",club:"Townhouse",city:"Birkenhead, Wirral",cls:"townhouse",
+   event:"Queer Space – A Space For All!",
+   desc:"LGBTQ+ inclusive night at Townhouse. A safe, celebratory space welcoming all identities and expressions. 8pm–2am.",
+   url:"https://www.tickettailor.com/events/townhousewirral"},
+  {d:"2026-05-16",m:"may",day:"Sat 16 May",club:"Townhouse",city:"Birkenhead, Wirral",cls:"townhouse",
+   event:"AMPED at Townhouse – Rock, Metal and Chaos!",
+   desc:"Rock and metal themed play party at Townhouse. High energy, loud and unapologetic. 8pm–2am.",
+   url:"https://www.tickettailor.com/events/townhousewirral"},
+  {d:"2026-05-16",m:"may",day:"Sat 16 May",club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   event:"Mixed Swing Night",
+   desc:"Fortnightly Saturday swing night at The No.3 in Chorley. 8:30pm–1:30am, smart casual dress code. Couples £20, Ladies £10, Singles £30.",
+   url:"https://theno3club.co.uk/"},
+  {d:"2026-05-22",m:"may",day:"Fri 22 May",club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   event:"Black Friday",
+   desc:"Guest list only Black Friday event at The No.3. One of their most popular nights — book with Mary on 07835 870772. 8:30pm–1:30am.",
+   url:"https://theno3club.co.uk/"},
+  {d:"2026-05-23",m:"may",day:"Sat 23 May",club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   event:"15th Anniversary – Schools Out Party",
+   desc:"Huge anniversary celebration at The No.3 in Chorley. Guest list, limited numbers — call Mary on 07835 870772 to book your place. Not to be missed.",
+   url:"https://theno3club.co.uk/"},
+  {d:"2026-05-23",m:"may",day:"Sat 23 May",club:"Xtasia",city:"West Bromwich, Midlands",cls:"xtasia",
+   event:"Saturday Club Night",
+   desc:"Xtasia — the UK's longest running lifestyle club, est. 1980s. Full nightclub, spa, pool, cinema and hotel on site. Dress code enforced. West Bromwich.",
+   url:"https://www.xtasia.co.uk/"},
+  {d:"2026-05-24",m:"may",day:"Sun 24 May",club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   event:"Super Sexy Sunday",
+   desc:"Bank holiday Sunday session at The No.3. Relaxed, fun and friendly from 4pm–10pm. Dress-down on entry. Perfect way to end the long weekend.",
+   url:"https://theno3club.co.uk/"},
+  {d:"2026-05-30",m:"may",day:"Sat 30 May",club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   event:"Mixed Swing Night",
+   desc:"Saturday swing night at The No.3, Chorley. 8:30pm–1:30am. Full facilities, friendly atmosphere. Smart casual on entry. Couples £20, Ladies £10.",
+   url:"https://theno3club.co.uk/"},
+  {d:"2026-05-31",m:"may",day:"Sun 31 May",club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   event:"Super Sexy Sunday",
+   desc:"Bank holiday Sunday session at The No.3 from 4pm–10pm. Relaxed, fun and friendly. The perfect way to end a long weekend. Dress-down on entry.",
+   url:"https://theno3club.co.uk/"},
+
+  // Liberty Elite
+  {d:"2026-05-09",m:"may",day:"Sat 9 May",club:"Liberty Elite",city:"Midlands",cls:"liberty",
+   event:"Liberty Elite Members Night",
+   desc:"Exclusive members-only event at Liberty Elite. Premium lifestyle club with a sophisticated crowd. Dress to impress. Pre-booking essential.",
+   url:"https://www.libertyelite.co.uk/"},
+  {d:"2026-06-06",m:"jun",day:"Sat 6 Jun",club:"Liberty Elite",city:"Midlands",cls:"liberty",
+   event:"Liberty Elite Members Night",
+   desc:"Monthly members event at Liberty Elite. One of the Midlands' most respected lifestyle clubs. Elegant venue, strictly vetted membership. Booking required.",
+   url:"https://www.libertyelite.co.uk/"},
+
+  // Pandoras
+  {d:"2026-05-16",m:"may",day:"Sat 16 May",club:"Pandoras",city:"South East",cls:"pandoras",
+   event:"Pandoras Club Night",
+   desc:"Regular club night at Pandoras in the South East. Welcoming atmosphere for couples and singles. Full facilities on site. Check website for full details.",
+   url:"https://www.pandorasswingers.co.uk/"},
+
+  // Purple Mamba
+  {d:"2026-05-02",m:"may",day:"Sat 2 May",club:"Purple Mamba",city:"Midlands",cls:"mamba",
+   event:"Purple Mamba Saturday",
+   desc:"Premium lifestyle night at Purple Mamba. Midlands' most stylish swing club with themed events, full bar and immaculate facilities. Couples and singles welcome.",
+   url:"https://www.purplemamba.co.uk/"},
+  {d:"2026-05-09",m:"may",day:"Sat 9 May",club:"Purple Mamba",city:"Midlands",cls:"mamba",
+   event:"Purple Mamba Saturday",
+   desc:"Weekly Saturday event at Purple Mamba. Sophisticated venue with a friendly crowd. Smart dress code. Full bar and all facilities available all night.",
+   url:"https://www.purplemamba.co.uk/"},
+
+  // Chameleons
+  {d:"2026-05-08",m:"may",day:"Fri 8 May",club:"Chameleons",city:"Darlaston, West Midlands",cls:"chameleons",
+   event:"Friday Night at Chameleons",
+   desc:"Chameleons Darlaston — open 7 days a week. One of the Midlands' most established clubs. Welcoming to all. Full facilities, friendly staff. Couples and singles.",
+   url:"https://www.chameleonsswingers.co.uk/"},
+
+  // Attic
+  {d:"2026-05-15",m:"may",day:"Fri 15 May",club:"The Attic",city:"East Midlands",cls:"attic",
+   event:"Attic Friday Night",
+   desc:"The Attic Adult Club — relaxed, non-judgemental lifestyle club in the East Midlands. Friendly atmosphere, full facilities. Couples and singles welcome.",
+   url:"https://www.theatticadultclub.co.uk/"},
+
+  // Naughty Pineapple
+  {d:"2026-05-22",m:"may",day:"Fri 22 May",club:"Naughty Pineapple",city:"UK",cls:"pineapple",
+   event:"Naughty Pineapple Night",
+   desc:"Fun and friendly lifestyle event from The Naughty Pineapple. Welcoming crowd, full facilities and great atmosphere. Check the website for exact location and times.",
+   url:"https://www.thenaughtypineapple.co.uk/"},
+
+  // Shhh
+  {d:"2026-05-16",m:"may",day:"Sat 16 May",club:"Shhh",city:"Newcastle",cls:"shhh",
+   event:"Shhh Saturday Night",
+   desc:"Shhh Swingers Club Newcastle — friendly and easy-going lifestyle venue in the North East. Online membership available. Welcoming to newcomers.",
+   url:"https://www.shhhclub.co.uk/"},
+
+  // Infusion
+  {d:"2026-05-09",m:"may",day:"Sat 9 May",club:"Infusion",city:"North West",cls:"infusion",
+   event:"Infusion Saturday",
+   desc:"The North West's largest swingers venue. Infusion offers a huge space, multiple play areas, bar, jacuzzi and a friendly welcoming crowd. Couples and singles.",
+   url:"https://www.infusionclub.co.uk/"},
+  {d:"2026-05-23",m:"may",day:"Sat 23 May",club:"Infusion",city:"North West",cls:"infusion",
+   event:"Infusion Saturday",
+   desc:"Regular Saturday night at Infusion — North West's biggest lifestyle club. Excellent facilities, great atmosphere. Couples welcome; singles on selected nights.",
+   url:"https://www.infusionclub.co.uk/"},
+
+  // Cupids
+  {d:"2026-05-08",m:"may",day:"Fri 8 May",club:"Cupids",city:"Swinton, Manchester",cls:"cupids",
+   event:"Cupids Friday Night",
+   desc:"Cupids Manchester — over 30 years in the game. Open 7 nights. Relaxed dress-down policy. One of the friendliest and most established clubs in the North West.",
+   url:"https://www.cupids-manchester.co.uk/"},
+
+  // New Gatehouse
+  {d:"2026-05-16",m:"may",day:"Sat 16 May",club:"New Gatehouse",city:"Bolton",cls:"gatehouse",
+   event:"Gatehouse Saturday",
+   desc:"The New Gatehouse Bolton — popular North West lifestyle club. Regular Saturday events with a great crowd. Couples and selected singles. Check website to book.",
+   url:"https://www.thenewgatehouse.co.uk/"},
+
+  // Swindon
+  {d:"2026-05-23",m:"may",day:"Sat 23 May",club:"Swindon SC",city:"Swindon",cls:"swindon",
+   event:"Swindon Swingers Club Night",
+   desc:"Regular club night from Swindon Swingers Club. Welcoming to couples and singles. Fully equipped venue with relaxed atmosphere in the heart of Swindon.",
+   url:"https://www.swindonswingers.co.uk/"},
+
+  // Club Alchemy
+  {d:"2026-05-30",m:"may",day:"Sat 30 May",club:"Club Alchemy",city:"UK",cls:"alchemy",
+   event:"Alchemy Saturday",
+   desc:"Club Alchemy — sophisticated and stylish lifestyle events. Clean, well-maintained venue with a discerning crowd. Couples and ladies free on selected nights.",
+   url:"https://www.clubalchemy.co.uk/"},
+
+  // Partners
+  {d:"2026-05-23",m:"may",day:"Sat 23 May",club:"Partners",city:"East of England",cls:"partners",
+   event:"Partners Club Night",
+   desc:"Partners Swingers Club — established East of England lifestyle venue. Warm, friendly crowd with full facilities. Couples and selected singles welcome.",
+   url:"https://www.partnersswingers.co.uk/"},
+
+  // Decadence
+  {d:"2026-05-16",m:"may",day:"Sat 16 May",club:"Decadence",city:"UK",cls:"decadence",
+   event:"Decadence Night",
+   desc:"Decadence lifestyle club — glamorous themed events for discerning couples. Dress to impress. Full bar and immaculate play facilities. Check website for location.",
+   url:"https://www.decadenceclub.co.uk/"},
+
+  // ── JUNE ──
+  {d:"2026-06-25",m:"jun",day:"Thu 25 Jun",club:"Townhouse",city:"Birkenhead, Wirral",cls:"townhouse",
+   event:"The Femdom Soirée",
+   desc:"Femdom-themed evening at Townhouse Wirral. Female-led, strict and consensual. A sophisticated BDSM soirée with full dungeon facilities. 8pm–2am.",
+   url:"https://www.tickettailor.com/events/townhousewirral"},
+  {d:"2026-06-06",m:"jun",day:"Sat 6 Jun",club:"Xtasia",city:"West Bromwich, Midlands",cls:"xtasia",
+   event:"Saturday Club Night",
+   desc:"Regular Saturday at Xtasia — UK's longest established lifestyle club. Nightclub, spa, pool, hotel and cinema all on site. Dress code strictly enforced.",
+   url:"https://www.xtasia.co.uk/"},
+  {d:"2026-06-13",m:"jun",day:"Sat 13 Jun",club:"Infusion",city:"North West",cls:"infusion",
+   event:"Infusion Saturday",
+   desc:"North West's biggest lifestyle venue. Infusion has multiple play areas, jacuzzi, full bar and a great welcoming crowd. Couples welcome; singles on selected nights.",
+   url:"https://www.infusionclub.co.uk/"},
+  {d:"2026-06-20",m:"jun",day:"Sat 20 Jun",club:"Purple Mamba",city:"Midlands",cls:"mamba",
+   event:"Purple Mamba Saturday",
+   desc:"Weekly Saturday at Purple Mamba. Premium Midlands lifestyle club with themed nights, full bar and sophisticated crowd. Smart dress code applies.",
+   url:"https://www.purplemamba.co.uk/"},
+  {d:"2026-06-27",m:"jun",day:"Sat 27 Jun",club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   event:"Mixed Swing Night",
+   desc:"Saturday swing night at The No.3 Chorley. 8:30pm–1:30am. Smart casual. Couples £20, Ladies £10. First visit must call Mary — 07835 870772.",
+   url:"https://theno3club.co.uk/"},
+
+  // ── JULY ──
+  {d:"2026-07-04",m:"jul",day:"Sat 4 Jul",club:"Xtasia",city:"West Bromwich, Midlands",cls:"xtasia",
+   event:"Saturday Club Night",
+   desc:"Regular Saturday at Xtasia — the UK's original and longest-running lifestyle club. Nightclub, spa, pool, hotel and cinema. Dress code enforced.",
+   url:"https://www.xtasia.co.uk/"},
+  {d:"2026-07-11",m:"jul",day:"Sat 11 Jul",club:"Infusion",city:"North West",cls:"infusion",
+   event:"Infusion Saturday",
+   desc:"North West's largest lifestyle venue. Multiple play areas, jacuzzi, bar and a friendly crowd. Regular Saturday event at Infusion. Couples and selected singles.",
+   url:"https://www.infusionclub.co.uk/"},
+  {d:"2026-07-18",m:"jul",day:"Sat 18 Jul",club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   event:"Mixed Swing Night",
+   desc:"Mid-summer swing night at The No.3, Chorley. 8:30pm–1:30am. Smart casual. Couples £20, Ladies £10. New visitors must call Mary — 07835 870772.",
+   url:"https://theno3club.co.uk/"},
+  {d:"2026-07-25",m:"jul",day:"Sat 25 Jul",club:"Purple Mamba",city:"Midlands",cls:"mamba",
+   event:"Purple Mamba Saturday",
+   desc:"Summer Saturday at Purple Mamba. Premium Midlands lifestyle events club. Themed nights, full bar, immaculate facilities. Smart dress. Couples and singles.",
+   url:"https://www.purplemamba.co.uk/"},
+];
+
+const RECURRING = [
+  {club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   lines:["Sat: Mixed Swing Night 8:30pm–1:30am","Sun (fortnightly): Super Sexy Sunday 4pm–10pm","Wed (1st & 3rd): Greedy Girls Day 1pm–8pm","Fri: Intro Night (2nd Fri) · Black Friday (4th Fri)","⚠️ First visit MUST call Mary — 07835 870772"],
+   url:"https://theno3club.co.uk/"},
+  {club:"Cupids",city:"Swinton, Manchester",cls:"cupids",
+   lines:["Open 7 nights a week","Over 30 years established","Relaxed dress-down policy","Couples and singles welcome"],
+   url:"https://www.cupids-manchester.co.uk/"},
+  {club:"Chameleons",city:"Darlaston, West Midlands",cls:"chameleons",
+   lines:["Open 7 days a week","Established Midlands lifestyle club","Couples and singles welcome","Full facilities on site"],
+   url:"https://www.chameleonsswingers.co.uk/"},
+  {club:"Townhouse",city:"Birkenhead, Wirral",cls:"townhouse",
+   lines:["Regular Fri & Sat events","4 floors · Hot tubs · Dungeon","25,000+ members · LGBTQ+ friendly","Check Tickettailor for full schedule"],
+   url:"https://www.tickettailor.com/events/townhousewirral"},
+  {club:"Xtasia",city:"West Bromwich, Midlands",cls:"xtasia",
+   lines:["UK's longest established lifestyle club","Nightclub · Spa · Pool · Cinema · Hotel","Regular Sat events + themed nights","Dress code enforced"],
+   url:"https://www.xtasia.co.uk/"},
+  {club:"Infusion",city:"North West",cls:"infusion",
+   lines:["North West's largest lifestyle venue","Multiple play areas & jacuzzi","Regular Sat events","Couples welcome; singles on selected nights"],
+   url:"https://www.infusionclub.co.uk/"},
+  {club:"Purple Mamba",city:"Midlands",cls:"mamba",
+   lines:["Weekly Saturday events","Premium Midlands lifestyle club","Smart dress code","Couples and singles welcome"],
+   url:"https://www.purplemamba.co.uk/"},
+  {club:"Shhh",city:"Newcastle",cls:"shhh",
+   lines:["Regular weekend events","Friendly North East club","Easy online membership","Welcoming to newcomers"],
+   url:"https://www.shhhclub.co.uk/"},
+];
+
+let currentFilter = 'all';
+
+function setFilter(m) {
+  currentFilter = m;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  render();
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  const filtered = currentFilter === 'all'
+    ? EVENTS
+    : EVENTS.filter(e => e.m === currentFilter);
+
+  if (!filtered.length) {
+    grid.innerHTML = '<p class="no-events">No events found for this period.</p>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(e => `
+    <a class="event-card" href="${e.url}" target="_blank" rel="noopener"
+       style="--accent: var(--${e.cls})">
+      <div class="card-top">
+        <span class="card-date">${e.day}</span>
+        <span class="card-club">${e.club}</span>
+      </div>
+      <div class="card-event">${e.event}</div>
+      <div class="card-city">📍 ${e.city}</div>
+      <div class="card-desc">${e.desc}</div>
+    </a>
+  `).join('');
+}
+
+function toggleRec() {
+  const body = document.getElementById('recBody');
+  const arrow = document.getElementById('recArrow');
+  body.classList.toggle('open');
+  arrow.textContent = body.classList.contains('open') ? '▲' : '▼';
+}
+
+// Build recurring section
+document.getElementById('recBody').innerHTML = RECURRING.map(r => `
+  <a class="rec-card" href="${r.url}" target="_blank" rel="noopener"
+     style="--accent: var(--${r.cls})">
+    <div class="rec-club">${r.club}</div>
+    <div class="rec-city">📍 ${r.city}</div>
+    <ul class="rec-lines">
+      ${r.lines.map(l => `<li>${l}</li>`).join('')}
+    </ul>
+  </a>
+`).join('');
+
+render();
+</script>
+</body>
+</html>
