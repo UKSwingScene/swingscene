@@ -715,6 +715,105 @@ async def scrape_wp_tribe_generic(page, base, club, city, cls, url, standard_fil
     return events
 
 
+async def scrape_swindon(page):
+    """Swindon Swingers: multiple event-type pages (WICKED, REMIX, KINKY, POWER, COITUS, SPIRIT, LUST).
+    Each page lists dates as plain text. Fetch all pages, parse dates + themes."""
+    import urllib.request as _ul, html as _html
+
+    # Each entry: (event_type_name, url)
+    EVENT_PAGES = [
+        ("WICKED",  "https://swindonswingers.com/swindon-swingers-club-wicked-couples-event/"),
+        ("REMIX",   "https://swindonswingers.com/swindon-swingers-club-remix-gay-straight-bi-bisexual-event-couples-singles/"),
+        ("KINKY",   "https://swindonswingers.com/swindon-swingers-club-bdsm-kinky-fetish/"),
+        ("POWER",   "https://swindonswingers.com/swindon-swingers-club-t-girls-admirers-tgirls/"),
+        ("COITUS",  "https://swindonswingers.com/swindon-swingers-club-coitus/"),
+        ("SPIRIT",  "https://swindonswingers.com/spirit/"),
+        ("LUST",    "https://swindonswingers.com/lust/"),
+    ]
+
+    events = []
+    seen = set()
+    cur_year = NOW.year
+
+    # Matches: "JUNE 6TH", "July 11th", "OCTOBER 31ST", "DECEMBER 5TH"
+    date_pat = re.compile(
+        r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+'
+        r'(\d{1,2})[a-z]{0,2}',
+        re.I
+    )
+
+    for event_type, url in EVENT_PAGES:
+        try:
+            req = _ul.Request(url, headers={
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36',
+                'Accept': 'text/html,*/*;q=0.8',
+                'Accept-Language': 'en-GB,en;q=0.9',
+            })
+            with _ul.urlopen(req, timeout=15) as r:
+                raw = r.read().decode('utf-8', errors='replace')
+            text = re.sub(r'<[^>]+>', ' ', raw)
+            text = _html.unescape(text)
+        except Exception as ex:
+            print(f"  Swindon {event_type} failed: {ex}")
+            try:
+                await page.goto(url, wait_until='domcontentloaded', timeout=20000)
+                await page.wait_for_timeout(2000)
+                text = await page.inner_text('body')
+            except:
+                continue
+
+        lines = [l.strip() for l in text.split('\n') if l.strip()]
+
+        for i, line in enumerate(lines):
+            dm = date_pat.search(line)
+            if not dm: continue
+            month = MMAP[dm.group(1).lower()]
+            day_num = int(dm.group(2))
+            try:
+                dt = datetime(cur_year, month, day_num)
+                if dt.date() < NOW.date():
+                    dt = datetime(cur_year + 1, month, day_num)
+                if not in_range(dt): continue
+            except: continue
+
+            # Get theme: rest of line after date, or next non-empty line
+            after_date = line[dm.end():].strip().strip('–-—').strip()
+            # Clean junk like "(This one is on the second weekend...)"
+            after_date = re.sub(r'\(.*?\)', '', after_date).strip()
+            # Remove common non-name words
+            after_date = re.sub(r'^\*+|\*+$', '', after_date).strip()
+
+            theme = None
+            if after_date and len(after_date) > 2 and after_date.upper() not in ('TBA', 'TBC', 'TB'):
+                theme = after_date[:60].strip()
+            else:
+                # Look at next line for theme
+                for j in range(i+1, min(i+4, len(lines))):
+                    candidate = lines[j].strip().strip('"').strip()
+                    if not candidate or len(candidate) < 3: continue
+                    cu = candidate.upper()
+                    if cu in ('TBA', 'TBC', '21:00', '02:30', 'RSVP'): continue
+                    if re.match(r'^[£\d]', candidate): continue
+                    if re.search(r'membership|pay on|door|tickets|mailing', candidate, re.I): continue
+                    theme = candidate[:60].strip()
+                    break
+
+            # Build event name
+            if theme:
+                event_name = f"{event_type}: {theme}"
+            else:
+                event_name = event_type  # Just the series name if no theme
+
+            key = dt.strftime('%Y-%m-%d') + event_type
+            if key in seen: continue
+            seen.add(key)
+            e = make_event(dt, 'Swindon SC', 'Swindon', 'swindon', event_name, url)
+            if e: events.append(e)
+
+    print(f"  Swindon SC: {len(events)} events")
+    return events
+
+
 async def scrape_infusion(page):
     """Infusion Blackpool: separate page per month, events separated by ●♡●♡●
     Format: 'Day DDth EVENT NAME description'
@@ -1034,7 +1133,7 @@ async def scrape_all(page):
     await run("Naughty Pineapple",scrape_naughtypineapple(page, "https://thenaughtypineapple.co.uk/all-events/"))
     await run("The Attic",        scrape_attic(page, "https://theatticexperience.com/events-prices-2/"))
     await run("Townhouse",        scrape_tickettailor(page, "https://www.tickettailor.com/events/townhousewirral", "Townhouse", "Birkenhead, Wirral", "townhouse"))
-    await run("Swindon SC",       scrape_wp_tribe_generic(page, "https://swindonswingers.com", "Swindon SC", "Swindon", "swindon", "https://swindonswingers.com/events/"))
+    await run("Swindon SC",       scrape_swindon(page))
     await run("Club Alchemy",     scrape_clubalchemy(page, "https://www.clubalchemy.co.uk/events"))
     await run("Infusion",         scrape_infusion(page))
     await run("Quest",            scrape_quest(page, "https://questswingersclub.co.uk/upcoming-events/"))
