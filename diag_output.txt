@@ -1,9 +1,13 @@
-Clicked I Confirm
+Age gate clicked
+Months visible: ['April 2026', 'May 2026', 'June 2026']
 
-HTML length: 37887
-Text lines: 117
+Clicking 'April 2026' (1 elements)
 
-=== ALL BODY TEXT ===
+Clicking 'May 2026' (1 elements)
+
+Clicking 'June 2026' (1 elements)
+
+=== FULL TEXT AFTER CLICKS (117 lines) ===
 [000] 18+
 [001] Age Verification
 [002] You must be 18 years or older to enter this site. By clicking "I Confirm", you certify that you are at least 18 years of age.
