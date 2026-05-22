@@ -52,8 +52,8 @@ body{{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min
 .site-header{{background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}}
 .logo-block{{display:flex;flex-direction:column;align-items:center;padding:14px 16px 8px;}}
 .logo-container{{width:250px;height:150px;max-width:92vw;max-height:55vw;display:flex;align-items:center;justify-content:center;border-radius:10px;overflow:hidden;background:none;border:none;}}
-.filter-row{{display:flex;gap:6px;padding:8px 14px 12px;justify-content:center;flex-wrap:wrap;}}
-.filter-btn{{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:7px 18px;border-radius:20px;font-size:15px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .18s;}}
+.filter-row{{display:flex;gap:8px;padding:8px 14px 12px;justify-content:center;align-items:center;}}
+.filter-btn{{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:7px 18px;border-radius:20px;font-size:15px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .18s;white-space:nowrap;}}.month-nav{{display:flex;align-items:center;gap:6px;}}.month-arrow{{background:var(--surface);border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;}}.month-arrow:hover{{background:var(--gold);color:#09090F;border-color:var(--gold);}}.month-label{{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text);min-width:120px;text-align:center;}}
 .filter-btn.active,.filter-btn:hover{{background:var(--gold);color:#09090F;border-color:var(--gold);}}
 .main{{max-width:600px;margin:0 auto;padding:12px 14px 40px;}}
 .date-header{{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:16px 0 8px;border-bottom:1px solid var(--border);margin-bottom:8px;}}
@@ -108,19 +108,12 @@ body{{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min
     <div class="logo-container">{video_tag}</div>
   </div>
   <div class="filter-row">
-    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
-    <button class="filter-btn" onclick="setFilter('jan',this)">Jan</button>
-    <button class="filter-btn" onclick="setFilter('feb',this)">Feb</button>
-    <button class="filter-btn" onclick="setFilter('mar',this)">Mar</button>
-    <button class="filter-btn" onclick="setFilter('apr',this)">Apr</button>
-    <button class="filter-btn" onclick="setFilter('may',this)">May</button>
-    <button class="filter-btn" onclick="setFilter('jun',this)">Jun</button>
-    <button class="filter-btn" onclick="setFilter('jul',this)">Jul</button>
-    <button class="filter-btn" onclick="setFilter('aug',this)">Aug</button>
-    <button class="filter-btn" onclick="setFilter('sep',this)">Sep</button>
-    <button class="filter-btn" onclick="setFilter('oct',this)">Oct</button>
-    <button class="filter-btn" onclick="setFilter('nov',this)">Nov</button>
-    <button class="filter-btn" onclick="setFilter('dec',this)">Dec</button>
+    <button class="filter-btn active" id="allBtn" onclick="setFilter('all')">All</button>
+    <div class="month-nav">
+      <button class="month-arrow" onclick="stepMonth(-1)">&#8249;</button>
+      <span class="month-label" id="monthLabel"></span>
+      <button class="month-arrow" onclick="stepMonth(1)">&#8250;</button>
+    </div>
   </div>
 </header>
 <main class="main" id="main"></main>
@@ -144,11 +137,34 @@ const RECURRING=[
   {{club:"Purple Mamba",city:"Nottingham",cls:"mamba",lines:["Weekly Saturday events","Premium lifestyle club","Smart dress code"],url:"https://www.purplemambaclub.com/"}},
   {{club:"Shhh",city:"Newcastle",cls:"shhh",lines:["Regular weekend events","Friendly North East club","Easy online membership"],url:"https://www.shhhclub.co.uk/"}},
 ];
-let f='all';
-function setFilter(m,btn){{f=m;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}}
+const MKS=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+function buildMonths(){{
+  const r=[];const now=new Date();
+  for(let i=0;i<13;i++){{
+    const d=new Date(now.getFullYear(),now.getMonth()+i,1);
+    r.push({{k:MKS[d.getMonth()],y:d.getFullYear(),l:MKS[d.getMonth()].toUpperCase()+' '+d.getFullYear()}});
+  }}
+  return r;
+}}
+const MLIST=buildMonths();
+let f='all',mIdx=0;
+function updateLabel(){{const el=document.getElementById('monthLabel');if(el)el.textContent=MLIST[mIdx].l;}}
+function stepMonth(dir){{
+  mIdx=Math.max(0,Math.min(MLIST.length-1,mIdx+dir));
+  f=MLIST[mIdx].k+'_'+MLIST[mIdx].y;
+  document.getElementById('allBtn').classList.remove('active');
+  updateLabel();render();
+}}
+function setFilter(m){{
+  f=m;
+  if(m==='all')document.getElementById('allBtn').classList.add('active');
+  else document.getElementById('allBtn').classList.remove('active');
+  render();
+}}
+updateLabel();
 function render(){{
   const main=document.getElementById('main');
-  const evts=f==='all'?EVENTS:EVENTS.filter(e=>e.m===f);
+  const evts=f==='all'?EVENTS:(()=>{{const p=f.split('_');return EVENTS.filter(e=>e.m===p[0]&&e.d.startsWith(p[1]+'-'));}})();
   if(!evts.length){{main.innerHTML='<div class="empty">No events found for this month.</div>';return;}}
   const g={{}};evts.forEach(e=>{{if(!g[e.day])g[e.day]=[];g[e.day].push(e);}});
   let h='';
