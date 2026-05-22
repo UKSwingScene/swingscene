@@ -20,7 +20,7 @@ import re as _re
 def _is_bad(name):
     if not name or len(name) < 6: return True
     n = name.lower()
-    bad = ['more info','google calendar','ics','view event','powered by',
+    bad = ['more info','google calendar','ics','view event','powered by','events list','event list',
            'sat, ','sun, ','mon, ','tue, ','wed, ','thu, ','fri, ',
            'pm sun','am sun','pm sat','am sat','subscribe','follow',
            'sign up','cookie','found','event name','copyright']
