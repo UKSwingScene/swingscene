@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
-"""Diagnostic 2: click age gate, dump all event text from HU9."""
-import asyncio, sys
+"""Diagnostic 3: expand future months in HU9 calendar."""
+import asyncio, re, sys
 from playwright.async_api import async_playwright
+
+async def get_lines(page):
+    text = await page.inner_text("body")
+    return [l.strip() for l in text.split("\n") if l.strip()]
 
 async def main():
     async with async_playwright() as p:
@@ -11,42 +15,49 @@ async def main():
         )
         await page.goto("https://my-site-nek40ye0-swingerspridegc.wix-vibe-site.com/events",
                         wait_until="domcontentloaded", timeout=30000)
-        await page.wait_for_timeout(3000)
+        await page.wait_for_timeout(4000)
 
         # Click age gate
         try:
-            btn = await page.get_by_text("I Confirm").first.element_handle()
-            if btn:
-                await btn.click()
-                print("Clicked I Confirm")
-                await page.wait_for_timeout(4000)
+            await page.get_by_text("I Confirm").first.click()
+            await page.wait_for_timeout(3000)
+            print("Age gate clicked")
         except Exception as e:
-            print(f"Age gate click failed: {e}")
+            print(f"Age gate: {e}")
 
-        # Try load more
-        try:
-            more = await page.query_selector('[data-hook="load-more-button"]')
-            if more: await more.click(); await page.wait_for_timeout(2000); print("Clicked load-more")
-        except: pass
+        lines = await get_lines(page)
+        months_seen = [l for l in lines if re.match(r"^(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}$", l, re.I)]
+        print(f"Months visible: {months_seen}")
 
-        html = await page.content()
-        text = await page.inner_text("body")
-        lines = [l.strip() for l in text.split("\n") if l.strip()]
+        # Try clicking each future month header
+        for month_text in months_seen:
+            try:
+                els = await page.get_by_text(month_text, exact=True).all()
+                print(f"\nClicking '{month_text}' ({len(els)} elements)")
+                for el in els:
+                    try:
+                        await el.click()
+                        await page.wait_for_timeout(2000)
+                        break
+                    except: pass
+            except Exception as e:
+                print(f"  click error: {e}")
 
-        print(f"\nHTML length: {len(html)}")
-        print(f"Text lines: {len(lines)}")
-        print("\n=== ALL BODY TEXT ===")
-        for i, l in enumerate(lines):
+        # Also try clicking "next month" arrow buttons
+        for sel in ["button[aria-label*='next']", "button[aria-label*='Next']",
+                    "[class*='next']", "[class*='arrow']", "button:has-text('>')"]:
+            btns = await page.query_selector_all(sel)
+            if btns:
+                print(f"\nFound {len(btns)} buttons with {sel!r}")
+                for b in btns[:1]:
+                    print(f"  text: {await b.inner_text()}")
+
+        # After clicking, get all lines
+        await page.wait_for_timeout(2000)
+        lines2 = await get_lines(page)
+        print(f"\n=== FULL TEXT AFTER CLICKS ({len(lines2)} lines) ===")
+        for i, l in enumerate(lines2):
             print(f"[{i:03d}] {l}")
-
-        # Check for event selectors
-        for sel in ['[data-hook="event-list-item"]', '[class*="EventListItem"]',
-                    '[class*="event-list"]', "article", '[data-hook="events-widget"]']:
-            els = await page.query_selector_all(sel)
-            if els:
-                print(f"\nSelector {sel!r}: {len(els)} elements")
-                for el in els[:3]:
-                    print(f"  text: {(await el.inner_text())[:200]}")
 
         await browser.close()
 
