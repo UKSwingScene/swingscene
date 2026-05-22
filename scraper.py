@@ -716,70 +716,55 @@ async def scrape_wp_tribe_generic(page, base, club, city, cls, url, standard_fil
 
 
 async def scrape_leboudoir(page):
-    """Le Boudoir: modernlifestyle platform. Returns JS with embedded HTML.
-    Paginates via ?page=N. Date format: 'Fri, Aug 28' (no year — infer from context).
-    All events are named — include everything."""
-    import urllib.request as _ul, html as _html
-
-    BASE_URL = 'https://leboudoir.club/events?browse=future&event_type=visible&venue_id=1773&view=gallery'
+    """Le Boudoir: Playwright-based. Loads gallery page, parses event cards."""
+    import html as _html
+    BASE = 'https://leboudoir.club'
+    EVENTS_URL = f'{BASE}/events?browse=future&event_type=visible&venue_id=1773&view=gallery'
+    MON_MAP = {'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,
+               'jul':7,'aug':8,'sep':9,'oct':10,'nov':11,'dec':12}
     events = []
     seen = set()
     cur_year = NOW.year
-
-    # Month abbreviation map
-    MON_MAP = {'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,
-               'jul':7,'aug':8,'sep':9,'oct':10,'nov':11,'dec':12}
-
-    for page_num in range(1, 6):  # Max 5 pages
-        url = BASE_URL if page_num == 1 else BASE_URL + f'&page={page_num}'
-        try:
-            req = _ul.Request(url, headers={
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36',
-                'Accept': '*/*',
-                'Accept-Language': 'en-GB,en;q=0.9',
-                'X-Requested-With': 'XMLHttpRequest',
-            })
-            with _ul.urlopen(req, timeout=15) as r:
-                content = r.read().decode('utf-8', errors='replace')
-        except Exception as ex:
-            print(f"  Le Boudoir page {page_num} failed: {ex}")
-            break
-
-        if not content.strip() or 'event_name' not in content:
-            break  # No more events
-
-        # Parse event names: <div class='event_name notranslate'><a ...>NAME<\/a>
-        names = re.findall(r"event_name notranslate'><a[^>]+>(.+?)<\\/a>", content)
-        # Parse dates: \nFri, Aug 28\n or \nSat, May 23\n
-        dates = re.findall(r'\\n(\w{3}),\s+(\w{3})\s+(\d{1,2})\\n', content)
-        # Parse event URLs: href=\"/events/XXXXX\"
-        urls = re.findall(r'href=\\"(/events/\d+)\\"', content)
-
+    try:
+        await page.goto(EVENTS_URL, wait_until='domcontentloaded', timeout=30000)
+        await page.wait_for_timeout(5000)
+        # Try to load more pages by clicking pagination
+        for _ in range(4):
+            try:
+                more = await page.query_selector('a.load_more, a[rel="next"], .pagination a:last-child')
+                if not more: break
+                await more.click()
+                await page.wait_for_timeout(2000)
+            except: break
+        # Parse page content
+        content = await page.content()
+        # Find event names
+        name_pat = re.compile(r'class="event_name notranslate"><a[^>]*>([^<]+)</a>', re.I)
+        date_pat = re.compile(r'(\w{3}),\s+(\w{3})\s+(\d{1,2})', re.I)
+        url_pat  = re.compile(r'href="(/events/\d+)\?marketplace')
+        names = name_pat.findall(content)
+        dates = date_pat.findall(content)
+        urls  = url_pat.findall(content)
+        print(f"  Le Boudoir found: {len(names)} names, {len(dates)} dates")
         for i, name in enumerate(names):
             name = _html.unescape(name).strip()
-            if not name or len(name) < 3: continue
-            if i >= len(dates): continue
-
-            _, month_abbr, day_str = dates[i]
-            month = MON_MAP.get(month_abbr.lower())
+            if not name or i >= len(dates): continue
+            _, mon, day = dates[i]
+            month = MON_MAP.get(mon.lower())
             if not month: continue
-            day_num = int(day_str)
-
-            # Infer year
             try:
-                dt = datetime(cur_year, month, day_num)
-                if dt.date() < NOW.date():
-                    dt = datetime(cur_year + 1, month, day_num)
+                dt = datetime(cur_year, month, int(day))
+                if dt.date() < NOW.date(): dt = datetime(cur_year+1, month, int(day))
                 if not in_range(dt): continue
             except: continue
-
-            event_url = 'https://leboudoir.club' + urls[i] if i < len(urls) else 'https://leboudoir.club/events'
+            evt_url = BASE + urls[i] if i < len(urls) else EVENTS_URL
             key = dt.strftime('%Y-%m-%d') + name[:15]
             if key in seen: continue
             seen.add(key)
-            e = make_event(dt, 'Le Boudoir', 'City of London', 'leboudoir', name, event_url)
+            e = make_event(dt, 'Le Boudoir', 'City of London', 'leboudoir', name, evt_url)
             if e: events.append(e)
-
+    except Exception as ex:
+        print(f"  Le Boudoir failed: {ex}")
     print(f"  Le Boudoir: {len(events)} events")
     return events
 
