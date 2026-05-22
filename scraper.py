@@ -1669,8 +1669,14 @@ async def scrape_all(page):
             results[name] = uniq
             print(f"  -> {len(uniq)} events")
         except Exception as ex:
-            print(f"  ERROR: {ex}")
+            print(f"  ERROR {name}: {ex}")
             results[name] = []
+        finally:
+            # Reset page after each club to prevent corrupted state from affecting next scraper
+            try:
+                await page.goto("about:blank", timeout=5000)
+            except:
+                pass
 
     await run("No.3 Club",        scrape_no3(page, "https://theno3club.co.uk/"))
     await run("Cupids",           scrape_cupids(page, "https://www.cupidsswingersclub.co.uk/events"))
