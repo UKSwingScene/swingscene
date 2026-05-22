@@ -498,3 +498,230 @@ async def scrape_no3(page, url):
     return events
 
 
+async def scrape_cupids(page, url):
+    """Cupids: Squarespace site. All events named. Filter only the generic
+    weekly Wednesday 'couples & single females only night'."""
+    CUPIDS_STANDARD = {'couples & single females only night', 'couples & single females only'}
+    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+    await page.wait_for_timeout(4000)
+    events = []
+    seen = set()
+    # Squarespace: event titles in h1 tags with links to /events/slug
+    # Dates in Google Calendar links: dates=YYYYMMDDTHHMMSSZ
+    links = await page.query_selector_all('h1 a[href*="/events/"], h2 a[href*="/events/"]')
+    for link in links:
+        title = (await link.inner_text()).strip()
+        if not title or len(title) < 3: continue
+        if title.lower().rstrip() in CUPIDS_STANDARD: continue
+        if 'couples & single females only' in title.lower(): continue
+        href = await link.get_attribute('href') or url
+        if not href.startswith('http'):
+            href = 'https://www.cupidsswingersclub.co.uk' + href
+        # Get parent container for date
+        container = await link.evaluate_handle(
+            'el => el.closest("article") || el.closest(".eventlist-event") || el.parentElement.parentElement.parentElement'
+        )
+        dt = None
+        try:
+            # Look for Google Calendar link with ISO date
+            gcal = await container.query_selector('a[href*="dates="]')
+            if gcal:
+                gcal_href = await gcal.get_attribute('href') or ''
+                m = re.search(r'dates=(\d{8})T', gcal_href)
+                if m:
+                    ds = m.group(1)
+                    dt = datetime(int(ds[:4]), int(ds[4:6]), int(ds[6:8]))
+        except: pass
+        if not dt:
+            try:
+                ptext = await container.inner_text()
+                dt = parse_date_text(ptext)
+            except: pass
+        if dt and in_range(dt):
+            key = dt.strftime('%Y-%m-%d') + title[:15]
+            if key not in seen:
+                seen.add(key)
+                e = make_event(dt, 'Cupids', 'Swinton, Manchester', 'cupids', title, href)
+                if e: events.append(e)
+    return events
+
+
+async def scrape_clubalchemy(page, url):
+    """Club Alchemy: custom JS-rendered site. Extract date from URL slug."""
+    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+    await page.wait_for_timeout(6000)
+    events = []
+    seen = set()
+    links = await page.query_selector_all('a[href*="/events/"]')
+    for link in links:
+        href = await link.get_attribute('href') or ''
+        if not href or href.rstrip('/') == url.rstrip('/'): continue
+        m = re.search(r'(\d{4})-(\d{2})-(\d{2})', href)
+        if m:
+            try:
+                dt = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+                if not in_range(dt): continue
+                title = (await link.inner_text()).strip()
+                if not title or len(title) < 3:
+                    slug = href.split('/events/')[-1].strip('/')
+                    slug = re.sub(r'-\d{4}-\d{2}-\d{2}.*', '', slug)
+                    title = slug.replace('-', ' ').title()
+                full_url = href if href.startswith('http') else 'https://www.clubalchemy.co.uk' + href
+                key = dt.strftime('%Y-%m-%d') + title[:10]
+                if key not in seen:
+                    seen.add(key)
+                    e = make_event(dt, 'Club Alchemy', 'UK', 'alchemy', title, full_url)
+                    if e: events.append(e)
+            except: pass
+    return events
+
+
+async def scrape_tickettailor(page, url, club, city, cls):
+    """Tickettailor events page."""
+    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+    await page.wait_for_timeout(4000)
+    events = []
+    for sel in ['.event-item h2', '.tt-event-title', 'h2', 'h3']:
+        items = await page.query_selector_all(sel)
+        if items:
+            for item in items:
+                title = (await item.inner_text()).strip()
+                if not title or len(title) < 4: continue
+                parent = await item.evaluate_handle('el => el.closest(".event-item") || el.closest("article") || el.parentElement.parentElement')
+                try:
+                    ptext = await parent.inner_text()
+                except: ptext = title
+                dt = parse_date_text(ptext)
+                if dt and in_range(dt):
+                    e = make_event(dt, club, city, cls, title, url)
+                    if e: events.append(e)
+            if events: return events
+    text = await page.inner_text('body')
+    lines = [l.strip() for l in text.split('\n') if l.strip()]
+    for i, line in enumerate(lines):
+        dt = parse_date_text(line)
+        if not dt or not in_range(dt): continue
+        for j in [i-1, i-2, i+1]:
+            if 0 <= j < len(lines) and len(lines[j]) > 5 and not parse_date_text(lines[j]):
+                e = make_event(dt, club, city, cls, lines[j], url)
+                if e: events.append(e); break
+    return events
+
+
+async def scrape_wp_tribe_generic(page, base, club, city, cls, url, standard_filter=None):
+    """Generic WordPress/Tribe Events scraper."""
+    api_events = await scrape_wp_api(page, base, club, city, cls, url)
+    if api_events:
+        if standard_filter:
+            api_events = [e for e in api_events if not any(s in e['event'].lower() for s in standard_filter)]
+        return api_events
+    await page.goto(url, wait_until='domcontentloaded', timeout=25000)
+    await page.wait_for_timeout(3500)
+    events = []
+    for sel in ['.tribe-events-calendar-list__event-title a', 'h2.tribe-events-list-event-title a',
+                'h3 a', 'h2 a', '.event-title a', '.eventlist-title a']:
+        items = await page.query_selector_all(sel)
+        if items:
+            for item in items:
+                title = (await item.inner_text()).strip()
+                if not title or len(title) < 4: continue
+                if standard_filter and any(s in title.lower() for s in standard_filter): continue
+                href = await item.get_attribute('href') or url
+                parent = await item.evaluate_handle('el => el.closest("article") || el.parentElement.parentElement')
+                try: ptext = await parent.inner_text()
+                except: ptext = title
+                dt = parse_date_text(ptext)
+                if dt and in_range(dt):
+                    e = make_event(dt, club, city, cls, title, href)
+                    if e: events.append(e)
+            if events: return events
+    return events
+
+
+async def scrape_all(page):
+    results = {}
+
+    async def run(name, coro):
+        print(f"Scraping {name}...")
+        try:
+            evs = await coro
+            seen = set()
+            uniq = []
+            for e in evs:
+                k = (e['d'], e['event'][:20])
+                if k not in seen:
+                    seen.add(k)
+                    uniq.append(e)
+            results[name] = uniq
+            print(f"  -> {len(uniq)} events")
+        except Exception as ex:
+            print(f"  ERROR: {ex}")
+            results[name] = []
+
+    await run("No.3 Club",        scrape_no3(page, "https://theno3club.co.uk/"))
+    await run("Cupids",           scrape_cupids(page, "https://www.cupidsswingersclub.co.uk/events"))
+    await run("Partners",         scrape_wp_tribe_generic(page, "https://www.partnersswingersclub.co.uk", "Partners", "Manchester", "partners", "https://www.partnersswingersclub.co.uk/events/"))
+    await run("Pandoras",         scrape_wp_tribe_generic(page, "https://www.pandoraswingers.com", "Pandoras", "Leeds", "pandora", "https://www.pandoraswingers.com/events/"))
+    await run("Club Play",        scrape_clubplay(page, "https://clubplay.net/events/"))
+    await run("Xtasia",           scrape_wp_tribe_generic(page, "https://www.xtasia.co.uk", "Xtasia", "West Bromwich", "xtasia", "https://www.xtasia.co.uk/page/2-months-diary"))
+    await run("Naughty Pineapple",scrape_naughtypineapple(page, "https://thenaughtypineapple.co.uk/all-events/"))
+    await run("The Attic",        scrape_attic(page, "https://theatticexperience.com/events-prices-2/"))
+    await run("Townhouse",        scrape_tickettailor(page, "https://www.tickettailor.com/events/townhousewirral", "Townhouse", "Birkenhead, Wirral", "townhouse"))
+    await run("Swindon SC",       scrape_wp_tribe_generic(page, "https://swindonswingers.com", "Swindon SC", "Swindon", "swindon", "https://swindonswingers.com/events/"))
+    await run("Club Alchemy",     scrape_clubalchemy(page, "https://www.clubalchemy.co.uk/events"))
+    await run("Infusion",         scrape_wp_tribe_generic(page, "https://www.infusionblackpool.co.uk", "Infusion", "Blackpool", "infusion", "https://www.infusionblackpool.co.uk/8.html"))
+    await run("Quest",            scrape_quest(page, "https://questswingersclub.co.uk/upcoming-events/"))
+    await run("Liberty Elite",    scrape_libertyelite(page, "https://libertyelite.co.uk/events/list/?tribe-bar-date=" + NOW.strftime('%Y-%m-%d')))
+    await run("Purple Mamba",     scrape_purplemamba(page, "https://www.purplemambaclub.com/what-s-on-tickets"))
+    await run("Shhh",             scrape_shhh(page, "https://www.shhhclub.co.uk/events"))
+    await run("Decadance",        scrape_decadance(page, "https://www.decadanceswingersclub.com/what-s-on-at-decadance"))
+    await run("New Gatehouse",    scrape_wp_tribe_generic(page, "https://www.thenewgatehousebolton.co.uk", "New Gatehouse", "Bolton", "gatehouse", "https://www.thenewgatehousebolton.co.uk/about-1"))
+    await run("Le Boudoir",       scrape_wp_tribe_generic(page, "https://www.leboudoir.co.uk", "Le Boudoir", "London", "leboudoir", "https://www.leboudoir.co.uk/events/"))
+    await run("Chameleons",       scrape_chameleons(page, "https://www.chameleons.cc/darlaston-events/"))
+
+    return results
+
+
+async def main():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(
+            headless=True,
+            args=['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage',
+                  '--disable-blink-features=AutomationControlled']
+        )
+        ctx = await browser.new_context(
+            user_agent='Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 '
+                       '(KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+            viewport={'width': 390, 'height': 844},
+            locale='en-GB',
+        )
+        await ctx.add_init_script("Object.defineProperty(navigator,'webdriver',{get:()=>undefined})")
+        page = await ctx.new_page()
+        results = await scrape_all(page)
+        await browser.close()
+
+    all_events = []
+    for evs in results.values():
+        all_events.extend(evs)
+
+    seen = set()
+    unique = []
+    for e in sorted(all_events, key=lambda x: x['d']):
+        k = (e['d'], e['club'])
+        if k not in seen:
+            seen.add(k)
+            unique.append(e)
+
+    with open('events_scraped.json', 'w') as f:
+        json.dump(unique, f, indent=2)
+
+    print("\n=== RESULTS ===")
+    total = 0
+    for name, evs in results.items():
+        status = f"YES {len(evs)}" if evs else "NO"
+        print(f"  {name}: {status}")
+        total += len(evs)
+    print(f"\nTotal scraped: {total}")
+
+
+asyncio.run(main())
