@@ -2,12 +2,14 @@ name: Scrape and Deploy
 
 on:
   schedule:
-    - cron: '0 2 * * *'   # runs every day at 2am UTC
-  workflow_dispatch:        # allows manual trigger from GitHub Actions tab
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repo
@@ -30,10 +32,10 @@ jobs:
       - name: Build HTML page
         run: python build.py
 
-      - name: Commit and push updated page
+      - name: Commit and push
         run: |
           git config user.name "SwingScene Bot"
           git config user.email "bot@ukswingscene.github.io"
-          git add index.html events.json
+          git add index.html events_scraped.json
           git diff --staged --quiet || git commit -m "Auto-update events $(date +%Y-%m-%d)"
           git push
