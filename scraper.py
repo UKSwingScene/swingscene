@@ -269,14 +269,51 @@ async def scrape_purplemamba(page, url):
     return events
 
 async def scrape_hu9(page, url):
-    """HU9 Hull: Wix — wait for JS, filter standard nights."""
-    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-    await page.wait_for_timeout(5000)
+    """HU9 Hull: Wix custom domain — stealth browser, parse events."""
+    import sys
+    try:
+        # Spoof automation flags
+        await page.add_init_script("""
+            Object.defineProperty(navigator,'webdriver',{get:()=>false});
+            Object.defineProperty(navigator,'plugins',{get:()=>[1,2,3]});
+        """)
+        await page.goto(url, wait_until='domcontentloaded', timeout=40000)
+        # Wait for Wix JS to hydrate
+        await page.wait_for_timeout(8000)
+        # Try clicking "show more" if present
+        try:
+            btn = await page.query_selector('[data-hook="load-more-button"]')
+            if btn: await btn.click(); await page.wait_for_timeout(2000)
+        except: pass
+    except Exception as e:
+        print(f"HU9 load error: {e}", file=sys.stderr)
+        return []
+
     events = []
-    items = await page.query_selector_all('[data-hook="event-list-item"], .eventContainer, [class*="EventListItem"]')
-    if not items:
-        # fallback: parse body text
+    # Wix event list selectors
+    items = await page.query_selector_all(
+        '[data-hook="event-list-item"], [class*="EventListItem"], .eventContainer, article[class*="event"]'
+    )
+    print(f"HU9: found {len(items)} items", file=sys.stderr)
+
+    if items:
+        for item in items:
+            try:
+                title_el = await item.query_selector('[data-hook="event-title"], [class*="title"], h2, h3, a')
+                if not title_el: continue
+                title = (await title_el.inner_text()).strip()
+                if not title: continue
+                if any(s in title.lower() for s in HU9_STANDARD): continue
+                item_text = await item.inner_text()
+                dt = parse_date_text(item_text)
+                if dt:
+                    e = make_event(dt, 'HU9', 'Hull', 'hu9', title, url)
+                    if e: events.append(e)
+            except: pass
+    else:
+        # Fallback: parse all body text
         text = await page.inner_text('body')
+        print(f"HU9 fallback body text (first 300): {text[:300]}", file=sys.stderr)
         lines = [l.strip() for l in text.split('\n') if l.strip()]
         for i, line in enumerate(lines):
             dt = parse_date_text(line)
@@ -290,21 +327,6 @@ async def scrape_hu9(page, url):
                                 e = make_event(dt, 'HU9', 'Hull', 'hu9', candidate, url)
                                 if e: events.append(e)
                             break
-        return events
-    for item in items:
-        try:
-            title_el = await item.query_selector('[data-hook="event-title"], [class*="title"], a')
-            if not title_el: continue
-            title = (await title_el.inner_text()).strip()
-            if not title: continue
-            if any(s in title.lower() for s in HU9_STANDARD): continue
-            item_text = await item.inner_text()
-            dt = parse_date_text(item_text)
-            if dt:
-                e = make_event(dt, 'HU9', 'Hull', 'hu9', title, url)
-                if e: events.append(e)
-        except:
-            pass
     return events
 
 
@@ -1316,7 +1338,7 @@ async def scrape_all(page):
     await run("Quest",            scrape_quest(page, "https://questswingersclub.co.uk/upcoming-events/"))
     await run("Liberty Elite",    scrape_libertyelite(page, "https://libertyelite.co.uk/events/list/?tribe-bar-date=" + NOW.strftime('%Y-%m-%d')))
     await run("Purple Mamba",     scrape_purplemamba(page, "https://www.purplemambaclub.com/what-s-on-tickets"))
-    await run("HU9",              scrape_hu9(page, "https://my-site-nek40ye0-swingerspridegc.wix-vibe-site.com/events"))
+    await run("HU9",              scrape_hu9(page, "https://hu9swingersclub.co.uk/events"))
     await run("Shhh",             scrape_shhh(page, "https://www.shhhclub.co.uk/events"))
     await run("Decadance",        scrape_decadance(page, "https://www.decadanceswingersclub.com/what-s-on-at-decadance"))
     await run("New Gatehouse",    scrape_wp_tribe_generic(page, "https://www.thenewgatehousebolton.co.uk", "New Gatehouse", "Bolton", "gatehouse", "https://www.thenewgatehousebolton.co.uk/about-1"))
