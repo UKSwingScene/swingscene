@@ -1485,15 +1485,19 @@ async def scrape_atlantis(page, url):
 
 
 async def scrape_ignite(page, url):
-    """Club Ignite West Drayton: TEC REST API via urllib (browser fetch blocked by CORS)."""
+    """Club Ignite West Drayton: TEC REST API (urllib first, Playwright DOM fallback).
+    Their security plugin blocks the API from some IPs — fall back to page scraping.
+    """
     import sys
+
+    # Try urllib API first
     api = 'https://club-ignite.co.uk/wp-json/tribe/events/v1/events?per_page=50&start_date=' + NOW.strftime('%Y-%m-%d')
     try:
         req = _urllib.Request(api, headers={
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             'Accept': 'application/json',
         })
-        with _urllib.urlopen(req, timeout=20) as r:
+        with _urllib.urlopen(req, timeout=15) as r:
             data = json.loads(r.read())
         events = []
         for ev in data.get('events', []):
@@ -1505,11 +1509,64 @@ async def scrape_ignite(page, url):
                         e = make_event(dt, 'Club Ignite', 'West Drayton', 'ignite', title, url)
                         if e: events.append(e)
             except: pass
-        print(f"Club Ignite: {len(events)} events", file=sys.stderr)
-        return events
+        if events:
+            print(f"Club Ignite (API): {len(events)} events", file=sys.stderr)
+            return events
     except Exception as ex:
-        print(f"Club Ignite API error: {ex}", file=sys.stderr)
-        return []
+        print(f"Club Ignite API error: {ex} — trying Playwright", file=sys.stderr)
+
+    # Playwright DOM fallback — load events page, parse TEC event cards
+    events = []
+    try:
+        await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+        await page.wait_for_timeout(4000)
+
+        # Also try browser-side API fetch from within page context
+        api_result = await page.evaluate(
+            f'fetch("{api}",{{headers:{{"Accept":"application/json"}}}}).then(r=>r.ok?r.json():null).catch(()=>null)'
+        )
+        if api_result and isinstance(api_result, dict) and api_result.get('events'):
+            for ev in api_result['events']:
+                try:
+                    dt = datetime.fromisoformat(ev['start_date'][:10])
+                    if in_range(dt):
+                        title = re.sub(r'<[^>]+>', '', ev.get('title', '')).strip()
+                        if title and title.lower() not in IGNITE_STANDARD:
+                            e = make_event(dt, 'Club Ignite', 'West Drayton', 'ignite', title, url)
+                            if e: events.append(e)
+                except: pass
+            if events:
+                print(f"Club Ignite (in-page fetch): {len(events)} events", file=sys.stderr)
+                return events
+
+        # DOM scraping — TEC event titles + date text
+        for sel in [
+            '.tribe-events-calendar-list__event-title a',
+            '.tribe-event-url', 'h2.tribe-events-list-event-title a',
+            '.tribe-common-h6 a', 'h2 a', 'h3 a',
+        ]:
+            items = await page.query_selector_all(sel)
+            if not items:
+                continue
+            for item in items:
+                title = (await item.inner_text()).strip()
+                href  = await item.get_attribute('href') or url
+                parent = await item.evaluate_handle(
+                    "el => el.closest('article') || el.closest('.tribe-events-calendar-list__event') || el.parentElement.parentElement"
+                )
+                try:    ptext = await parent.inner_text()
+                except: ptext = title
+                dt = parse_date_text(ptext)
+                if dt and in_range(dt) and title.lower() not in IGNITE_STANDARD:
+                    e = make_event(dt, 'Club Ignite', 'West Drayton', 'ignite', title, href)
+                    if e: events.append(e)
+            if events: break
+
+    except Exception as ex:
+        print(f"Club Ignite Playwright error: {ex}", file=sys.stderr)
+
+    print(f"Club Ignite (DOM): {len(events)} events", file=sys.stderr)
+    return events
 
 
 async def scrape_all(page):
