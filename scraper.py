@@ -638,6 +638,76 @@ async def scrape_wp_tribe_generic(page, base, club, city, cls, url, standard_fil
     return events
 
 
+async def scrape_pandoras(page, url):
+    """Pandoras: 123-reg static site, plain text diary.
+    Filter: Biphoria (every Thu), Relaxed Sunday, generic open nights."""
+    PANDORA_STANDARD = {'biphoria', 'relaxed sunday', 'open to all members'}
+    await page.goto(url, wait_until='domcontentloaded', timeout=25000)
+    await page.wait_for_timeout(3000)
+    text = await page.inner_text('body')
+    for ch in ['\u2013', '\u2014']:
+        text = text.replace(ch, '-')
+    lines = [l.strip() for l in text.split('\n') if l.strip()]
+    events = []
+    seen = set()
+    day_pattern = re.compile(
+        r'^(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+'
+        r'(\d{1,2})[a-z]{0,2}\s+'
+        r'(January|February|March|April|May|June|July|August|September|October|November|December)',
+        re.I
+    )
+    SKIP_LINES = {
+        'open to all members', 'all members welcome', 'event night',
+        'before 7pm', 'after 7pm', 'per couple', 'per single male',
+        'single female', 'trans', '8pm', '11am', 'midnight', '2am',
+        'free shots', 'dj', 'guest list', 'fabswingers', 'add onto',
+        'more information', 'membership required', 'relaxed sunday',
+    }
+    cur_year = NOW.year
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        dm = day_pattern.match(line)
+        if dm:
+            day_num = int(dm.group(1))
+            month = MMAP[dm.group(2).lower()]
+            try:
+                dt = datetime(cur_year, month, day_num)
+                if dt < NOW - timedelta(days=1):
+                    dt = datetime(cur_year + 1, month, day_num)
+                if not in_range(dt):
+                    i += 1
+                    continue
+            except:
+                i += 1
+                continue
+            # Scan next lines for event name
+            event_name = None
+            for j in range(i+1, min(i+10, len(lines))):
+                candidate = lines[j].strip('*').strip()
+                if not candidate or len(candidate) < 4: continue
+                if day_pattern.match(candidate): break
+                cl = candidate.lower()
+                if any(sk in cl for sk in SKIP_LINES): continue
+                if re.match(r'^\d', candidate): continue
+                if re.match(r'^£', candidate): continue
+                # Skip "X is hosting..." lines — get the name after
+                if re.search(r'\bis hosting\b', candidate, re.I):
+                    continue
+                if cl in PANDORA_STANDARD: continue
+                event_name = candidate[:80]
+                break
+            if event_name and event_name.lower() not in PANDORA_STANDARD:
+                key = dt.strftime('%Y-%m-%d') + event_name[:15]
+                if key not in seen:
+                    seen.add(key)
+                    e = make_event(dt, 'Pandoras', 'Armley, Leeds', 'pandora',
+                                   event_name, 'https://www.pandoraswingers.com/event-diary')
+                    if e: events.append(e)
+        i += 1
+    return events
+
+
 async def scrape_partners(page, url):
     """Partners Swingers Club: custom WordPress weekly layout.
     Format: day + date line, then h3 event name.
@@ -718,7 +788,7 @@ async def scrape_all(page):
     await run("No.3 Club",        scrape_no3(page, "https://theno3club.co.uk/"))
     await run("Cupids",           scrape_cupids(page, "https://www.cupidsswingersclub.co.uk/events"))
     await run("Partners",         scrape_partners(page, "https://partnersswingersclub.com/events/"))
-    await run("Pandoras",         scrape_wp_tribe_generic(page, "https://www.pandoraswingers.com", "Pandoras", "Leeds", "pandora", "https://www.pandoraswingers.com/events/"))
+    await run("Pandoras",         scrape_pandoras(page, "https://www.pandoraswingers.com/event-diary"))
     await run("Club Play",        scrape_clubplay(page, "https://clubplay.net/events/"))
     await run("Xtasia",           scrape_wp_tribe_generic(page, "https://www.xtasia.co.uk", "Xtasia", "West Bromwich", "xtasia", "https://www.xtasia.co.uk/page/2-months-diary"))
     await run("Naughty Pineapple",scrape_naughtypineapple(page, "https://thenaughtypineapple.co.uk/all-events/"))
