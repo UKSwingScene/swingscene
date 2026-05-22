@@ -391,26 +391,58 @@ async def scrape_shhh(page, url):
             if events: return events
     return events
 
-async def scrape_no3(page, url):
-    """No.3 Club: fetch homepage directly with urllib (bypasses Playwright blocking).
-    Events are plain text on homepage. Show ALL events."""
+async def fetch_via_jina(url, timeout=20):
+    """Use Jina Reader (r.jina.ai) to bypass bot detection.
+    Free public service that fetches any URL and returns clean text."""
     import urllib.request as _ul
-    import html as _html
+    jina_url = f"https://r.jina.ai/{url}"
+    req = _ul.Request(jina_url, headers={
+        'Accept': 'text/plain',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+    })
+    with _ul.urlopen(req, timeout=timeout) as r:
+        return r.read().decode('utf-8', errors='replace')
+
+async def scrape_no3(page, url):
+    """No.3 Club: bot-blocked site. Use Jina Reader as primary fetch method.
+    Events are plain text on homepage. Show ALL events."""
     events = []
     seen = set()
+    raw = ''
+    # Strategy 1: Jina Reader (most reliable for blocked sites)
     try:
-        req = _ul.Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; bot)'})
-        with _ul.urlopen(req, timeout=15) as r:
-            raw = r.read().decode('utf-8', errors='replace')
+        raw = await fetch_via_jina(url)
+        print(f"  No.3 Club: Jina Reader fetched {len(raw)} chars")
     except Exception as ex:
-        print(f"  No.3 direct fetch failed: {ex}, falling back to Playwright")
+        print(f"  No.3 Jina failed: {ex}, trying direct fetch")
+        # Strategy 2: Direct fetch with proper browser headers
         try:
-            await page.goto(url, wait_until='domcontentloaded', timeout=25000)
-            await page.wait_for_timeout(3000)
-            raw = await page.content()
+            import urllib.request as _ul
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-GB,en;q=0.9',
+                'Accept-Encoding': 'identity',
+                'Connection': 'keep-alive',
+                'Upgrade-Insecure-Requests': '1',
+            }
+            req = _ul.Request(url, headers=headers)
+            with _ul.urlopen(req, timeout=15) as r:
+                raw = r.read().decode('utf-8', errors='replace')
+            print(f"  No.3 direct fetch: {len(raw)} chars")
         except Exception as ex2:
-            print(f"  No.3 Playwright also failed: {ex2}")
-            return []
+            print(f"  No.3 direct fetch failed: {ex2}, trying Playwright")
+            # Strategy 3: Playwright fallback
+            try:
+                await page.goto(url, wait_until='domcontentloaded', timeout=25000)
+                await page.wait_for_timeout(3000)
+                raw = await page.content()
+                print(f"  No.3 Playwright: {len(raw)} chars")
+            except Exception as ex3:
+                print(f"  No.3 all methods failed: {ex3}")
+                return []
+    
+    import html as _html
     # Strip HTML tags
     text = re.sub(r'<[^>]+>', ' ', raw)
     text = _html.unescape(text)
