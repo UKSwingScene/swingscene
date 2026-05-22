@@ -638,6 +638,99 @@ async def scrape_wp_tribe_generic(page, base, club, city, cls, url, standard_fil
     return events
 
 
+async def scrape_infusion(page):
+    """Infusion Blackpool: separate page per month, events separated by ●♡●♡●
+    Format: 'Day DDth EVENT NAME description'
+    Fetches current + next month pages."""
+    MONTH_PAGES = {1:3,2:4,3:5,4:7,5:8,6:11,7:13,8:14,9:15,10:17,11:20,12:24}
+    INFUSION_STANDARD = {
+        'wicked wednesday', 'greedy girls', 'pure',
+        'chillout sunday', 'chill zone sunday', 'sexy sunday',
+        'seductive sunday', 'thirsty thursday',
+    }
+    BASE = 'https://www.infusionblackpool.co.uk'
+    events = []
+    seen = set()
+
+    # Fetch current month + next month
+    months_to_fetch = []
+    cur_month = NOW.month
+    cur_year = NOW.year
+    for offset in [0, 1]:
+        m = ((cur_month - 1 + offset) % 12) + 1
+        y = cur_year + ((cur_month - 1 + offset) // 12)
+        page_num = MONTH_PAGES.get(m)
+        if page_num:
+            months_to_fetch.append((m, y, page_num))
+
+    for month_num, year, page_num in months_to_fetch:
+        url = f'{BASE}/{page_num}.html'
+        try:
+            import urllib.request as _ul
+            import html as _html
+            req = _ul.Request(url, headers={
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36',
+                'Accept': 'text/html,*/*;q=0.8',
+                'Accept-Language': 'en-GB,en;q=0.9',
+            })
+            with _ul.urlopen(req, timeout=15) as r:
+                raw = r.read().decode('utf-8', errors='replace')
+            text = re.sub(r'<[^>]+>', ' ', raw)
+            text = _html.unescape(text)
+        except Exception as ex:
+            print(f"  Infusion fetch {url} failed: {ex}")
+            try:
+                await page.goto(url, wait_until='domcontentloaded', timeout=20000)
+                await page.wait_for_timeout(2000)
+                text = await page.inner_text('body')
+            except:
+                continue
+
+        # Validate year — skip if page still shows old year
+        if str(year) not in text and str(year-1) in text:
+            print(f"  Infusion {url} still showing {year-1} data, skipping")
+            continue
+
+        # Split on separator
+        parts = re.split(r'●♡●♡●|●|♡', text)
+        day_pattern = re.compile(
+            r'(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*\s+'
+            r'(\d{1,2})[a-z]{0,2}\s*(.+)',
+            re.I
+        )
+        for part in parts:
+            part = part.strip()
+            if not part: continue
+            m = day_pattern.match(part)
+            if not m: continue
+            day_num = int(m.group(1))
+            rest = m.group(2).strip()
+            # Extract event name — all-caps portion at start
+            name_match = re.match(r'^([A-Z][A-Z\s\':&!\-\.0-9]+?)(?:\s+[a-z]|\s*$)', rest)
+            if name_match:
+                event_name = name_match.group(1).strip().rstrip('-').strip()
+            else:
+                # Take first sentence / up to first lowercase word continuation
+                event_name = rest.split('.')[0].strip()[:80]
+            event_name = re.sub(r'\s+', ' ', event_name).strip()
+            if not event_name or len(event_name) < 4: continue
+            if event_name.lower() in INFUSION_STANDARD: continue
+            try:
+                dt = datetime(year, month_num, day_num)
+                if dt < NOW - timedelta(days=1): continue
+                if not in_range(dt): continue
+                key = dt.strftime('%Y-%m-%d') + event_name[:15]
+                if key in seen: continue
+                seen.add(key)
+                e = make_event(dt, 'Infusion', 'Blackpool', 'infusion',
+                               event_name, f'{BASE}/{page_num}.html')
+                if e: events.append(e)
+            except:
+                pass
+    print(f"  Infusion: {len(events)} events")
+    return events
+
+
 async def scrape_xtasia(page, url):
     """Xtasia: plain text diary, format 'Day DDth Month: Event Name (times)'
     Site returns 403 to simple fetches — use Playwright with longer wait.
@@ -866,7 +959,7 @@ async def scrape_all(page):
     await run("Townhouse",        scrape_tickettailor(page, "https://www.tickettailor.com/events/townhousewirral", "Townhouse", "Birkenhead, Wirral", "townhouse"))
     await run("Swindon SC",       scrape_wp_tribe_generic(page, "https://swindonswingers.com", "Swindon SC", "Swindon", "swindon", "https://swindonswingers.com/events/"))
     await run("Club Alchemy",     scrape_clubalchemy(page, "https://www.clubalchemy.co.uk/events"))
-    await run("Infusion",         scrape_wp_tribe_generic(page, "https://www.infusionblackpool.co.uk", "Infusion", "Blackpool", "infusion", "https://www.infusionblackpool.co.uk/8.html"))
+    await run("Infusion",         scrape_infusion(page))
     await run("Quest",            scrape_quest(page, "https://questswingersclub.co.uk/upcoming-events/"))
     await run("Liberty Elite",    scrape_libertyelite(page, "https://libertyelite.co.uk/events/list/?tribe-bar-date=" + NOW.strftime('%Y-%m-%d')))
     await run("Purple Mamba",     scrape_purplemamba(page, "https://www.purplemambaclub.com/what-s-on-tickets"))
