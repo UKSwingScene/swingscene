@@ -162,6 +162,9 @@ MAMBA_STANDARD = {'play space','sunday sinners','bottomless munch social','singl
 
 HU9_STANDARD = {'frisky friday','sexy saturday'}
 
+IGNITE_STANDARD = {'couples & singles friday','couples & singles saturday',
+                   'silks & skins spa day','half off friday'}
+
 DECADANCE_STANDARD = {'sexxxy saturday','monday funday','friday night madness','spicy sunday',
                       'friday night madness 2.0'}
 
@@ -1381,6 +1384,12 @@ async def scrape_atlantis(page, url):
     return events
 
 
+async def scrape_ignite(page, url):
+    """Club Ignite West Drayton: WordPress/Tribe Events Calendar API."""
+    events = await scrape_wp_api(page, 'https://club-ignite.co.uk', 'Club Ignite', 'West Drayton', 'ignite', url)
+    return [e for e in events if e.get('event', '').lower() not in IGNITE_STANDARD]
+
+
 async def scrape_all(page):
     results = {}
 
@@ -1421,6 +1430,7 @@ async def scrape_all(page):
     await run("Decadance",        scrape_decadance(page, "https://www.decadanceswingersclub.com/what-s-on-at-decadance"))
     await run("New Gatehouse",    scrape_wp_tribe_generic(page, "https://www.thenewgatehousebolton.co.uk", "New Gatehouse", "Bolton", "gatehouse", "https://www.thenewgatehousebolton.co.uk/about-1"))
     await run("Le Boudoir",       scrape_leboudoir(page))
+    await run("Club Ignite", scrape_ignite(page, "https://club-ignite.co.uk/events-new/"))
     await run("atlantisEVOLUTION", scrape_atlantis(page, "http://www.atlantisevolution.co.uk/calendar.htm"))
     await run("Chameleons",       scrape_chameleons(page, "https://www.chameleons.cc/darlaston-events/"))
 
