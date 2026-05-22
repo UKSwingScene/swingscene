@@ -1,22 +1,41 @@
 import json, base64
 from datetime import datetime
 
-# Load scraped events
+# Load manually researched events (always present as fallback)
+with open('events.json') as f:
+    manual = json.load(f)
+
+# Load freshly scraped events (may be empty if scraper found nothing)
 try:
-    with open('events.json') as f:
-        merged = json.load(f)
+    with open('events_scraped.json') as f:
+        scraped = json.load(f)
+    print(f"Scraped: {len(scraped)} events")
 except:
-    merged = []
+    scraped = []
+    print("No scraped events file found, using manual only")
 
-merged.sort(key=lambda x: x['d'])
+# Merge: scraped takes priority, manual fills gaps
+# Key by date+club to deduplicate
+merged = {}
+for e in manual:
+    merged[(e['d'], e['club'])] = e
+for e in scraped:
+    # Only override manual if scraped has a real event name
+    if e.get('event') and 'Event' not in e['event']:
+        merged[(e['d'], e['club'])] = e
+    elif (e['d'], e['club']) not in merged:
+        merged[(e['d'], e['club'])] = e
 
+events = sorted(merged.values(), key=lambda x: x['d'])
+print(f"Total merged events: {len(events)}")
+
+# Load logo
 with open('gemini_logo.mp4', 'rb') as f:
     vid_b64 = base64.b64encode(f.read()).decode()
 
 video_tag = f'<video src="data:video/mp4;base64,{vid_b64}" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:contain;display:block;"></video>'
-
 updated = datetime.now().strftime("%-d %B %Y")
-events_js = json.dumps(merged, ensure_ascii=False)
+events_js = json.dumps(events, ensure_ascii=False)
 
 html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -27,10 +46,7 @@ html = f"""<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {{
-  --bg:#09090F; --surface:#111118; --surf2:#181825; --border:#22222E;
-  --gold:#C9963A; --text:#E4DFD8; --muted:#6B6580; --dim:#3A3650;
-}}
+:root{{--bg:#09090F;--surface:#111118;--surf2:#181825;--border:#22222E;--gold:#C9963A;--text:#E4DFD8;--muted:#6B6580;--dim:#3A3650;}}
 *{{box-sizing:border-box;margin:0;padding:0;}}
 body{{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;}}
 .site-header{{background:var(--bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}}
@@ -92,7 +108,7 @@ body{{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min
     <div class="logo-container">{video_tag}</div>
   </div>
   <div class="filter-row">
-    <button class="filter-btn active" onclick="setFilter('all',this)">All Events</button>
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
     <button class="filter-btn" onclick="setFilter('jan',this)">Jan</button>
     <button class="filter-btn" onclick="setFilter('feb',this)">Feb</button>
     <button class="filter-btn" onclick="setFilter('mar',this)">Mar</button>
@@ -128,25 +144,24 @@ const RECURRING=[
   {{club:"Purple Mamba",city:"Nottingham",cls:"mamba",lines:["Weekly Saturday events","Premium lifestyle club","Smart dress code"],url:"https://www.purplemambaclub.com/"}},
   {{club:"Shhh",city:"Newcastle",cls:"shhh",lines:["Regular weekend events","Friendly North East club","Easy online membership"],url:"https://www.shhhclub.co.uk/"}},
 ];
-let currentFilter='all';
-function setFilter(m,btn){{currentFilter=m;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}}
+let f='all';
+function setFilter(m,btn){{f=m;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}}
 function render(){{
   const main=document.getElementById('main');
-  const filtered=currentFilter==='all'?EVENTS:EVENTS.filter(e=>e.m===currentFilter);
-  if(!filtered.length){{main.innerHTML='<div class="empty">No events found.</div>';return;}}
-  const groups={{}};
-  filtered.forEach(e=>{{if(!groups[e.day])groups[e.day]=[];groups[e.day].push(e);}});
-  let html='';
-  Object.keys(groups).forEach(day=>{{
-    html+=`<div class="date-header">${{day}}</div>`;
-    groups[day].forEach(e=>{{
-      html+=`<a class="event-card c-${{e.cls}}" href="${{e.url}}" target="_blank" rel="noopener">
+  const evts=f==='all'?EVENTS:EVENTS.filter(e=>e.m===f);
+  if(!evts.length){{main.innerHTML='<div class="empty">No events found for this month.</div>';return;}}
+  const g={{}};evts.forEach(e=>{{if(!g[e.day])g[e.day]=[];g[e.day].push(e);}});
+  let h='';
+  Object.keys(g).forEach(day=>{{
+    h+=`<div class="date-header">${{day}}</div>`;
+    g[day].forEach(e=>{{
+      h+=`<a class="event-card c-${{e.cls}}" href="${{e.url}}" target="_blank" rel="noopener">
         <div class="card-title"><div class="card-title-left"><span class="event-club">${{e.club}}</span><span class="title-sep">·</span><span class="event-name">${{e.event}}</span></div><span class="card-arrow">→</span></div>
         <div class="event-city">📍 ${{e.city}}</div>
         <div class="event-desc">${{e.desc}}</div></a>`;
     }});
   }});
-  main.innerHTML=html;
+  main.innerHTML=h;
 }}
 function toggleRec(){{const btn=document.getElementById('recBtn');const body=document.getElementById('recBody');const arrow=document.getElementById('recArrow');btn.classList.toggle('open');body.classList.toggle('open');arrow.style.transform=body.classList.contains('open')?'rotate(180deg)':'';}}
 document.getElementById('recBody').innerHTML=RECURRING.map(r=>`<a class="rec-card c-${{r.cls}}" href="${{r.url}}" target="_blank" rel="noopener"><div class="rec-club">${{r.club}}</div><div class="rec-city">📍 ${{r.city}}</div><div class="rec-schedule">${{r.lines.map(l=>`<div class="rec-line">${{l}}</div>`).join('')}}</div></a>`).join('');
