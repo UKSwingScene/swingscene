@@ -269,66 +269,59 @@ async def scrape_purplemamba(page, url):
     return events
 
 async def scrape_hu9(page, url):
-    """HU9 Hull: Wix custom domain — stealth browser, parse events."""
-    import sys
-    try:
-        # Spoof automation flags
-        await page.add_init_script("""
-            Object.defineProperty(navigator,'webdriver',{get:()=>false});
-            Object.defineProperty(navigator,'plugins',{get:()=>[1,2,3]});
-        """)
-        await page.goto(url, wait_until='domcontentloaded', timeout=40000)
-        # Wait for Wix JS to hydrate
-        await page.wait_for_timeout(8000)
-        # Try clicking "show more" if present
-        try:
-            btn = await page.query_selector('[data-hook="load-more-button"]')
-            if btn: await btn.click(); await page.wait_for_timeout(2000)
-        except: pass
-    except Exception as e:
-        print(f"HU9 load error: {e}", file=sys.stderr)
+    """HU9 Hull: Skiddle API (venue ID 87332) — picks up all ticketed special events.
+    Requires SKIDDLE_API_KEY env var (free key from skiddle.com/api/join.php).
+    Wix Vibe site blocks cloud IPs, so direct scraping is not possible.
+    """
+    import os, sys
+
+    api_key = os.environ.get('SKIDDLE_API_KEY', '')
+    if not api_key:
+        print("HU9: SKIDDLE_API_KEY not set — skipping", file=sys.stderr)
         return []
 
     events = []
-    # Wix event list selectors
-    items = await page.query_selector_all(
-        '[data-hook="event-list-item"], [class*="EventListItem"], .eventContainer, article[class*="event"]'
-    )
-    print(f"HU9: found {len(items)} items", file=sys.stderr)
+    try:
+        api_url = (
+            f"https://www.skiddle.com/api/v1/events/search/"
+            f"?api_key={api_key}&venueid=87332"
+            f"&minDate={NOW.strftime('%Y-%m-%d')}&limit=100"
+        )
+        req = _urllib.Request(api_url, headers={'User-Agent': 'SwingScene/1.0'})
+        with _urllib.urlopen(req, timeout=20) as r:
+            data = json.loads(r.read())
 
-    if items:
-        for item in items:
+        result_count = len(data.get('results', []))
+        print(f"HU9 Skiddle API: {result_count} events returned", file=sys.stderr)
+        if data.get('error') not in (0, None, '0', ''):
+            print(f"HU9 Skiddle API error code: {data.get('error')} — {data.get('errormsg', '')}", file=sys.stderr)
+
+        for ev in data.get('results', []):
+            name = (ev.get('eventname') or ev.get('headline') or ev.get('EventTitle') or '').strip()
+            date_str = (ev.get('date') or ev.get('startdate') or '')[:10]
+            event_url = ev.get('link') or url
+
+            if not name or not date_str:
+                continue
+            if any(s in name.lower() for s in HU9_STANDARD):
+                continue
+
             try:
-                title_el = await item.query_selector('[data-hook="event-title"], [class*="title"], h2, h3, a')
-                if not title_el: continue
-                title = (await title_el.inner_text()).strip()
-                if not title: continue
-                if any(s in title.lower() for s in HU9_STANDARD): continue
-                item_text = await item.inner_text()
-                dt = parse_date_text(item_text)
-                if dt:
-                    e = make_event(dt, 'HU9', 'Hull', 'hu9', title, url)
-                    if e: events.append(e)
-            except: pass
-    else:
-        # Fallback: parse all body text
-        text = await page.inner_text('body')
-        print(f"HU9 fallback body text (first 300): {text[:300]}", file=sys.stderr)
-        lines = [l.strip() for l in text.split('\n') if l.strip()]
-        for i, line in enumerate(lines):
-            dt = parse_date_text(line)
-            if dt:
-                for j in [i-1, i-2, i+1, i+2]:
-                    if 0 <= j < len(lines):
-                        candidate = lines[j].strip()
-                        if len(candidate) > 5 and not parse_date_text(candidate):
-                            nl = candidate.lower()
-                            if not any(s in nl for s in HU9_STANDARD):
-                                e = make_event(dt, 'HU9', 'Hull', 'hu9', candidate, url)
-                                if e: events.append(e)
-                            break
-    return events
+                dt = datetime.strptime(date_str, '%Y-%m-%d')
+            except ValueError:
+                continue
 
+            if not in_range(dt):
+                continue
+
+            e = make_event(dt, 'HU9', 'Hull', 'hu9', name, event_url)
+            if e:
+                events.append(e)
+
+    except Exception as ex:
+        print(f"HU9 Skiddle API error: {ex}", file=sys.stderr)
+
+    return events
 
 async def scrape_libertyelite(page, url):
     """Liberty Elite: Tribe Events Calendar with WP API."""
