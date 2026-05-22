@@ -15,16 +15,28 @@ except:
     print("No scraped events, using manual only")
 
 # Merge: manual first, scraped overrides only if event name is clean
+# Manual events always win — scraped only adds NEW events not in manual
+import re as _re
+def _is_bad(name):
+    if not name or len(name) < 6: return True
+    n = name.lower()
+    bad = ['more info','google calendar','ics','view event','powered by',
+           'sat, ','sun, ','mon, ','tue, ','wed, ','thu, ','fri, ',
+           'pm sun','am sun','pm sat','am sat','subscribe','follow',
+           'sign up','cookie','found','event name','copyright']
+    if any(x in n for x in bad): return True
+    if _re.match(r'^[\d\s:apm,\-\/\.]+$', n, _re.I): return True
+    return False
+
 merged = {}
 for e in manual:
     merged[(e['d'], e['club'])] = e
 for e in scraped:
+    key = (e['d'], e['club'])
     ev = e.get('event', '')
-    bad = ['found', 'event name', 'pm -', 'am -', '8:00', '7:00', '9:00', '10:00']
-    if ev and len(ev) > 8 and not any(x in ev.lower() for x in bad):
-        merged[(e['d'], e['club'])] = e
-    elif (e['d'], e['club']) not in merged:
-        merged[(e['d'], e['club'])] = e
+    # Only add scraped event if: not in manual AND has a clean name
+    if key not in merged and not _is_bad(ev):
+        merged[key] = e
 
 events = sorted(merged.values(), key=lambda x: x['d'])
 print(f"Total merged events: {len(events)}")
