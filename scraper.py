@@ -1,4 +1,4 @@
-import asyncio, json, re
+import asyncio, json, re, urllib.request as _urllib
 from datetime import datetime, timedelta
 from playwright.async_api import async_playwright
 
@@ -392,22 +392,39 @@ async def scrape_shhh(page, url):
     return events
 
 async def scrape_no3(page, url):
-    """No.3 Club: events on homepage as plain text.
-    Format: 'Saturday 23rd May - Event Name'
-    Show ALL events."""
-    await page.goto(url, wait_until='domcontentloaded', timeout=25000)
-    await page.wait_for_timeout(3000)
-    text = await page.inner_text('body')
-    # Normalise all dash variants to simple hyphen for reliable matching
-    text = text.replace('\u2013', '-').replace('\u2014', '-').replace('\u2012', '-')
+    """No.3 Club: fetch homepage directly with urllib (bypasses Playwright blocking).
+    Events are plain text on homepage. Show ALL events."""
+    import urllib.request as _ul
+    import html as _html
     events = []
     seen = set()
-    # Pattern: day-of-week + ordinal date + month + separator + event name
+    try:
+        req = _ul.Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; bot)'})
+        with _ul.urlopen(req, timeout=15) as r:
+            raw = r.read().decode('utf-8', errors='replace')
+    except Exception as ex:
+        print(f"  No.3 direct fetch failed: {ex}, falling back to Playwright")
+        try:
+            await page.goto(url, wait_until='domcontentloaded', timeout=25000)
+            await page.wait_for_timeout(3000)
+            raw = await page.content()
+        except Exception as ex2:
+            print(f"  No.3 Playwright also failed: {ex2}")
+            return []
+    # Strip HTML tags
+    text = re.sub(r'<[^>]+>', ' ', raw)
+    text = _html.unescape(text)
+    # Normalise all dash types to hyphen
+    for ch in ['–', '—', '‒', '‑']:
+        text = text.replace(ch, '-')
+    # Collapse whitespace but keep newlines
+    text = re.sub(r'[ 	]+', ' ', text)
     pattern = re.compile(
         r'(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)[a-z]*\s+'
         r'(\d{1,2})[a-z]{0,2}\s+'
         r'(January|February|March|April|May|June|July|August|September|October|November|December)'
-        r'\s*[-]+\s*(.+?)(?:\n|\r|$)',
+        r'\s*[-]+\s*(.+?)(?:
+||$)',
         re.I | re.UNICODE
     )
     cur_year = NOW.year
@@ -415,12 +432,12 @@ async def scrape_no3(page, url):
         day_num = int(m.group(1))
         month_name = m.group(2)
         raw_name = m.group(3).strip()
-        # Strip trailing time/price info
-        event_name = re.sub(r'\s*[-]\s*\d{1,2}[:.:]\d{2}.*$', '', raw_name).strip()
+        # Strip trailing time info like "8:30 - 1:30am"
+        event_name = re.sub(r'\s*-\s*\d{1,2}[:.]\d{2}.*$', '', raw_name).strip()
         event_name = re.sub(r'\s+from\s+\d.*$', '', event_name, flags=re.I).strip()
-        event_name = re.sub(r'\s+\d{1,2}[:.:]\d{2}.*$', '', event_name).strip()
-        # Strip emoji at start
-        event_name = re.sub(r'^[\U00010000-\U0010ffff\U00002600-\U000027FF\s]+', '', event_name).strip()
+        event_name = re.sub(r'\s+\d{1,2}[:.]\d{2}.*$', '', event_name).strip()
+        # Strip leading emoji
+        event_name = re.sub(r'^[𐀀-􏿿☀-⟿\s]+', '', event_name).strip()
         if not event_name or len(event_name) < 4: continue
         event_name = event_name[:80].strip()
         month = MMAP[month_name.lower()]
@@ -436,229 +453,7 @@ async def scrape_no3(page, url):
             if e: events.append(e)
         except:
             pass
+    print(f"  No.3 Club parsed {len(events)} events from text")
     return events
 
-async def scrape_wp_tribe_generic(page, base, club, city, cls, url, standard_filter=None):
-    """Generic WordPress/Tribe Events scraper with optional standard filter."""
-    api_events = await scrape_wp_api(page, base, club, city, cls, url)
-    if api_events:
-        if standard_filter:
-            api_events = [e for e in api_events if not any(s in e['event'].lower() for s in standard_filter)]
-        return api_events
-    await page.goto(url, wait_until='domcontentloaded', timeout=25000)
-    await page.wait_for_timeout(3500)
-    events = []
-    for sel in ['.tribe-events-calendar-list__event-title a', 'h2.tribe-events-list-event-title a',
-                'h3 a', 'h2 a', '.event-title a', '.eventlist-title a']:
-        items = await page.query_selector_all(sel)
-        if items:
-            for item in items:
-                title = (await item.inner_text()).strip()
-                if not title or len(title) < 4: continue
-                if standard_filter and any(s in title.lower() for s in standard_filter): continue
-                href = await item.get_attribute('href') or url
-                parent = await item.evaluate_handle('el => el.closest("article") || el.parentElement.parentElement')
-                try:
-                    ptext = await parent.inner_text()
-                except:
-                    ptext = title
-                dt = parse_date_text(ptext)
-                if dt:
-                    e = make_event(dt, club, city, cls, title, href)
-                    if e: events.append(e)
-            if events: return events
-    return events
 
-async def scrape_tickettailor(page, url, club, city, cls):
-    """Tickettailor events page."""
-    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-    await page.wait_for_timeout(4000)
-    events = []
-    for sel in ['.event-item h2', '.tt-event-title', 'h2', 'h3']:
-        items = await page.query_selector_all(sel)
-        if items:
-            for item in items:
-                title = (await item.inner_text()).strip()
-                if not title or len(title) < 4: continue
-                parent = await item.evaluate_handle('el => el.closest(".event-item") || el.closest("article") || el.parentElement.parentElement')
-                try:
-                    ptext = await parent.inner_text()
-                except:
-                    ptext = title
-                dt = parse_date_text(ptext)
-                if dt:
-                    e = make_event(dt, club, city, cls, title, url)
-                    if e: events.append(e)
-            if events: return events
-    # fallback text parse
-    text = await page.inner_text('body')
-    lines = [l.strip() for l in text.split('\n') if l.strip()]
-    for i, line in enumerate(lines):
-        dt = parse_date_text(line)
-        if not dt: continue
-        for j in [i-1, i-2, i+1]:
-            if 0 <= j < len(lines) and len(lines[j]) > 5 and not parse_date_text(lines[j]):
-                e = make_event(dt, club, city, cls, lines[j], url)
-                if e: events.append(e); break
-    return events
-
-async def scrape_xtasia(page, url):
-    """Xtasia: Text diary — returns 403 to fetch but Playwright should get through."""
-    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-    await page.wait_for_timeout(5000)
-    events = []
-    text = await page.inner_text('body')
-    # Xtasia uses a text diary with dates and event names
-    lines = [l.strip() for l in text.split('\n') if l.strip()]
-    for i, line in enumerate(lines):
-        dt = parse_date_text(line)
-        if not dt: continue
-        for j in [i-1, i+1, i-2, i+2]:
-            if 0 <= j < len(lines):
-                candidate = lines[j].strip()
-                if not parse_date_text(candidate) and len(candidate) > 4 and len(candidate) < 120:
-                    e = make_event(dt, 'Xtasia', 'West Bromwich', 'xtasia', candidate, url)
-                    if e: events.append(e); break
-    return events
-
-# ─────────────────────────────────────────────
-# CLUB REGISTRY
-# ─────────────────────────────────────────────
-
-async def scrape_clubalchemy(page, url):
-    """Club Alchemy: custom JS-rendered site. Wait for render, parse event cards.
-    Event URLs have slug format: /events/event-name-YYYY-MM-DD"""
-    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-    await page.wait_for_timeout(6000)  # Heavy JS site needs extra time
-    events = []
-    # Try to find event links — URLs contain date in slug
-    links = await page.query_selector_all('a[href*="/events/"]')
-    for link in links:
-        href = await link.get_attribute('href') or ''
-        if not href or href.rstrip('/') == url.rstrip('/'): continue
-        # Extract date from URL slug e.g. /events/temptation-2026-05-16
-        m = re.search(r'(\d{4})-(\d{2})-(\d{2})', href)
-        if m:
-            try:
-                dt = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
-                if not in_range(dt): continue
-                # Get event name from link text or slug
-                title = (await link.inner_text()).strip()
-                if not title or len(title) < 3:
-                    # Extract from URL slug
-                    slug = href.split('/events/')[-1].strip('/')
-                    slug = re.sub(r'-\d{4}-\d{2}-\d{2}.*', '', slug)
-                    title = slug.replace('-', ' ').title()
-                full_url = href if href.startswith('http') else 'https://www.clubalchemy.co.uk' + href
-                e = make_event(dt, 'Club Alchemy', 'UK', 'alchemy', title, full_url)
-                if e: events.append(e)
-            except:
-                pass
-    if events:
-        return events
-    # Fallback: look for event cards with text content
-    for sel in ['[class*="event"]', '[class*="Event"]', 'article', '.card', '[class*="card"]']:
-        items = await page.query_selector_all(sel)
-        if 0 < len(items) < 100:
-            for item in items:
-                try:
-                    text = await item.inner_text()
-                    if not text.strip(): continue
-                    dt = parse_date_text(text)
-                    if not dt: continue
-                    lines = [l.strip() for l in text.split('\n') if l.strip() and len(l.strip()) > 3]
-                    title = max((l for l in lines if not parse_date_text(l) and len(l) > 5), key=len, default=None)
-                    if title:
-                        e = make_event(dt, 'Club Alchemy', 'UK', 'alchemy', title, url)
-                        if e: events.append(e)
-                except:
-                    pass
-            if events: return events
-    return events
-
-async def scrape_all(page):
-    results = {}
-
-    async def run(name, coro):
-        print(f"Scraping {name}...")
-        try:
-            evs = await coro
-            # Deduplicate by date
-            seen = set()
-            uniq = []
-            for e in evs:
-                k = (e['d'], e['event'][:20])
-                if k not in seen:
-                    seen.add(k)
-                    uniq.append(e)
-            results[name] = uniq
-            print(f"  -> {len(uniq)} events")
-        except Exception as ex:
-            print(f"  ERROR: {ex}")
-            results[name] = []
-
-    await run("No.3 Club",        scrape_no3(page, "https://theno3club.co.uk/"))
-    await run("Cupids",           scrape_wp_tribe_generic(page, "https://www.cupidsswingersclub.co.uk", "Cupids", "Swinton, Manchester", "cupids", "https://www.cupidsswingersclub.co.uk/events"))
-    await run("Partners",         scrape_wp_tribe_generic(page, "https://www.partnersswingersclub.co.uk", "Partners", "Manchester/Bury", "partners", "https://www.partnersswingersclub.co.uk/events/"))
-    await run("Pandoras",         scrape_wp_tribe_generic(page, "https://www.pandoraswingers.com", "Pandoras", "Leeds, West Yorkshire", "pandora", "https://www.pandoraswingers.com/events/"))
-    await run("Club Play",        scrape_clubplay(page, "https://clubplay.net/events/"))
-    await run("Xtasia",           scrape_xtasia(page, "https://www.xtasia.co.uk/page/2-months-diary"))
-    await run("Naughty Pineapple",scrape_naughtypineapple(page, "https://thenaughtypineapple.co.uk/all-events/"))
-    await run("The Attic",        scrape_attic(page, "https://theatticexperience.com/events-prices-2/"))
-    await run("Townhouse",        scrape_tickettailor(page, "https://www.tickettailor.com/events/townhousewirral", "Townhouse", "Birkenhead, Wirral", "townhouse"))
-    await run("Swindon SC",       scrape_wp_tribe_generic(page, "https://swindonswingers.com", "Swindon SC", "Swindon", "swindon", "https://swindonswingers.com/events/"))
-    await run("Club Alchemy",     scrape_clubalchemy(page, "https://www.clubalchemy.co.uk/events"))
-    await run("Infusion",         scrape_wp_tribe_generic(page, "https://www.infusionblackpool.co.uk", "Infusion", "Blackpool", "infusion", "https://www.infusionblackpool.co.uk/8.html"))
-    await run("Quest",            scrape_quest(page, "https://questswingersclub.co.uk/upcoming-events/"))
-    await run("Liberty Elite",    scrape_libertyelite(page, "https://libertyelite.co.uk/events/list/?tribe-bar-date=" + NOW.strftime('%Y-%m-%d')))
-    await run("Purple Mamba",     scrape_purplemamba(page, "https://www.purplemambaclub.com/what-s-on-tickets"))
-    await run("Shhh",             scrape_shhh(page, "https://www.shhhclub.co.uk/events"))
-    await run("Decadance",        scrape_decadance(page, "https://www.decadanceswingersclub.com/what-s-on-at-decadance"))
-    await run("New Gatehouse",    scrape_wp_tribe_generic(page, "https://www.thenewgatehousebolton.co.uk", "New Gatehouse", "Bolton", "gatehouse", "https://www.thenewgatehousebolton.co.uk/about-1"))
-    await run("Le Boudoir",       scrape_wp_tribe_generic(page, "https://www.leboudoir.co.uk", "Le Boudoir", "London", "leboudoir", "https://www.leboudoir.co.uk/events/"))
-    await run("Chameleons",       scrape_chameleons(page, "https://www.chameleons.cc/darlaston-events/"))
-
-    return results
-
-async def main():
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(
-            headless=True,
-            args=['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage',
-                  '--disable-blink-features=AutomationControlled']
-        )
-        ctx = await browser.new_context(
-            user_agent='Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 '
-                       '(KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
-            viewport={'width': 390, 'height': 844},
-            locale='en-GB',
-        )
-        await ctx.add_init_script("Object.defineProperty(navigator,'webdriver',{get:()=>undefined})")
-        page = await ctx.new_page()
-        results = await scrape_all(page)
-        await browser.close()
-
-    all_events = []
-    for evs in results.values():
-        all_events.extend(evs)
-
-    seen = set()
-    unique = []
-    for e in sorted(all_events, key=lambda x: x['d']):
-        k = (e['d'], e['club'])
-        if k not in seen:
-            seen.add(k)
-            unique.append(e)
-
-    with open('events_scraped.json', 'w') as f:
-        json.dump(unique, f, indent=2)
-
-    print("\n=== RESULTS ===")
-    total = 0
-    for name, evs in results.items():
-        status = f"YES {len(evs)}" if evs else "NO"
-        print(f"  {name}: {status}")
-        total += len(evs)
-    print(f"\nTotal scraped: {total}")
-
-asyncio.run(main())
