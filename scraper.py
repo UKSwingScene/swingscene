@@ -638,6 +638,63 @@ async def scrape_wp_tribe_generic(page, base, club, city, cls, url, standard_fil
     return events
 
 
+async def scrape_partners(page, url):
+    """Partners Swingers Club: custom WordPress weekly layout.
+    Format: day + date line, then h3 event name.
+    Filter: Biphoria Bisexual Day & Night (every Thu), Swing Sunday (every Sun)."""
+    PARTNERS_STANDARD = {'biphoria bisexual day & night', 'swing sunday'}
+    await page.goto(url, wait_until='domcontentloaded', timeout=25000)
+    await page.wait_for_timeout(3500)
+    events = []
+    seen = set()
+    text = await page.inner_text('body')
+    lines = [l.strip() for l in text.split('\n') if l.strip()]
+    # Pattern: "Thursday 21st May" or "Friday 22nd May" etc
+    day_pattern = re.compile(
+        r'^(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+'
+        r'(\d{1,2})[a-z]{0,2}\s+'
+        r'(January|February|March|April|May|June|July|August|September|October|November|December)',
+        re.I
+    )
+    cur_year = NOW.year
+    for i, line in enumerate(lines):
+        dm = day_pattern.match(line)
+        if not dm: continue
+        day_num = int(dm.group(1))
+        month = MMAP[dm.group(2).lower()]
+        try:
+            dt = datetime(cur_year, month, day_num)
+            if dt < NOW - timedelta(days=1):
+                dt = datetime(cur_year + 1, month, day_num)
+            if not in_range(dt): continue
+        except: continue
+        # Event name is in next few lines — skip label lines, find the name
+        event_name = None
+        for j in range(i+1, min(i+6, len(lines))):
+            candidate = lines[j].strip()
+            if not candidate or len(candidate) < 4: continue
+            if day_pattern.match(candidate): break  # hit next date
+            # Skip label lines like "Partners weekly event", "Hosted event", times, guest list
+            if candidate.lower() in ('partners weekly event','hosted event','partners event',
+                                     'partners special event','hosted by partners',
+                                     'no guest list required','check event details before travelling',
+                                     'times','guest list'): continue
+            if re.match(r'^\d{1,2}(AM|PM)', candidate, re.I): continue
+            if re.match(r'^hosted by ', candidate, re.I): continue
+            if re.match(r'^guest list only', candidate, re.I): continue
+            event_name = candidate
+            break
+        if not event_name: continue
+        if event_name.lower() in PARTNERS_STANDARD: continue
+        if event_name.lower() == 'swing sunday': continue
+        key = dt.strftime('%Y-%m-%d') + event_name[:15]
+        if key in seen: continue
+        seen.add(key)
+        e = make_event(dt, 'Partners', 'Bury, Manchester', 'partners', event_name, url)
+        if e: events.append(e)
+    return events
+
+
 async def scrape_all(page):
     results = {}
 
@@ -660,7 +717,7 @@ async def scrape_all(page):
 
     await run("No.3 Club",        scrape_no3(page, "https://theno3club.co.uk/"))
     await run("Cupids",           scrape_cupids(page, "https://www.cupidsswingersclub.co.uk/events"))
-    await run("Partners",         scrape_wp_tribe_generic(page, "https://www.partnersswingersclub.co.uk", "Partners", "Manchester", "partners", "https://www.partnersswingersclub.co.uk/events/"))
+    await run("Partners",         scrape_partners(page, "https://partnersswingersclub.com/events/"))
     await run("Pandoras",         scrape_wp_tribe_generic(page, "https://www.pandoraswingers.com", "Pandoras", "Leeds", "pandora", "https://www.pandoraswingers.com/events/"))
     await run("Club Play",        scrape_clubplay(page, "https://clubplay.net/events/"))
     await run("Xtasia",           scrape_wp_tribe_generic(page, "https://www.xtasia.co.uk", "Xtasia", "West Bromwich", "xtasia", "https://www.xtasia.co.uk/page/2-months-diary"))
