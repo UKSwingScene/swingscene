@@ -16,38 +16,45 @@ def make_event(dt, club, city, cls, name, url, desc=None):
     name = re.sub(r'[\U0001F000-\U0001FFFF\U00002600-\U000027FF\U0000200D\uFE0F]+', '', name).strip()
     name = re.sub(r'\s+', ' ', name).strip()
 
-    # Strip booking/status prefixes (Club Alchemy etc)
+    M  = r'(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)'
+    DF = r'(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)'
+    DA = r'(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)'  # 3-char abbreviations only
+
+    # --- PREFIX CLEANING ---
     name = re.sub(r'^(BOOK TICKETS|GUEST LIST ONLY|COMING SOON|SOLD OUT|BUY TICKETS)\s*', '', name, flags=re.I).strip()
+    name = re.sub(r'^CLUB PLAY\s*[-\u2013]\s*', '', name, flags=re.I).strip()
+    name = re.sub(r'^CLUB PLAY\s+', '', name, flags=re.I).strip()
+    name = re.sub(rf'^{DA}\s+\d{{1,2}}(?:ST|ND|RD|TH)?\s+{M}(?:\s+\d{{4}})?\s*[-\u2013:]*\s*', '', name, flags=re.I).strip()
+    name = re.sub(rf'^{DF}\s+\d{{1,2}}[a-z]{{0,2}}\s+{M}(?:\s+\d{{4}})?\s*[-\u2013:]*\s*', '', name, flags=re.I).strip()
+    name = re.sub(r'^\d{1,2}/\d{1,2}/\d{2,4}\s*[-\u2013:]*\s*', '', name).strip()
+    name = re.sub(r'^\d{1,2}-\d{1,2}\s+', '', name).strip()
 
-    # Strip date+time suffix: "Saturday, 6 June 2026 19:30 – 01:30 ..."
-    name = re.sub(r'\s*,?\s*(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+\d{1,2}[a-z]{0,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}.*$', '', name, flags=re.I).strip()
+    # --- SUFFIX JUNK (before date stripping to expose trailing dates) ---
+    name = re.sub(r'\s*[-\u2013]\s*FREE\s+(?:ENTRY|BAR|LICENSED BAR|BUFFET|PLAY).*$', '', name, flags=re.I).strip()
+    name = re.sub(r'\s+FREE\s+ENTRY.*$', '', name, flags=re.I).strip()
+    name = re.sub(r'\s*LICEN[SC]ED\s+BAR.*$', '', name, flags=re.I).strip()
+    name = re.sub(r'\s*FULLY\s+LICEN[SC]ED.*$', '', name, flags=re.I).strip()
+    name = re.sub(r'\s*\([^)]{20,}\)$', '', name).strip()
+    # Lone trailing digit (truncated "8" from "8pm")
+    name = re.sub(r'\s+\d$', '', name).strip()
 
-    # Strip date from START of title: "Saturday 6th June 2026 Broadway After Midnight"
-    name = re.sub(
-        r'^(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|'
-        r'Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*'
-        r'\s+\d{1,2}[a-z]{0,2}'
-        r'\s+(?:January|February|March|April|May|June|July|August|September|October|November|December|'
-        r'Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*'
-        r'(?:\s+\d{4})?'
-        r'\s*[-–:]*\s*',
-        '', name, flags=re.I
-    ).strip()
+    # --- DATE+TIME STRIPPING FROM END ---
+    # "Saturday, 6 June 2026 19:30–01:30..." (Club Alchemy)
+    name = re.sub(rf'\s*,?\s*{DF},?\s+\d{{1,2}}[a-z]{{0,2}}\s+{M}\s+\d{{4}}.*$', '', name, flags=re.I).strip()
+    # Time from end: "8pm till 3am"
+    name = re.sub(r'\s+\d{1,2}(?::\d{2})?\s*(?:am|pm)\s*(?:till|until|to|-)?.*$', '', name, flags=re.I).strip()
+    # *** "DDth Month" at end FIRST — preserves "FILTHY FRIDAY" ***
+    name = re.sub(rf'\s+\d{{1,2}}(?:st|nd|rd|th)?\s+{M}(?:\s+\d{{4}})?$', '', name, flags=re.I).strip()
+    # "Day DDth Month" at end: "FRIDAY 5th JUNE", "Saturday 8th August"
+    name = re.sub(rf'\s+{DF}\s+\d{{1,2}}[a-z]{{0,2}}\s+{M}(?:\s+\d{{4}})?$', '', name, flags=re.I).strip()
+    # Abbreviated 3-char day at end (left over from stripped date): "FRI", "SAT"
+    # Safe: won't strip "FILTHY FRIDAY" since DA only matches 3-char abbrevs, not full "FRIDAY"
+    name = re.sub(rf'\s+{DA}$', '', name, flags=re.I).strip()
 
-    # Strip DD/MM/YYYY or DDth Month formats at start
-    name = re.sub(r'^\d{1,2}/\d{1,2}/\d{2,4}\s*[-–:]*\s*', '', name).strip()
-    name = re.sub(r'^\d{1,2}[a-z]{0,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?\s*[-–:]*\s*', '', name, flags=re.I).strip()
+    # --- VENUE AT END ---
+    name = re.sub(r'\s*[-\u2013]?\s*CLUB PLAY\s*$', '', name, flags=re.I).strip()
 
-    # Strip time info from end: "8pm till 3am", "8PM UNTIL 3am", "8pm - 3am"
-    name = re.sub(r'\s*[-–]?\s*\d{1,2}(?::\d{2})?\s*(?:am|pm)\s*(?:till|until|to|-|–)?\s*\d{0,2}(?::\d{2})?\s*(?:am|pm)?$', '', name, flags=re.I).strip()
-
-    # Strip venue/club name repetition after dash: "Event Name - Club Play Sat 23rd May FREE BAR"
-    name = re.sub(r'\s*[-–]\s*(?:Club Play|Infusion|Cupids|Quest|Partners|Le Boudoir|Chameleons|Xtasia|Swindon)[^-]*$', '', name, flags=re.I).strip()
-
-    # Strip trailing junk: "FREE ENTRY", "FREE LICENSED BAR", "LICENCED BAR", "BUFFET"
-    name = re.sub(r'\s*(FREE\s+(?:ENTRY|BAR|LICENSED BAR|BUFFET)|LICEN[SC]ED BAR|OPEN BAR)\s*$', '', name, flags=re.I).strip()
-
-    name = name.strip(' ·–—-').strip()
+    name = name.strip(' \xb7\u2013\u2014-&').strip()
     name = re.sub(r'\s+', ' ', name).strip()
     if not name or len(name) < 3: return None
     if not desc:
@@ -59,6 +66,7 @@ def make_event(dt, club, city, cls, name, url, desc=None):
         "club": club, "city": city, "cls": cls,
         "event": name[:100], "url": url, "desc": desc
     }
+
 
 def in_range(dt):
     # Compare dates only so today's events are included regardless of time
