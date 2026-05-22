@@ -51,6 +51,12 @@ events_js = json.dumps(events, ensure_ascii=False)
 with open('template.html') as f:
     html = f.read()
 
+# Build stats line
+num_events = len(events)
+num_clubs  = len({e['club'] for e in events})
+stats_line = f'{num_events} events across {num_clubs} clubs'
+
+html = html.replace('STATS_PLACEHOLDER', stats_line)
 html = html.replace('VIDEO_TAG_PLACEHOLDER', video_tag)
 html = html.replace('UPDATED_PLACEHOLDER', updated)
 html = html.replace('EVENTS_JS_PLACEHOLDER', events_js)
