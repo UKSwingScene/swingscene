@@ -770,33 +770,56 @@ async def scrape_clubalchemy(page, url):
 
 async def scrape_tickettailor(page, url, club, city, cls):
     """Tickettailor events page."""
+    import sys
     await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-    await page.wait_for_timeout(4000)
+    await page.wait_for_timeout(5000)
+
+    BAD_TITLES = {'events list', 'event list', 'upcoming events', 'all events',
+                  'buy tickets', 'sold out', 'more info'}
+
     events = []
-    for sel in ['.event-item h2', '.tt-event-title', 'h2', 'h3']:
+    # Specific selectors first — only fall through if nothing useful found
+    for sel in [
+        '[data-event-id] h3', '[data-event-id] h2',
+        '.tc-event__name', '.event-name',
+        '.event-item h2', '.event-item h3',
+        '.tt-event-title',
+    ]:
         items = await page.query_selector_all(sel)
-        if items:
-            for item in items:
-                title = (await item.inner_text()).strip()
-                if not title or len(title) < 4: continue
-                parent = await item.evaluate_handle('el => el.closest(".event-item") || el.closest("article") || el.parentElement.parentElement')
-                try:
-                    ptext = await parent.inner_text()
-                except: ptext = title
-                dt = parse_date_text(ptext)
-                if dt and in_range(dt):
-                    e = make_event(dt, club, city, cls, title, url)
-                    if e: events.append(e)
-            if events: return events
+        if not items: continue
+        for item in items:
+            title = (await item.inner_text()).strip()
+            if not title or len(title) < 4: continue
+            if title.lower() in BAD_TITLES: continue
+            parent = await item.evaluate_handle(
+                'el => el.closest("[data-event-id]") || el.closest(".event-item") || el.closest("article") || el.parentElement.parentElement'
+            )
+            try:    ptext = await parent.inner_text()
+            except: ptext = title
+            dt = parse_date_text(ptext)
+            if dt and in_range(dt):
+                e = make_event(dt, club, city, cls, title, url)
+                if e: events.append(e)
+        if events:
+            print(f"{club} (selector '{sel}'): {len(events)} events", file=sys.stderr)
+            return events
+
+    # Text-parsing fallback — scan body line by line for date+name pairs
     text = await page.inner_text('body')
     lines = [l.strip() for l in text.split('\n') if l.strip()]
     for i, line in enumerate(lines):
         dt = parse_date_text(line)
         if not dt or not in_range(dt): continue
-        for j in [i-1, i-2, i+1]:
-            if 0 <= j < len(lines) and len(lines[j]) > 5 and not parse_date_text(lines[j]):
-                e = make_event(dt, club, city, cls, lines[j], url)
-                if e: events.append(e); break
+        for j in [i-1, i-2, i+1, i+2]:
+            if 0 <= j < len(lines):
+                candidate = lines[j]
+                if (len(candidate) > 5
+                        and not parse_date_text(candidate)
+                        and candidate.lower() not in BAD_TITLES):
+                    e = make_event(dt, club, city, cls, candidate, url)
+                    if e: events.append(e); break
+
+    print(f"{club} (text parse): {len(events)} events", file=sys.stderr)
     return events
 
 
