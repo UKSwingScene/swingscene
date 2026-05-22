@@ -7,6 +7,7 @@ MONTH_MAP = {"jan":1,"feb":2,"mar":3,"apr":4,"may":5,"jun":6,"jul":7,"aug":8,"se
 MONTH_SHORT = {1:"jan",2:"feb",3:"mar",4:"apr",5:"may",6:"jun",7:"jul",8:"aug",9:"sep",10:"oct",11:"nov",12:"dec"}
 DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 JUNK = ["cookie","privacy","copyright","menu","home","contact","login","register","search","loading","javascript","please enable","click here","read more","view all","no events","coming soon","sign up","subscribe","follow us","share","tweet","facebook","instagram","terms","conditions","basket","checkout","cart","book now","find out","learn more","get tickets","buy ticket","events found","event name","results found","showing","filter","sort by","clear","back to","next page","previous page"]
+TIME_PAT = re.compile(r"^\d{1,2}:\d{2}\s*(am|pm|AM|PM)", re.I)
 
 def parse_date(text):
     text = text.strip()
@@ -52,6 +53,8 @@ def is_junk(text):
     if len(t) < 6 or len(t) > 120: return True
     if any(j in t for j in JUNK): return True
     if re.match(r"^[\d\s\-\/\|\.,]+$", t): return True
+    if re.match(r"^\d{1,2}:\d{2}", t): return True  # filter time strings
+    if re.match(r"^\d{1,2}\/\d{1,2}\/\d{4}", t): return True  # filter date strings
     return False
 
 async def try_wp_api(page, base_url, club, city, cls, events_url):
@@ -115,13 +118,15 @@ async def scrape_page(page, club, city, cls, url):
             dt = parse_date(line)
             if not dt:
                 continue
-            name = ""
-            for j in list(range(i-3, i)) + list(range(i+1, i+6)):
-                if 0 <= j < len(lines) and not parse_date(lines[j]) and not is_junk(lines[j]) and len(lines[j]) > 8:
-                    name = lines[j]
-                    break
-            if not name:
+            # Collect candidates from surrounding lines
+            candidates = []
+            for j in list(range(max(0,i-5), i)) + list(range(i+1, min(len(lines),i+6))):
+                if not parse_date(lines[j]) and not is_junk(lines[j]) and len(lines[j]) > 10:
+                    candidates.append(lines[j])
+            if not candidates:
                 continue
+            # Pick the longest candidate as most likely to be the event name
+            name = max(candidates, key=len)
             key = (dt.strftime("%Y-%m-%d"), name[:20])
             if key not in seen:
                 seen.add(key)
