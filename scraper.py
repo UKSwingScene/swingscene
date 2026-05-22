@@ -13,10 +13,16 @@ DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 def mk(dt): return MKS[dt.month-1]
 
 def make_event(dt, club, city, cls, name, url, desc=None):
-    name = re.sub(r'[\U0001F000-\U0001FFFF\U00002600-\U000027FF]+', '', name).strip(' ·–—-')
+    name = re.sub(r'[\U0001F000-\U0001FFFF\U00002600-\U000027FF\U0000200D\uFE0F]+', '', name).strip()
     name = re.sub(r'\s+', ' ', name).strip()
-    # Strip dates from event titles — the card already shows the date
-    # Handles: "Saturday 6th June 2026 Broadway After Midnight", "Fri 22nd May - Black Friday" etc
+
+    # Strip booking/status prefixes (Club Alchemy etc)
+    name = re.sub(r'^(BOOK TICKETS|GUEST LIST ONLY|COMING SOON|SOLD OUT|BUY TICKETS)\s*', '', name, flags=re.I).strip()
+
+    # Strip date+time suffix: "Saturday, 6 June 2026 19:30 – 01:30 ..."
+    name = re.sub(r'\s*,?\s*(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\s+\d{1,2}[a-z]{0,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}.*$', '', name, flags=re.I).strip()
+
+    # Strip date from START of title: "Saturday 6th June 2026 Broadway After Midnight"
     name = re.sub(
         r'^(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|'
         r'Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*'
@@ -26,10 +32,21 @@ def make_event(dt, club, city, cls, name, url, desc=None):
         r'(?:\s+\d{4})?'
         r'\s*[-–:]*\s*',
         '', name, flags=re.I
-    )
-    # Also strip bare DD/MM/YYYY or DDth Month formats at start
-    name = re.sub(r'^\d{1,2}/\d{1,2}/\d{2,4}\s*[-–:]*\s*', '', name)
-    name = re.sub(r'^\d{1,2}[a-z]{0,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?\s*[-–:]*\s*', '', name, flags=re.I)
+    ).strip()
+
+    # Strip DD/MM/YYYY or DDth Month formats at start
+    name = re.sub(r'^\d{1,2}/\d{1,2}/\d{2,4}\s*[-–:]*\s*', '', name).strip()
+    name = re.sub(r'^\d{1,2}[a-z]{0,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?\s*[-–:]*\s*', '', name, flags=re.I).strip()
+
+    # Strip time info from end: "8pm till 3am", "8PM UNTIL 3am", "8pm - 3am"
+    name = re.sub(r'\s*[-–]?\s*\d{1,2}(?::\d{2})?\s*(?:am|pm)\s*(?:till|until|to|-|–)?\s*\d{0,2}(?::\d{2})?\s*(?:am|pm)?$', '', name, flags=re.I).strip()
+
+    # Strip venue/club name repetition after dash: "Event Name - Club Play Sat 23rd May FREE BAR"
+    name = re.sub(r'\s*[-–]\s*(?:Club Play|Infusion|Cupids|Quest|Partners|Le Boudoir|Chameleons|Xtasia|Swindon)[^-]*$', '', name, flags=re.I).strip()
+
+    # Strip trailing junk: "FREE ENTRY", "FREE LICENSED BAR", "LICENCED BAR", "BUFFET"
+    name = re.sub(r'\s*(FREE\s+(?:ENTRY|BAR|LICENSED BAR|BUFFET)|LICEN[SC]ED BAR|OPEN BAR)\s*$', '', name, flags=re.I).strip()
+
     name = name.strip(' ·–—-').strip()
     name = re.sub(r'\s+', ' ', name).strip()
     if not name or len(name) < 3: return None
@@ -658,11 +675,21 @@ async def scrape_clubalchemy(page, url):
             try:
                 dt = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
                 if not in_range(dt): continue
-                title = (await link.inner_text()).strip()
+                # Try to get a clean title from a heading element inside the link
+                heading = await link.query_selector('h1, h2, h3, h4, h5, strong, .title, .event-title, .name')
+                if heading:
+                    title = (await heading.inner_text()).strip()
+                else:
+                    title = (await link.inner_text()).strip()
+                # If no title, derive from URL slug
                 if not title or len(title) < 3:
                     slug = href.split('/events/')[-1].strip('/')
                     slug = re.sub(r'-\d{4}-\d{2}-\d{2}.*', '', slug)
                     title = slug.replace('-', ' ').title()
+                # Strip description text — keep only first line
+                title = title.split('\n')[0].strip()
+                # Strip "Saturday, DD Month YYYY HH:MM" and anything after
+                title = re.sub(r'\s*,?\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*,?\s+\d{1,2}.*$', '', title, flags=re.I).strip()
                 full_url = href if href.startswith('http') else 'https://www.clubalchemy.co.uk' + href
                 key = dt.strftime('%Y-%m-%d') + title[:10]
                 if key not in seen:
@@ -876,8 +903,10 @@ async def scrape_swindon(page):
             after_date = line[dm.end():].strip().strip('–-—').strip()
             # Clean junk like "(This one is on the second weekend...)"
             after_date = re.sub(r'\(.*?\)', '', after_date).strip()
-            # Remove common non-name words
             after_date = re.sub(r'^\*+|\*+$', '', after_date).strip()
+            # Stop if after_date itself contains another date (it's not a theme name)
+            if re.search(r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}', after_date, re.I):
+                after_date = ''
 
             theme = None
             if after_date and len(after_date) > 2 and after_date.upper() not in ('TBA', 'TBC', 'TB'):
@@ -891,6 +920,8 @@ async def scrape_swindon(page):
                     if cu in ('TBA', 'TBC', '21:00', '02:30', 'RSVP'): continue
                     if re.match(r'^[£\d]', candidate): continue
                     if re.search(r'membership|pay on|door|tickets|mailing', candidate, re.I): continue
+                    # Skip if candidate is just more dates
+                    if re.search(r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}', candidate, re.I): continue
                     theme = candidate[:60].strip()
                     break
 
