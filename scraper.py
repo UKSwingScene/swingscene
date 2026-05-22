@@ -1,241 +1,210 @@
-import asyncio
-import json
-import re
+import asyncio, json, re
 from datetime import datetime, timedelta
 from playwright.async_api import async_playwright
 
 CUTOFF = datetime.now() + timedelta(days=365)
-
-MONTH_MAP = {
-    'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,
-    'jul':7,'aug':8,'sep':9,'oct':10,'nov':11,'dec':12,
-    'january':1,'february':2,'march':3,'april':4,'june':6,
-    'july':7,'august':8,'september':9,'october':10,'november':11,'december':12
-}
-
-MONTH_SHORT = {1:'jan',2:'feb',3:'mar',4:'apr',5:'may',6:'jun',
-               7:'jul',8:'aug',9:'sep',10:'oct',11:'nov',12:'dec'}
-
-DAY_NAMES = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
-
-def ordinal(n):
-    s = str(n)
-    if s.endswith('11') or s.endswith('12') or s.endswith('13'):
-        return s + 'th'
-    if s.endswith('1'): return s + 'st'
-    if s.endswith('2'): return s + 'nd'
-    if s.endswith('3'): return s + 'rd'
-    return s + 'th'
+MONTH_MAP = {"jan":1,"feb":2,"mar":3,"apr":4,"may":5,"jun":6,"jul":7,"aug":8,"sep":9,"oct":10,"nov":11,"dec":12,"january":1,"february":2,"march":3,"april":4,"may":5,"june":6,"july":7,"august":8,"september":9,"october":10,"november":11,"december":12}
+MONTH_SHORT = {1:"jan",2:"feb",3:"mar",4:"apr",5:"may",6:"jun",7:"jul",8:"aug",9:"sep",10:"oct",11:"nov",12:"dec"}
+DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+JUNK = ["cookie","privacy","copyright","menu","home","contact","login","register","search","loading","javascript","please enable","click here","read more","view all","no events","coming soon","sign up","subscribe","follow us","share","tweet","facebook","instagram","terms","conditions","basket","checkout","cart","book now","find out","learn more","get tickets","buy ticket","events found","event name","results found","showing","filter","sort by","clear","back to","next","previous","page"]
 
 def parse_date(text):
     text = text.strip()
-    patterns = [
-        r'(\d{1,2})[a-z]{0,2}\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{4})',
-        r'(\d{1,2})[a-z]{0,2}\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+(\d{4})',
-        r'(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})[a-z]{0,2}\s+(\d{4})',
-        r'(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})',
-        r'(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})',
+    pats = [
+        r"(\d{1,2})[a-z]{0,2}\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{4})",
+        r"(\d{1,2})[a-z]{0,2}\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d{4})",
+        r"(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})[a-z]{0,2},?\s+(\d{4})",
     ]
-    for pat in patterns:
-        m = re.search(pat, text, re.IGNORECASE)
+    for pat in pats:
+        m = re.search(pat, text, re.I)
         if m:
             g = m.groups()
             try:
-                if g[0].isdigit() and not g[1].isdigit():
+                if g[0].isdigit():
                     day, month, year = int(g[0]), MONTH_MAP[g[1].lower()], int(g[2])
-                elif not g[0].isdigit():
-                    month, day, year = MONTH_MAP[g[0].lower()], int(g[1]), int(g[2])
-                elif len(g[0]) == 4:
-                    year, month, day = int(g[0]), int(g[1]), int(g[2])
                 else:
-                    day, month, year = int(g[0]), int(g[1]), int(g[2])
-                    if month > 12: day, month = month, day
+                    month, day, year = MONTH_MAP[g[0].lower()], int(g[1]), int(g[2])
                 dt = datetime(year, month, day)
                 if datetime.now() <= dt <= CUTOFF:
                     return dt
-            except:
-                pass
+            except: pass
     return None
 
-def make_event(dt, club, city, cls, event_name, url):
-    day_name = DAY_NAMES[dt.weekday()]
-    month_name = dt.strftime('%B')
-    return {
-        "d": dt.strftime("%Y-%m-%d"),
-        "m": MONTH_SHORT[dt.month],
-        "day": f"{day_name} {dt.day} {month_name}",
-        "club": club,
-        "city": city,
-        "cls": cls,
-        "event": event_name[:100],
-        "desc": f"{event_name} at {club} in {city}. Visit the website for full details and booking.",
-        "url": url
-    }
+def make_event(dt, club, city, cls, name, url):
+    return {"d":dt.strftime("%Y-%m-%d"),"m":MONTH_SHORT[dt.month],"day":f"{DAYS[dt.weekday()]} {dt.day} {dt.strftime(\'%B\')} {dt.year}","club":club,"city":city,"cls":cls,"event":name[:100],"url":url,"desc":f"{name} at {club}, {city}. Visit the website for full details."}
 
-async def get_page_text(page, url, wait_ms=3000):
+def is_junk(text):
+    t = text.lower().strip()
+    if len(t) < 6 or len(t) > 120: return True
+    if any(j in t for j in JUNK): return True
+    if re.match(r"^[\d\s\-\/\|\.,]+$", t): return True
+    return False
+
+async def try_wp_api(page, base_url, club, city, cls, events_url):
+    """Try WordPress Events Calendar REST API"""
     try:
-        await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-        await page.wait_for_timeout(wait_ms)
-        return await page.inner_text('body')
-    except Exception as e:
-        print(f"  Failed to load {url}: {e}")
-        return ""
+        api = base_url.rstrip("/") + "/wp-json/tribe/events/v1/events?per_page=50&start_date=" + datetime.now().strftime("%Y-%m-%d")
+        result = await page.evaluate(f"""
+            fetch("{api}").then(r=>r.ok?r.json():null).catch(()=>null)
+        """)
+        if result and isinstance(result, dict) and "events" in result:
+            found = []
+            for ev in result["events"]:
+                try:
+                    dt = datetime.fromisoformat(ev["start_date"][:10])
+                    if datetime.now() <= dt <= CUTOFF:
+                        title = ev.get("title","").strip()
+                        if title and not is_junk(title):
+                            found.append(make_event(dt, club, city, cls, title, events_url))
+                except: pass
+            if found:
+                return found
+    except: pass
+    return []
 
-async def scrape_wordpress_events(page, club, city, cls, url):
-    """For WordPress sites using The Events Calendar plugin"""
+async def scrape_page(page, club, city, cls, url):
     events = []
-    text = await get_page_text(page, url, 3000)
-    lines = [l.strip() for l in text.split('\n') if l.strip()]
-    
-    seen_dates = set()
-    for i, line in enumerate(lines):
-        dt = parse_date(line)
-        if dt:
-            # Look for event name nearby
+    try:
+        await page.goto(url, wait_until="domcontentloaded", timeout=25000)
+        await page.wait_for_timeout(3500)
+
+        # Try WP API first
+        base = re.match(r"(https?://[^/]+)", url)
+        if base:
+            api_events = await try_wp_api(page, base.group(1), club, city, cls, url)
+            if api_events:
+                return api_events
+
+        # Try structured event elements
+        for sel in [".tribe-event-url", "article.type-tribe_events", ".tribe_events_cat", ".event-item", ".event-card", "[class*=\'event\']", "h2 a", "h3 a"]:
+            try:
+                items = await page.query_selector_all(sel)
+                if len(items) > 0 and len(items) < 50:
+                    for item in items:
+                        text = await item.inner_text()
+                        lines = [l.strip() for l in text.split("\n") if l.strip()]
+                        dt = None
+                        name = None
+                        for line in lines:
+                            if not dt: dt = parse_date(line)
+                            elif not name and not is_junk(line): name = line
+                        if dt and name:
+                            events.append(make_event(dt, club, city, cls, name, url))
+                    if events:
+                        return events
+            except: pass
+
+        # Fall back to full text parse
+        text = await page.inner_text("body")
+        lines = [l.strip() for l in text.split("\n") if l.strip() and len(l.strip()) > 3]
+        seen = set()
+        for i, line in enumerate(lines):
+            dt = parse_date(line)
+            if not dt: continue
             name = ""
-            for j in range(max(0,i-3), min(len(lines), i+5)):
-                if j != i and len(lines[j]) > 8 and not parse_date(lines[j]):
-                    candidate = lines[j]
-                    if not any(x in candidate.lower() for x in ['cookie','privacy','copyright','menu','home','contact','login','register','search']):
-                        name = candidate
-                        break
-            if not name:
-                name = f"{club} Event"
-            key = (dt.strftime("%Y-%m-%d"), name[:30])
-            if key not in seen_dates:
-                seen_dates.add(key)
+            for j in list(range(i-3,i)) + list(range(i+1,i+6)):
+                if 0 <= j < len(lines) and not parse_date(lines[j]) and not is_junk(lines[j]) and len(lines[j]) > 8:
+                    name = lines[j]
+                    break
+            if not name: continue
+            key = (dt.strftime("%Y-%m-%d"), name[:20])
+            if key not in seen:
+                seen.add(key)
                 events.append(make_event(dt, club, city, cls, name, url))
+    except Exception as e:
+        print(f"  Error: {e}")
     return events
 
 async def scrape_tickettailor(page, club, city, cls, url):
-    """Tickettailor specific scraper"""
     events = []
     try:
-        await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+        await page.goto(url, wait_until="domcontentloaded", timeout=25000)
         await page.wait_for_timeout(4000)
-        
-        # Tickettailor event cards
-        cards = await page.query_selector_all('.event-listing, .event-card, [data-event-id], .tt-event')
-        if not cards:
-            # Fall back to text parsing
-            text = await page.inner_text('body')
-            lines = [l.strip() for l in text.split('\n') if l.strip()]
-            seen = set()
-            for i, line in enumerate(lines):
-                dt = parse_date(line)
-                if dt:
-                    name = ""
-                    for j in range(max(0,i-2), min(len(lines), i+4)):
-                        if j != i and len(lines[j]) > 8 and not parse_date(lines[j]):
-                            if lines[j].isupper() or len(lines[j]) < 80:
-                                name = lines[j]
-                                break
-                    if not name:
-                        name = f"{club} Event"
-                    key = dt.strftime("%Y-%m-%d")
-                    if key not in seen:
-                        seen.add(key)
-                        events.append(make_event(dt, club, city, cls, name, url))
-        else:
-            for card in cards:
-                text = await card.inner_text()
-                lines = [l.strip() for l in text.split('\n') if l.strip()]
-                dt = None
-                name = None
-                for line in lines:
-                    if not dt:
-                        dt = parse_date(line)
-                    elif not name and len(line) > 5:
-                        name = line
-                if dt:
-                    events.append(make_event(dt, club, city, cls, name or f"{club} Event", url))
+        text = await page.inner_text("body")
+        lines = [l.strip() for l in text.split("\n") if l.strip()]
+        seen = set()
+        for i, line in enumerate(lines):
+            dt = parse_date(line)
+            if not dt: continue
+            name = ""
+            for j in list(range(i-2,i)) + list(range(i+1,i+5)):
+                if 0 <= j < len(lines) and not parse_date(lines[j]) and not is_junk(lines[j]) and len(lines[j]) > 8:
+                    candidate = lines[j]
+                    if candidate.isupper() or (len(candidate) > 8 and len(candidate) < 100):
+                        name = candidate
+                        break
+            if not name: continue
+            key = dt.strftime("%Y-%m-%d")
+            if key not in seen:
+                seen.add(key)
+                events.append(make_event(dt, club, city, cls, name, url))
     except Exception as e:
         print(f"  Tickettailor error: {e}")
     return events
 
 CLUBS = [
-    {"name":"No.3 Club",       "cls":"no3",        "city":"Chorley, Lancashire",      "url":"https://theno3club.co.uk/events/",            "type":"wordpress"},
-    {"name":"Cupids",          "cls":"cupids",     "city":"Swinton, Manchester",      "url":"https://cupidsswingers.co.uk/events/",        "type":"wordpress"},
-    {"name":"Partners",        "cls":"partners",   "city":"East of England",          "url":"https://www.partnersswingers.co.uk/",         "type":"generic"},
-    {"name":"Pandoras",        "cls":"pandora",    "city":"South East",               "url":"https://www.pandorasswingers.co.uk/events/",  "type":"wordpress"},
-    {"name":"Club Play",       "cls":"clubplay",   "city":"Blackpool",                "url":"https://www.clubplayblackpool.co.uk/events/", "type":"wordpress"},
-    {"name":"Xtasia",          "cls":"xtasia",     "city":"West Bromwich",            "url":"https://www.xtasia.co.uk/events/",            "type":"wordpress"},
-    {"name":"Naughty Pineapple","cls":"pineapple", "city":"UK",                       "url":"https://thenaughtypineapple.co.uk/all-events/","type":"wordpress"},
-    {"name":"The Attic",       "cls":"attic",      "city":"East Midlands",            "url":"https://www.theatticadultclub.co.uk/events/", "type":"wordpress"},
-    {"name":"Townhouse",       "cls":"townhouse",  "city":"Birkenhead, Wirral",       "url":"https://www.tickettailor.com/events/townhousewirral","type":"tickettailor"},
-    {"name":"Swindon SC",      "cls":"swindon",    "city":"Swindon",                  "url":"https://swindonswingers.com/events/",         "type":"wordpress"},
-    {"name":"Club Alchemy",    "cls":"alchemy",    "city":"UK",                       "url":"https://www.clubalchemy.co.uk/events",        "type":"wordpress"},
-    {"name":"Infusion",        "cls":"infusion",   "city":"North West",               "url":"https://www.infusionclub.co.uk/events/",      "type":"wordpress"},
-    {"name":"Quest",           "cls":"quest",      "city":"Darlington",               "url":"https://www.questswingersclub.co.uk/events/", "type":"wordpress"},
-    {"name":"Liberty Elite",   "cls":"liberty",    "city":"Midlands",                 "url":"https://www.libertyelite.co.uk/events/",      "type":"wordpress"},
-    {"name":"Purple Mamba",    "cls":"mamba",      "city":"Nottingham",               "url":"https://www.purplemambaclub.com/events/",     "type":"wordpress"},
-    {"name":"Shhh",            "cls":"shhh",       "city":"Newcastle",                "url":"https://www.shhhclub.co.uk/events/",          "type":"wordpress"},
-    {"name":"Decadance",       "cls":"decadance",  "city":"Rochdale",                 "url":"https://www.decadanceswingersclub.com/events/","type":"wordpress"},
-    {"name":"New Gatehouse",   "cls":"gatehouse",  "city":"Bolton",                   "url":"https://www.thenewgatehousebolton.co.uk/whats-on","type":"generic"},
-    {"name":"Le Boudoir",      "cls":"leboudoir",  "city":"UK",                       "url":"https://www.leboudoir.co.uk/events/",         "type":"wordpress"},
-    {"name":"Chameleons",      "cls":"chameleons", "city":"Darlaston, West Midlands", "url":"https://www.chameleons.cc/events/",           "type":"wordpress"},
+    ("No.3 Club",        "no3",        "Chorley, Lancashire",       "https://theno3club.co.uk/events/",                  "wp"),
+    ("Cupids",           "cupids",     "Swinton, Manchester",       "https://www.cupidsswingersclub.co.uk/events/",       "wp"),
+    ("Partners",         "partners",   "Manchester/Bury",           "https://www.partnersswingersclub.co.uk/events/",     "wp"),
+    ("Pandoras",         "pandora",    "Leeds, West Yorkshire",     "https://www.pandoraswingers.com/events/",            "wp"),
+    ("Club Play",        "clubplay",   "Blackpool",                 "https://www.clubplayblackpool.co.uk/events/",        "wp"),
+    ("Xtasia",           "xtasia",     "West Bromwich",             "https://www.xtasia.co.uk/events/",                  "wp"),
+    ("Naughty Pineapple","pineapple",  "UK",                        "https://thenaughtypineapple.co.uk/all-events/",      "wp"),
+    ("The Attic",        "attic",      "Derby",                     "https://www.theatticexperience.com/events/",         "wp"),
+    ("Townhouse",        "townhouse",  "Birkenhead, Wirral",        "https://www.tickettailor.com/events/townhousewirral","tt"),
+    ("Swindon SC",       "swindon",    "Swindon",                   "https://swindonswingers.com/events/",               "wp"),
+    ("Club Alchemy",     "alchemy",    "UK",                        "https://www.clubalchemy.co.uk/events",              "wp"),
+    ("Infusion",         "infusion",   "Blackpool",                 "https://www.infusionblackpool.co.uk/events/",       "wp"),
+    ("Quest",            "quest",      "Darlington",                "https://www.questswingersclub.co.uk/events/",       "wp"),
+    ("Liberty Elite",    "liberty",    "Midlands",                  "https://www.libertyelite.co.uk/events/",            "wp"),
+    ("Purple Mamba",     "mamba",      "Nottingham",                "https://www.purplemambaclub.com/events/",           "wp"),
+    ("Shhh",             "shhh",       "Newcastle",                 "https://www.shhhclub.co.uk/events/",                "wp"),
+    ("Decadance",        "decadance",  "Rochdale",                  "https://www.decadanceswingersclub.com/events/",     "wp"),
+    ("New Gatehouse",    "gatehouse",  "Bolton",                    "https://www.thenewgatehousebolton.co.uk/whats-on",  "wp"),
+    ("Le Boudoir",       "leboudoir",  "London",                    "https://www.leboudoir.co.uk/events/",               "wp"),
+    ("Chameleons",       "chameleons", "Darlaston, West Midlands",  "https://www.chameleons.cc/events/",                 "wp"),
 ]
 
 async def main():
-    all_events = []
-
+    results = {}
     async with async_playwright() as p:
-        browser = await p.chromium.launch(
-            headless=True,
-            args=[
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-blink-features=AutomationControlled',
-            ]
+        browser = await p.chromium.launch(headless=True, args=["--no-sandbox","--disable-setuid-sandbox","--disable-dev-shm-usage","--disable-blink-features=AutomationControlled"])
+        ctx = await browser.new_context(
+            user_agent="Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+            viewport={"width":390,"height":844}, locale="en-GB",
         )
-        context = await browser.new_context(
-            user_agent='Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
-            viewport={'width': 390, 'height': 844},
-            locale='en-GB',
-            extra_http_headers={
-                'Accept-Language': 'en-GB,en;q=0.9',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            }
-        )
+        await ctx.add_init_script("Object.defineProperty(navigator,\'webdriver\',{get:()=>undefined})")
+        page = await ctx.new_page()
 
-        # Hide webdriver flag
-        await context.add_init_script("""
-            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
-        """)
-
-        page = await context.new_page()
-
-        for club in CLUBS:
-            print(f"Scraping {club['name']}...")
-            try:
-                if club['type'] == 'tickettailor':
-                    events = await scrape_tickettailor(page, club['name'], club['city'], club['cls'], club['url'])
-                else:
-                    events = await scrape_wordpress_events(page, club['name'], club['city'], club['cls'], club['url'])
-                print(f"  Found {len(events)} events")
-                all_events.extend(events)
-            except Exception as e:
-                print(f"  Error: {e}")
-
-            await asyncio.sleep(1)
+        for name, cls, city, url, mode in CLUBS:
+            print(f"Scraping {name}...")
+            if mode == "tt":
+                evs = await scrape_tickettailor(page, name, city, cls, url)
+            else:
+                evs = await scrape_page(page, name, city, cls, url)
+            results[name] = evs
+            print(f"  -> {len(evs)} events")
+            await asyncio.sleep(1.5)
 
         await browser.close()
 
-    # Deduplicate and sort
+    all_events = []
+    for evs in results.values():
+        all_events.extend(evs)
     seen = set()
     unique = []
-    for e in all_events:
-        key = (e['d'], e['club'])
-        if key not in seen:
-            seen.add(key)
+    for e in sorted(all_events, key=lambda x: x["d"]):
+        k = (e["d"], e["club"])
+        if k not in seen:
+            seen.add(k)
             unique.append(e)
-    unique.sort(key=lambda x: x['d'])
 
-    with open('events_scraped.json', 'w') as f:
+    with open("events_scraped.json","w") as f:
         json.dump(unique, f, indent=2)
 
-    print(f"\nTotal: {len(unique)} events scraped")
+    print("\n=== RESULTS ===")
+    for name, evs in results.items():
+        print(f"  {name}: {'✅ ' + str(len(evs)) + ' events' if evs else '❌ 0'}")
+    print(f"Total: {len(unique)}")
 
-if __name__ == "__main__":
-    asyncio.run(main())
+asyncio.run(main())
