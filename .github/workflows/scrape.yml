@@ -36,7 +36,8 @@ jobs:
         run: |
           git config user.name "SwingScene Bot"
           git config user.email "bot@ukswingscene.github.io"
-          git pull --rebase origin main
+          git fetch origin main
+          git reset --hard origin/main
           git add index.html events_scraped.json
           git diff --staged --quiet || git commit -m "Auto-update events $(date +%Y-%m-%d)"
           git push
