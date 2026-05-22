@@ -317,24 +317,28 @@ async def scrape_quest(page, url):
         'day event', 'night event', 'day/night event', 'evening event',
         'afternoon even', 'couples & singles afternoon fun',
     }
-    # Fetch directly — page is accessible
+    # Site blocks urllib — use Playwright first (real browser bypasses 403), curl fallback
     try:
-        import urllib.request as _ul
-        import html as _html
-        req = _ul.Request(url, headers={
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36',
-            'Accept': 'text/html,*/*;q=0.8',
-            'Accept-Language': 'en-GB,en;q=0.9',
-        })
-        with _ul.urlopen(req, timeout=20) as r:
-            raw = r.read().decode('utf-8', errors='replace')
-        text = re.sub(r'<[^>]+>', ' ', raw)
-        text = _html.unescape(text)
-    except Exception as ex:
-        print(f"  Quest direct fetch failed: {ex}, trying Playwright")
-        await page.goto(url, wait_until='domcontentloaded', timeout=25000)
-        await page.wait_for_timeout(3500)
+        await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+        await page.wait_for_timeout(4000)
         text = await page.inner_text('body')
+    except Exception as ex:
+        print(f"  Quest Playwright failed: {ex}, trying curl")
+        try:
+            import subprocess, html as _html
+            result = subprocess.run([
+                'curl', '-s', '-L', '--max-time', '20',
+                '-H', 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36',
+                '-H', 'Accept: text/html,*/*;q=0.8',
+                url
+            ], capture_output=True, timeout=25)
+            raw = result.stdout.decode('utf-8', errors='replace')
+            import html as _html2
+            text = re.sub(r'<[^>]+>', ' ', raw)
+            text = _html2.unescape(text)
+        except Exception as ex2:
+            print(f"  Quest all methods failed: {ex2}")
+            return []
 
     for ch in ['\u2013', '\u2014']:
         text = text.replace(ch, '-')
