@@ -1389,7 +1389,7 @@ async def scrape_penthouse(page, url):
     import sys, json as _json
     events = []
     try:
-        await page.goto(url, wait_until='networkidle', timeout=30000)
+        await page.goto(url, wait_until='domcontentloaded', timeout=30000)
         await page.wait_for_timeout(5000)
 
         # Log what we can see for debugging
