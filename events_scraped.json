@@ -6,20 +6,9 @@
     "club": "Club Play",
     "city": "Blackpool",
     "cls": "clubplay",
-    "event": "\ud83c\udf21\ufe0fFriday 29th May \ud83c\udf21\ufe0fThe Midnight Clinic \ud83c\udfe5 8pm till 3am\ud83c\udf21\ufe0f",
-    "url": "https://clubplay.net/events/",
-    "desc": "\ud83c\udf21\ufe0fFriday 29th May \ud83c\udf21\ufe0fThe Midnight Clinic \ud83c\udfe5 8pm till 3am\ud83c\udf21\ufe0f at Club Play, Blackpool. Visit the website for full details."
-  },
-  {
-    "d": "2026-05-23",
-    "m": "may",
-    "day": "Saturday 23 May 2026",
-    "club": "Quest",
-    "city": "Darlington",
-    "cls": "quest",
-    "event": "NON Members Entrance : \u00a335.00 Per Couple, \u00a315.00 Per Single Ladies, \u00a335.00 Per Single Male",
-    "url": "https://questswingersclub.co.uk/upcoming-events/",
-    "desc": "NON Members Entrance : \u00a335.00 Per Couple, \u00a315.00 Per Single Ladies, \u00a335.00 Per Single Male at Quest, Darlington. Visit the website for full details."
+    "event": "Wild West Cowboy Bonanza - Club Play Sat 23rd May FREE LICENSED BAR & BUFFET",
+    "url": "https://clubplay.net/events/wild-west-cowboy-bonanza-club-play-sat-23rd-may-free-licensed-bar/",
+    "desc": "Wild West Cowboy Bonanza - Club Play Sat 23rd May FREE LICENSED BAR & BUFFET at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-05-23",
@@ -30,7 +19,29 @@
     "cls": "liberty",
     "event": "Jungle Juice",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Jungle Juice at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Jungle Juice at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-05-23",
+    "m": "may",
+    "day": "Saturday 23 May 2026",
+    "club": "Purple Mamba",
+    "city": "Nottingham",
+    "cls": "mamba",
+    "event": "Ahoy! Sailor",
+    "url": "https://www.purplemambaclub.com/what-s-on-tickets",
+    "desc": "Ahoy! Sailor at Purple Mamba, Nottingham. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-05-24",
+    "m": "may",
+    "day": "Sunday 24 May 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "CLUB PLAY SUN 24TH MAY 2-12 CHEESY BONK HOLIDAY - FREE ENTRY 4 EVERYONE - LICENCED BAR",
+    "url": "https://clubplay.net/events/club-play-sun-24th-may-2-12-cheesy-bonk-holiday-free-entry-4-everyone-licenced-bar/",
+    "desc": "CLUB PLAY SUN 24TH MAY 2-12 CHEESY BONK HOLIDAY - FREE ENTRY 4 EVERYONE - LICENCED BAR at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-05-24",
@@ -41,7 +52,7 @@
     "cls": "liberty",
     "event": "Embargo",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-05-24",
@@ -50,9 +61,31 @@
     "club": "Chameleons",
     "city": "Darlaston, West Midlands",
     "cls": "chameleons",
-    "event": "Couples & Singles",
+    "event": "Late Bonk Holiday Weekend",
     "url": "https://www.chameleons.cc/darlaston-events/",
-    "desc": "Couples & Singles at Chameleons, Darlaston, West Midlands. Visit the website for full details."
+    "desc": "Late Bonk Holiday Weekend at Chameleons, Darlaston, West Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-05-25",
+    "m": "may",
+    "day": "Monday 25 May 2026",
+    "club": "Chameleons",
+    "city": "Darlaston, West Midlands",
+    "cls": "chameleons",
+    "event": "Late Bonk Holiday Weekend",
+    "url": "https://www.chameleons.cc/darlaston-events/",
+    "desc": "Late Bonk Holiday Weekend at Chameleons, Darlaston, West Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-05-29",
+    "m": "may",
+    "day": "Friday 29 May 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "\ufe0fFriday 29th May \ufe0fThe Midnight Clinic 8pm till 3am\ufe0f",
+    "url": "https://clubplay.net/events/%f0%9f%8c%a1%ef%b8%8ffriday-29th-may-%f0%9f%8c%a1%ef%b8%8fthe-midnight-clinic-%f0%9f%8f%a5-8pm-till-3am%f0%9f%8c%a1%ef%b8%8f/",
+    "desc": "\ufe0fFriday 29th May \ufe0fThe Midnight Clinic 8pm till 3am\ufe0f at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-05-29",
@@ -63,18 +96,40 @@
     "cls": "liberty",
     "event": "Dark Desires",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Dark Desires at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Dark Desires at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-05-29",
+    "m": "may",
+    "day": "Friday 29 May 2026",
+    "club": "Purple Mamba",
+    "city": "Nottingham",
+    "cls": "mamba",
+    "event": "Clitter Bomb - Women Only",
+    "url": "https://www.purplemambaclub.com/what-s-on-tickets",
+    "desc": "Clitter Bomb - Women Only at Purple Mamba, Nottingham. Visit the website for full details and booking."
   },
   {
     "d": "2026-05-30",
     "m": "may",
     "day": "Saturday 30 May 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "An exclusive, intimate event strictly for couples and single females \u2014 with a fun, friendly, and ero",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "An exclusive, intimate event strictly for couples and single females \u2014 with a fun, friendly, and erotic vibe. at Club Alchemy, UK. Visit the website for full details."
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "Saturday 30th MayHot & Horny Hollywood 8pm till 3am",
+    "url": "https://clubplay.net/events/saturday-%f0%9f%94%a530th-may%f0%9f%94%a5hot-horny-%f0%9f%98%88hollywood-%f0%9f%8e%ac8pm-till-3am/",
+    "desc": "Saturday 30th MayHot & Horny Hollywood 8pm till 3am at Club Play, Blackpool. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-05-30",
+    "m": "may",
+    "day": "Saturday 30 May 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Uniforms Party",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Uniforms Party at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-05-30",
@@ -85,18 +140,62 @@
     "cls": "liberty",
     "event": "Vibe 80&#8217;s Party",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Vibe 80&#8217;s Party at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Vibe 80&#8217;s Party at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-05-30",
+    "m": "may",
+    "day": "Saturday 30 May 2026",
+    "club": "Purple Mamba",
+    "city": "Nottingham",
+    "cls": "mamba",
+    "event": "Sinsational",
+    "url": "https://www.purplemambaclub.com/what-s-on-tickets",
+    "desc": "Sinsational at Purple Mamba, Nottingham. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-05-31",
+    "m": "may",
+    "day": "Sunday 31 May 2026",
+    "club": "Purple Mamba",
+    "city": "Nottingham",
+    "cls": "mamba",
+    "event": "Wife (Wardrobe) Swap!",
+    "url": "https://www.purplemambaclub.com/what-s-on-tickets",
+    "desc": "Wife (Wardrobe) Swap! at Purple Mamba, Nottingham. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-05",
+    "m": "jun",
+    "day": "Friday 5 June 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "TEMPTATION - LET THE DESIRE OF TEMPTATION DRAW YOU IN ( ideal night for newcomers) FRIDAY 5th JUNE 8",
+    "url": "https://clubplay.net/events/temptation-let-the-desire-of-temptation-draw-you-in-ideal-night-for-newcomers-friday-5th-june-8pm-till-3am/",
+    "desc": "TEMPTATION - LET THE DESIRE OF TEMPTATION DRAW YOU IN ( ideal night for newcomers) FRIDAY 5th JUNE 8pm till 3am at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-05",
     "m": "jun",
     "day": "Friday 5 June 2026",
     "club": "Naughty Pineapple",
-    "city": "UK",
+    "city": "Leicester",
     "cls": "pineapple",
     "event": "Games night",
     "url": "https://thenaughtypineapple.co.uk/all-events/",
-    "desc": "Games night at Naughty Pineapple, UK. Visit the website for full details."
+    "desc": "Games night at Naughty Pineapple, Leicester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-05",
+    "m": "jun",
+    "day": "Friday 5 June 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "The Kink Night",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "The Kink Night at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-05",
@@ -107,18 +206,29 @@
     "cls": "liberty",
     "event": "Queens of the Scene",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Queens of the Scene at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Queens of the Scene at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-05",
+    "m": "jun",
+    "day": "Friday 5 June 2026",
+    "club": "Purple Mamba",
+    "city": "Nottingham",
+    "cls": "mamba",
+    "event": "Hard Core",
+    "url": "https://www.purplemambaclub.com/what-s-on-tickets",
+    "desc": "Hard Core at Purple Mamba, Nottingham. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-06",
     "m": "jun",
     "day": "Saturday 6 June 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Step into body positivity and celebrate curves in all their beauty. Curvy is beautiful, and this is ",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Step into body positivity and celebrate curves in all their beauty. Curvy is beautiful, and this is your time to shine. at Club Alchemy, UK. Visit the website for full details."
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "Saturday 6th June 2026 Broadway After Midnight",
+    "url": "https://clubplay.net/events/saturday-6th-june-2026-%f0%9f%8e%ad-broadway-after-midnight/",
+    "desc": "Saturday 6th June 2026 Broadway After Midnight at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-06",
@@ -129,7 +239,29 @@
     "cls": "liberty",
     "event": "Alternative Affair &#8211; Download Festival",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Alternative Affair &#8211; Download Festival at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Alternative Affair &#8211; Download Festival at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-06",
+    "m": "jun",
+    "day": "Saturday 6 June 2026",
+    "club": "Purple Mamba",
+    "city": "Nottingham",
+    "cls": "mamba",
+    "event": "East Midlands Social Takeover",
+    "url": "https://www.purplemambaclub.com/what-s-on-tickets",
+    "desc": "East Midlands Social Takeover at Purple Mamba, Nottingham. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-07",
+    "m": "jun",
+    "day": "Sunday 7 June 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Cumfest 7pm - 12am",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Cumfest 7pm - 12am at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-07",
@@ -140,18 +272,29 @@
     "cls": "liberty",
     "event": "Embargo",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-10",
     "m": "jun",
     "day": "Wednesday 10 June 2026",
     "club": "Naughty Pineapple",
-    "city": "UK",
+    "city": "Leicester",
     "cls": "pineapple",
     "event": "Comedy night",
     "url": "https://thenaughtypineapple.co.uk/all-events/",
-    "desc": "Comedy night at Naughty Pineapple, UK. Visit the website for full details."
+    "desc": "Comedy night at Naughty Pineapple, Leicester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-12",
+    "m": "jun",
+    "day": "Friday 12 June 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "Fri 12th June Mummies & Mischief - \ufe0fNile Nights & Naughy Delights",
+    "url": "https://clubplay.net/events/fri-12th-june-%f0%9f%87%aa%f0%9f%87%ac-mummies-mischief%f0%9f%98%88-%f0%9f%8f%9e%ef%b8%8fnile-nights-naughy-delights%f0%9f%87%aa%f0%9f%87%ac/",
+    "desc": "Fri 12th June Mummies & Mischief - \ufe0fNile Nights & Naughy Delights at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-12",
@@ -162,7 +305,18 @@
     "cls": "liberty",
     "event": "The Hot Wife Club",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "The Hot Wife Club at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "The Hot Wife Club at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-12",
+    "m": "jun",
+    "day": "Friday 12 June 2026",
+    "club": "Purple Mamba",
+    "city": "Nottingham",
+    "cls": "mamba",
+    "event": "Got Milk?",
+    "url": "https://www.purplemambaclub.com/what-s-on-tickets",
+    "desc": "Got Milk? at Purple Mamba, Nottingham. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-13",
@@ -171,20 +325,31 @@
     "club": "Club Play",
     "city": "Blackpool",
     "cls": "clubplay",
-    "event": "Twilight Tokyo \ud83c\uddef\ud83c\uddf5 @ Club Play - Sat 13th June 2026 \u00a0 Do you love Japan and all of it\u2019s culture? \u00a0 Ma",
-    "url": "https://clubplay.net/events/",
-    "desc": "Twilight Tokyo \ud83c\uddef\ud83c\uddf5 @ Club Play - Sat 13th June 2026 \u00a0 Do you love Japan and all of it\u2019s culture? \u00a0 Maybe you are [...] at Club Play, Blackpool. Visit the website for full details."
+    "event": "Saturday 13th June - Twilight Tokyo @ Club Play",
+    "url": "https://clubplay.net/events/saturday-13th-june-%f0%9f%87%af%f0%9f%87%b5twilight-tokyo-%f0%9f%87%af%f0%9f%87%b5-club-play/",
+    "desc": "Saturday 13th June - Twilight Tokyo @ Club Play at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-13",
     "m": "jun",
     "day": "Saturday 13 June 2026",
     "club": "Naughty Pineapple",
-    "city": "UK",
+    "city": "Leicester",
     "cls": "pineapple",
     "event": "Movie Party Night &#8211; Cum Dressed As Your Favourite Actor or Actress",
     "url": "https://thenaughtypineapple.co.uk/all-events/",
-    "desc": "Movie Party Night &#8211; Cum Dressed As Your Favourite Actor or Actress at Naughty Pineapple, UK. Visit the website for full details."
+    "desc": "Movie Party Night &#8211; Cum Dressed As Your Favourite Actor or Actress at Naughty Pineapple, Leicester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-13",
+    "m": "jun",
+    "day": "Saturday 13 June 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Disney Party",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Disney Party at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-13",
@@ -195,7 +360,18 @@
     "cls": "liberty",
     "event": "Naughties",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Naughties at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Naughties at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-13",
+    "m": "jun",
+    "day": "Saturday 13 June 2026",
+    "club": "Purple Mamba",
+    "city": "Nottingham",
+    "cls": "mamba",
+    "event": "Studio 54 : Midnight Heat",
+    "url": "https://www.purplemambaclub.com/what-s-on-tickets",
+    "desc": "Studio 54 : Midnight Heat at Purple Mamba, Nottingham. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-14",
@@ -206,7 +382,29 @@
     "cls": "liberty",
     "event": "The CMnf Organisation",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "The CMnf Organisation at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "The CMnf Organisation at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-14",
+    "m": "jun",
+    "day": "Sunday 14 June 2026",
+    "club": "Purple Mamba",
+    "city": "Nottingham",
+    "cls": "mamba",
+    "event": "Notts Serpents Private Kink Event",
+    "url": "https://www.purplemambaclub.com/what-s-on-tickets",
+    "desc": "Notts Serpents Private Kink Event at Purple Mamba, Nottingham. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-19",
+    "m": "jun",
+    "day": "Friday 19 June 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "FILTHY FRIDAY 19th June 8pm UNTIL 3am",
+    "url": "https://clubplay.net/events/%f0%9f%91%bf%f0%9f%98%88filthy-friday-%f0%9f%91%bf%f0%9f%98%88-19th-june-8pm-until-3am%f0%9f%98%88%f0%9f%91%bf/",
+    "desc": "FILTHY FRIDAY 19th June 8pm UNTIL 3am at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-19",
@@ -217,7 +415,7 @@
     "cls": "liberty",
     "event": "Dangerous Curves",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Dangerous Curves at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Dangerous Curves at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-20",
@@ -226,9 +424,9 @@
     "club": "Club Play",
     "city": "Blackpool",
     "cls": "clubplay",
-    "event": "\ud83e\ude77\ud83e\ude75 50 SHADES OF PLAY \ud83e\ude77\ud83e\ude75 CLUB PLAY \ud83e\ude77\ud83e\ude75 FRI 26TH JUNE \ud83e\ude77\ud83e\ude758pm till 3am",
-    "url": "https://clubplay.net/events/?pno=2",
-    "desc": "\ud83e\ude77\ud83e\ude75 50 SHADES OF PLAY \ud83e\ude77\ud83e\ude75 CLUB PLAY \ud83e\ude77\ud83e\ude75 FRI 26TH JUNE \ud83e\ude77\ud83e\ude758pm till 3am at Club Play, Blackpool. Visit the website for full details."
+    "event": "Sat 20th June Randy Royale A Midsummer Masquerade & & Engagement Party",
+    "url": "https://clubplay.net/events/%f0%9f%ab%85sat-20th-june-%f0%9f%ab%85-%f0%9f%91%91-randy-royale-%f0%9f%91%91-%f0%9f%8c%84-a-midsummer-masquerade-%f0%9f%8c%84/",
+    "desc": "Sat 20th June Randy Royale A Midsummer Masquerade & & Engagement Party at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-20",
@@ -239,7 +437,18 @@
     "cls": "liberty",
     "event": "LiberateD",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "LiberateD at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "LiberateD at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-26",
+    "m": "jun",
+    "day": "Friday 26 June 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "50 SHADES OF PLAY CLUB PLAY FRI 26TH JUNE 8pm till 3am",
+    "url": "https://clubplay.net/events/%f0%9f%a9%b7%f0%9f%a9%b5-50-shades-of-play-%f0%9f%a9%b7%f0%9f%a9%b5-club-play-%f0%9f%a9%b7%f0%9f%a9%b5-fri-26th-june-%f0%9f%a9%b7%f0%9f%a9%b58pm-till-3am/",
+    "desc": "50 SHADES OF PLAY CLUB PLAY FRI 26TH JUNE 8pm till 3am at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-26",
@@ -250,7 +459,29 @@
     "cls": "liberty",
     "event": "Dark Desires",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Dark Desires at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Dark Desires at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-27",
+    "m": "jun",
+    "day": "Saturday 27 June 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "\ufe0f\ufe0fLet's Start the Summer Holidays in Style\ufe0f\ufe0f & Celebrate Paul's Birthday 27th June 8pm till 3am",
+    "url": "https://clubplay.net/events/%f0%9f%8c%9e%f0%9f%8f%96%ef%b8%8f%f0%9f%8f%9d%ef%b8%8flets-start-the-summer-holidays-in-style%f0%9f%8f%9d%ef%b8%8f%f0%9f%8f%96%ef%b8%8f%f0%9f%8c%9e-%f0%9f%8e%82%f0%9f%8e%8acelebrate-pauls-birthd/",
+    "desc": "\ufe0f\ufe0fLet's Start the Summer Holidays in Style\ufe0f\ufe0f & Celebrate Paul's Birthday 27th June 8pm till 3am at Club Play, Blackpool. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-27",
+    "m": "jun",
+    "day": "Saturday 27 June 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Western Party",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Western Party at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-27",
@@ -261,7 +492,7 @@
     "cls": "liberty",
     "event": "Secret House",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Secret House at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Secret House at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-27",
@@ -270,9 +501,20 @@
     "club": "Shhh",
     "city": "Newcastle",
     "cls": "shhh",
-    "event": "Sat, Aug 1, 20261:30\u202fPM  Sun, Aug 2, 20261:00\u202fAM",
-    "url": "https://www.shhhclub.co.uk/events",
-    "desc": "Sat, Aug 1, 20261:30\u202fPM  Sun, Aug 2, 20261:00\u202fAM at Shhh, Newcastle. Visit the website for full details."
+    "event": "SECRET SOLSTICE 2026",
+    "url": "https://www.shhhclub.co.uk/events/secret-solstice26",
+    "desc": "SECRET SOLSTICE 2026 at Shhh, Newcastle. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-27",
+    "m": "jun",
+    "day": "Saturday 27 June 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Mr and Miss Agadoo will be hosting another fabulous party night. Theme and details TBC.",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "Mr and Miss Agadoo will be hosting another fabulous party night. Theme and details TBC. at Decadance, Rochdale. Visit the website for full details and booking."
   },
   {
     "d": "2026-06-28",
@@ -283,7 +525,7 @@
     "cls": "liberty",
     "event": "Swing Into It Social",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Swing Into It Social at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Swing Into It Social at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-03",
@@ -292,9 +534,20 @@
     "club": "Club Play",
     "city": "Blackpool",
     "cls": "clubplay",
-    "event": "Club Play",
-    "url": "https://clubplay.net/events/?pno=2",
-    "desc": "Club Play at Club Play, Blackpool. Visit the website for full details."
+    "event": "Fri 3rd July BI-BI BABY CLUB PLAY\u2019s BIG BI PARTY \ufe0f\u200d",
+    "url": "https://clubplay.net/events/sat-3rd-july-bi-bi-baby-club-plays-big-bi-party-%f0%9f%8f%b3%ef%b8%8f%f0%9f%8c%88-2/",
+    "desc": "Fri 3rd July BI-BI BABY CLUB PLAY\u2019s BIG BI PARTY \ufe0f\u200d at Club Play, Blackpool. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-07-03",
+    "m": "jul",
+    "day": "Friday 3 July 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "The Kink Night",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "The Kink Night at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-03",
@@ -305,18 +558,18 @@
     "cls": "liberty",
     "event": "Libertine",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Libertine at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Libertine at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-04",
     "m": "jul",
     "day": "Saturday 4 July 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Step into body positivity and celebrate curves in all their beauty. Curvy is beautiful, and this is ",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Step into body positivity and celebrate curves in all their beauty. Curvy is beautiful, and this is your time to shine. at Club Alchemy, UK. Visit the website for full details."
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "SATURDAY 4TH JULY UV.R 8PM TILL 3AM",
+    "url": "https://clubplay.net/events/%f0%9f%8c%88-saturday-4th-july-uv-r-8pm-till-3am-%f0%9f%8c%88/",
+    "desc": "SATURDAY 4TH JULY UV.R 8PM TILL 3AM at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-04",
@@ -327,7 +580,7 @@
     "cls": "liberty",
     "event": "Passion Casino",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Passion Casino at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Passion Casino at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-05",
@@ -338,7 +591,7 @@
     "cls": "liberty",
     "event": "Embargo",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-10",
@@ -349,7 +602,18 @@
     "cls": "liberty",
     "event": "Temptation",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Temptation at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Temptation at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-07-11",
+    "m": "jul",
+    "day": "Saturday 11 July 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Sports Day",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Sports Day at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-11",
@@ -360,7 +624,7 @@
     "cls": "liberty",
     "event": "Ultimate Kink",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Ultimate Kink at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Ultimate Kink at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-12",
@@ -371,7 +635,18 @@
     "cls": "liberty",
     "event": "Sunday Funday",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Sunday Funday at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Sunday Funday at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-07-17",
+    "m": "jul",
+    "day": "Friday 17 July 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "FILTHY FRIDAY 17th July 8pm till 3am",
+    "url": "https://clubplay.net/events/%f0%9f%91%bf%f0%9f%98%88filthy-friday-%f0%9f%91%bf%f0%9f%98%88-17th-july-8pm-till-3am/",
+    "desc": "FILTHY FRIDAY 17th July 8pm till 3am at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-17",
@@ -382,29 +657,29 @@
     "cls": "liberty",
     "event": "Dangerous Curves",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Dangerous Curves at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Dangerous Curves at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-07-18",
+    "m": "jul",
+    "day": "Saturday 18 July 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "\ufe0f\ufe0f18th July Summer Lovin - Sunshine VibesWicked Nights 8pm till 3am",
+    "url": "https://clubplay.net/events/%f0%9f%8f%9d%ef%b8%8f%f0%9f%8f%9d%ef%b8%8f18th-july-summer-lovin-%f0%9f%a5%b0%f0%9f%a5%b0-%f0%9f%8c%9esunshine-vibes%f0%9f%8c%9ewicked-nights%f0%9f%8c%9e-8pm-till-3am/",
+    "desc": "\ufe0f\ufe0f18th July Summer Lovin - Sunshine VibesWicked Nights 8pm till 3am at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-18",
     "m": "jul",
     "day": "Saturday 18 July 2026",
     "club": "Naughty Pineapple",
-    "city": "UK",
+    "city": "Leicester",
     "cls": "pineapple",
     "event": "Schools Out Party Night",
     "url": "https://thenaughtypineapple.co.uk/all-events/",
-    "desc": "Schools Out Party Night at Naughty Pineapple, UK. Visit the website for full details."
-  },
-  {
-    "d": "2026-07-18",
-    "m": "jul",
-    "day": "Saturday 18 July 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas,",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas, and 30+ playrooms! at Club Alchemy, UK. Visit the website for full details."
+    "desc": "Schools Out Party Night at Naughty Pineapple, Leicester. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-18",
@@ -415,7 +690,7 @@
     "cls": "liberty",
     "event": "Liberty Lounge",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Liberty Lounge at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Liberty Lounge at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-24",
@@ -426,29 +701,29 @@
     "cls": "liberty",
     "event": "Temptation",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Temptation at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Temptation at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-25",
     "m": "jul",
     "day": "Saturday 25 July 2026",
     "club": "Naughty Pineapple",
-    "city": "UK",
+    "city": "Leicester",
     "cls": "pineapple",
     "event": "Burlesque Show",
     "url": "https://thenaughtypineapple.co.uk/all-events/",
-    "desc": "Burlesque Show at Naughty Pineapple, UK. Visit the website for full details."
+    "desc": "Burlesque Show at Naughty Pineapple, Leicester. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-25",
     "m": "jul",
     "day": "Saturday 25 July 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas,",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas, and 30+ playrooms! at Club Alchemy, UK. Visit the website for full details."
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Schools Out",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Schools Out at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-25",
@@ -459,7 +734,18 @@
     "cls": "liberty",
     "event": "Pool Party",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Pool Party at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Pool Party at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-07-25",
+    "m": "jul",
+    "day": "Saturday 25 July 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Mr and Miss Agadoo will be hosting another fabulous party night. Theme and details TBC.",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "Mr and Miss Agadoo will be hosting another fabulous party night. Theme and details TBC. at Decadance, Rochdale. Visit the website for full details and booking."
   },
   {
     "d": "2026-07-31",
@@ -470,18 +756,7 @@
     "cls": "liberty",
     "event": "Dark Desires",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Dark Desires at Liberty Elite, Midlands. Visit the website for full details."
-  },
-  {
-    "d": "2026-08-01",
-    "m": "aug",
-    "day": "Saturday 1 August 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "An exclusive, intimate event strictly for couples and single females \u2014 with a fun, friendly, and ero",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "An exclusive, intimate event strictly for couples and single females \u2014 with a fun, friendly, and erotic vibe. at Club Alchemy, UK. Visit the website for full details."
+    "desc": "Dark Desires at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-01",
@@ -492,7 +767,7 @@
     "cls": "liberty",
     "event": "LiberateD",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "LiberateD at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "LiberateD at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-02",
@@ -503,7 +778,18 @@
     "cls": "liberty",
     "event": "Embargo",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-08-07",
+    "m": "aug",
+    "day": "Friday 7 August 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "The Kink Night",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "The Kink Night at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-07",
@@ -514,7 +800,18 @@
     "cls": "liberty",
     "event": "Queens of the Scene",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Queens of the Scene at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Queens of the Scene at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-08-08",
+    "m": "aug",
+    "day": "Saturday 8 August 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "80's Karaoke Night Saturday 8th August 8pm till 3am - Rock n Roll Bingo",
+    "url": "https://clubplay.net/events/%f0%9f%8e%a4%f0%9f%8e%a4%f0%9f%ab%af80s-karaoke-night-saturday-8th-august-8pm-till-3am-%f0%9f%93%80%f0%9f%92%bfrock-n-roll-bingo%f0%9f%92%bf%f0%9f%93%80/",
+    "desc": "80's Karaoke Night Saturday 8th August 8pm till 3am - Rock n Roll Bingo at Club Play, Blackpool. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-08",
@@ -525,7 +822,7 @@
     "cls": "liberty",
     "event": "The Hot Wife Club",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "The Hot Wife Club at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "The Hot Wife Club at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-14",
@@ -536,18 +833,29 @@
     "cls": "liberty",
     "event": "Hot Garage Party",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Hot Garage Party at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Hot Garage Party at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-15",
     "m": "aug",
     "day": "Saturday 15 August 2026",
     "club": "Naughty Pineapple",
-    "city": "UK",
+    "city": "Leicester",
     "cls": "pineapple",
     "event": "Beach Party !!",
     "url": "https://thenaughtypineapple.co.uk/all-events/",
-    "desc": "Beach Party !! at Naughty Pineapple, UK. Visit the website for full details."
+    "desc": "Beach Party !! at Naughty Pineapple, Leicester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-08-15",
+    "m": "aug",
+    "day": "Saturday 15 August 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Cops N Robbers",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Cops N Robbers at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-15",
@@ -558,7 +866,7 @@
     "cls": "liberty",
     "event": "EUPHORIA",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "EUPHORIA at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "EUPHORIA at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-21",
@@ -569,18 +877,7 @@
     "cls": "liberty",
     "event": "Dangerous Curves",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Dangerous Curves at Liberty Elite, Midlands. Visit the website for full details."
-  },
-  {
-    "d": "2026-08-22",
-    "m": "aug",
-    "day": "Saturday 22 August 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "A night where pleasure has no limits and desires run wild. Will you be devoured\u2026 or do the devouring",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "A night where pleasure has no limits and desires run wild. Will you be devoured\u2026 or do the devouring? at Club Alchemy, UK. Visit the website for full details."
+    "desc": "Dangerous Curves at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-22",
@@ -591,7 +888,18 @@
     "cls": "liberty",
     "event": "Movie Night",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Movie Night at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Movie Night at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-08-23",
+    "m": "aug",
+    "day": "Sunday 23 August 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Cumfest 7pm - 12pm",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Cumfest 7pm - 12pm at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-23",
@@ -602,7 +910,7 @@
     "cls": "liberty",
     "event": "Embargo",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-28",
@@ -613,7 +921,18 @@
     "cls": "liberty",
     "event": "Dark Desires",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Dark Desires at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Dark Desires at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-08-29",
+    "m": "aug",
+    "day": "Saturday 29 August 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Beach Party",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Beach Party at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-29",
@@ -624,7 +943,7 @@
     "cls": "liberty",
     "event": "Secret House",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Secret House at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Secret House at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-08-30",
@@ -635,18 +954,29 @@
     "cls": "liberty",
     "event": "Secret House",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Secret House at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Secret House at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-04",
     "m": "sep",
     "day": "Friday 4 September 2026",
     "club": "Naughty Pineapple",
-    "city": "UK",
+    "city": "Leicester",
     "cls": "pineapple",
     "event": "Pride Party Night",
     "url": "https://thenaughtypineapple.co.uk/all-events/",
-    "desc": "Pride Party Night at Naughty Pineapple, UK. Visit the website for full details."
+    "desc": "Pride Party Night at Naughty Pineapple, Leicester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-09-04",
+    "m": "sep",
+    "day": "Friday 4 September 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "The Kink Night",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "The Kink Night at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-04",
@@ -657,29 +987,18 @@
     "cls": "liberty",
     "event": "Libertine",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Libertine at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Libertine at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-05",
     "m": "sep",
     "day": "Saturday 5 September 2026",
     "club": "Naughty Pineapple",
-    "city": "UK",
+    "city": "Leicester",
     "cls": "pineapple",
     "event": "Pride Party Night",
     "url": "https://thenaughtypineapple.co.uk/all-events/",
-    "desc": "Pride Party Night at Naughty Pineapple, UK. Visit the website for full details."
-  },
-  {
-    "d": "2026-09-05",
-    "m": "sep",
-    "day": "Saturday 5 September 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "A night where pleasure has no limits and desires run wild. Will you be devoured\u2026 or do the devouring",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "A night where pleasure has no limits and desires run wild. Will you be devoured\u2026 or do the devouring? at Club Alchemy, UK. Visit the website for full details."
+    "desc": "Pride Party Night at Naughty Pineapple, Leicester. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-05",
@@ -690,7 +1009,7 @@
     "cls": "liberty",
     "event": "Passion Casino",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Passion Casino at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Passion Casino at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-06",
@@ -701,7 +1020,7 @@
     "cls": "liberty",
     "event": "Embargo",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Embargo at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-11",
@@ -712,7 +1031,18 @@
     "cls": "liberty",
     "event": "The Hot Wife Club",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "The Hot Wife Club at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "The Hot Wife Club at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-09-12",
+    "m": "sep",
+    "day": "Saturday 12 September 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Bollywood Party",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Bollywood Party at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-12",
@@ -723,7 +1053,7 @@
     "cls": "liberty",
     "event": "Alternative Affair",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Alternative Affair at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Alternative Affair at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-13",
@@ -734,7 +1064,7 @@
     "cls": "liberty",
     "event": "Sunday Funday",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Sunday Funday at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Sunday Funday at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-18",
@@ -745,18 +1075,7 @@
     "cls": "liberty",
     "event": "Dangerous Curves",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Dangerous Curves at Liberty Elite, Midlands. Visit the website for full details."
-  },
-  {
-    "d": "2026-09-19",
-    "m": "sep",
-    "day": "Saturday 19 September 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "An exclusive, intimate event strictly for couples and single females - with a fun, friendly, and ero",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "An exclusive, intimate event strictly for couples and single females - with a fun, friendly, and erotic vibe. at Club Alchemy, UK. Visit the website for full details."
+    "desc": "Dangerous Curves at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-19",
@@ -767,7 +1086,7 @@
     "cls": "liberty",
     "event": "Liberty Lounge",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Liberty Lounge at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Liberty Lounge at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-25",
@@ -778,18 +1097,29 @@
     "cls": "liberty",
     "event": "Dark Desires",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Dark Desires at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Dark Desires at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-26",
     "m": "sep",
     "day": "Saturday 26 September 2026",
     "club": "Naughty Pineapple",
-    "city": "UK",
+    "city": "Leicester",
     "cls": "pineapple",
     "event": "Pirate Party Night &#8211; Ahhh",
     "url": "https://thenaughtypineapple.co.uk/all-events/",
-    "desc": "Pirate Party Night &#8211; Ahhh at Naughty Pineapple, UK. Visit the website for full details."
+    "desc": "Pirate Party Night &#8211; Ahhh at Naughty Pineapple, Leicester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-09-26",
+    "m": "sep",
+    "day": "Saturday 26 September 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Back to the 80's",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Back to the 80's at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-26",
@@ -800,7 +1130,18 @@
     "cls": "liberty",
     "event": "Swingo Bingo",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Swingo Bingo at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Swingo Bingo at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-09-26",
+    "m": "sep",
+    "day": "Saturday 26 September 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "DECADANCES 15th BIRTHDAY PARTY, Hosted by Mr and Miss Agadoo. Details TBC.",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "DECADANCES 15th BIRTHDAY PARTY, Hosted by Mr and Miss Agadoo. Details TBC. at Decadance, Rochdale. Visit the website for full details and booking."
   },
   {
     "d": "2026-09-27",
@@ -811,105 +1152,171 @@
     "cls": "liberty",
     "event": "Swing Into It Social",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
-    "desc": "Swing Into It Social at Liberty Elite, Midlands. Visit the website for full details."
+    "desc": "Swing Into It Social at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
-    "d": "2026-10-03",
+    "d": "2026-10-02",
     "m": "oct",
-    "day": "Saturday 3 October 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas,",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas, and 30+ playrooms! at Club Alchemy, UK. Visit the website for full details."
+    "day": "Friday 2 October 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "The Kink Night",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "The Kink Night at The Attic, Derby. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-10-10",
+    "m": "oct",
+    "day": "Saturday 10 October 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Blue Lights Party",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Blue Lights Party at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-10-17",
     "m": "oct",
     "day": "Saturday 17 October 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas,",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas, and 30+ playrooms! at Club Alchemy, UK. Visit the website for full details."
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Blue Lights Party",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Blue Lights Party at The Attic, Derby. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-10-23",
+    "m": "oct",
+    "day": "Friday 23 October 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "BI2 Inclusion",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "BI2 Inclusion at The Attic, Derby. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-10-24",
+    "m": "oct",
+    "day": "Saturday 24 October 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Western Party",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Western Party at The Attic, Derby. Visit the website for full details and booking."
   },
   {
     "d": "2026-10-31",
     "m": "oct",
     "day": "Saturday 31 October 2026",
     "club": "Naughty Pineapple",
-    "city": "UK",
+    "city": "Leicester",
     "cls": "pineapple",
     "event": "Halloween Party Night",
     "url": "https://thenaughtypineapple.co.uk/all-events/",
-    "desc": "Halloween Party Night at Naughty Pineapple, UK. Visit the website for full details."
+    "desc": "Halloween Party Night at Naughty Pineapple, Leicester. Visit the website for full details and booking."
   },
   {
     "d": "2026-10-31",
     "m": "oct",
     "day": "Saturday 31 October 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Halloween gets deliciously dangerous. Dark magic, sinful glamour, and creatures of the night come ou",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Halloween gets deliciously dangerous. Dark magic, sinful glamour, and creatures of the night come out to play! at Club Alchemy, UK. Visit the website for full details."
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Halloween Party",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Halloween Party at The Attic, Derby. Visit the website for full details and booking."
   },
   {
-    "d": "2026-11-07",
+    "d": "2026-11-06",
     "m": "nov",
-    "day": "Saturday 7 November 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Halloween gets deliciously dangerous. Dark magic, sinful glamour, and creatures of the night come ou",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Halloween gets deliciously dangerous. Dark magic, sinful glamour, and creatures of the night come out to play! at Club Alchemy, UK. Visit the website for full details."
+    "day": "Friday 6 November 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "The Kink Night",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "The Kink Night at The Attic, Derby. Visit the website for full details and booking."
   },
   {
-    "d": "2026-11-21",
+    "d": "2026-11-14",
     "m": "nov",
-    "day": "Saturday 21 November 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas,",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas, and 30+ playrooms! at Club Alchemy, UK. Visit the website for full details."
+    "day": "Saturday 14 November 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Noughties Party",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Noughties Party at The Attic, Derby. Visit the website for full details and booking."
   },
   {
-    "d": "2026-12-05",
+    "d": "2026-11-14",
+    "m": "nov",
+    "day": "Saturday 14 November 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Mandy's Birthday 8pm-2am details TBC",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "Mandy's Birthday 8pm-2am details TBC at Decadance, Rochdale. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-11-28",
+    "m": "nov",
+    "day": "Saturday 28 November 2026",
+    "club": "The Attic",
+    "city": "Derby",
+    "cls": "attic",
+    "event": "Military Party",
+    "url": "https://theatticexperience.com/events-prices-2/",
+    "desc": "Military Party at The Attic, Derby. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-12-24",
     "m": "dec",
-    "day": "Saturday 5 December 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas,",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Our flagship event. Ultimate pleasure awaits in our bar, club, terrace, steam maze, jacuzzi, saunas, and 30+ playrooms! at Club Alchemy, UK. Visit the website for full details."
+    "day": "Thursday 24 December 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Christmas Eve, Details TBC",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "Christmas Eve, Details TBC at Decadance, Rochdale. Visit the website for full details and booking."
   },
   {
-    "d": "2026-12-19",
+    "d": "2026-12-25",
     "m": "dec",
-    "day": "Saturday 19 December 2026",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Swap more than just presents. A festive night of temptation, tinsel, and twisted cheer. Nobody stays",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Swap more than just presents. A festive night of temptation, tinsel, and twisted cheer. Nobody stays on the nice list. at Club Alchemy, UK. Visit the website for full details."
+    "day": "Friday 25 December 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Christmas Day CLUB CLOSED",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "Christmas Day CLUB CLOSED at Decadance, Rochdale. Visit the website for full details and booking."
   },
   {
-    "d": "2027-01-02",
-    "m": "jan",
-    "day": "Saturday 2 January 2027",
-    "club": "Club Alchemy",
-    "city": "UK",
-    "cls": "alchemy",
-    "event": "Swap more than just presents. A festive night of temptation, tinsel, and twisted cheer. Nobody stays",
-    "url": "https://www.clubalchemy.co.uk/events",
-    "desc": "Swap more than just presents. A festive night of temptation, tinsel, and twisted cheer. Nobody stays on the nice list. at Club Alchemy, UK. Visit the website for full details."
+    "d": "2026-12-26",
+    "m": "dec",
+    "day": "Saturday 26 December 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Boxing Day, Details TBC",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "Boxing Day, Details TBC at Decadance, Rochdale. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-12-31",
+    "m": "dec",
+    "day": "Thursday 31 December 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "New Years Eve, 8pm til 2am, Details TBC",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "New Years Eve, 8pm til 2am, Details TBC at Decadance, Rochdale. Visit the website for full details and booking."
   }
 ]
