@@ -1,1 +1,46 @@
-[]
+[
+  {
+    "d": "2026-05-22",
+    "m": "may",
+    "day": "Friday 22 May 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "Black Friday",
+    "url": "https://theno3club.co.uk/",
+    "desc": "Black Friday at The No.3 Club, Chorley. New visitors must call Mary on 07835 870772."
+  },
+  {
+    "d": "2026-05-23",
+    "m": "may",
+    "day": "Saturday 23 May 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "The No3 Club 15th Anniversary Party - Theme - Schools Out",
+    "url": "https://theno3club.co.uk/",
+    "desc": "The No3 Club 15th Anniversary Party - Theme - Schools Out at The No.3 Club, Chorley. New visitors must call Mary on 07835 870772."
+  },
+  {
+    "d": "2026-05-30",
+    "m": "may",
+    "day": "Saturday 30 May 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "Mixed Swing Night 8:30",
+    "url": "https://theno3club.co.uk/",
+    "desc": "Mixed Swing Night 8:30 at The No.3 Club, Chorley. New visitors must call Mary on 07835 870772."
+  },
+  {
+    "d": "2026-05-31",
+    "m": "may",
+    "day": "Sunday 31 May 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "Super Sexy Sunday",
+    "url": "https://theno3club.co.uk/",
+    "desc": "Super Sexy Sunday at The No.3 Club, Chorley. New visitors must call Mary on 07835 870772."
+  }
+]
