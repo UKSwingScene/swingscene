@@ -391,17 +391,27 @@ async def scrape_shhh(page, url):
             if events: return events
     return events
 
-async def fetch_via_jina(url, timeout=20):
-    """Use Jina Reader (r.jina.ai) to bypass bot detection.
-    Free public service that fetches any URL and returns clean text."""
-    import urllib.request as _ul
-    jina_url = f"https://r.jina.ai/{url}"
-    req = _ul.Request(jina_url, headers={
-        'Accept': 'text/plain',
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
-    })
-    with _ul.urlopen(req, timeout=timeout) as r:
-        return r.read().decode('utf-8', errors='replace')
+async def fetch_bypass(url, timeout=20):
+    """Fetch a bot-blocked URL using curl - different TLS fingerprint bypasses most blocks."""
+    import subprocess
+    result = subprocess.run([
+        'curl', '-s', '-L', '--max-time', str(timeout), '--compressed',
+        '-H', 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        '-H', 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        '-H', 'Accept-Language: en-GB,en;q=0.9',
+        '-H', 'Connection: keep-alive',
+        '-H', 'Upgrade-Insecure-Requests: 1',
+        '-H', 'Sec-Fetch-Dest: document',
+        '-H', 'Sec-Fetch-Mode: navigate',
+        '-H', 'Sec-Fetch-Site: none',
+        url
+    ], capture_output=True, timeout=timeout+5)
+    if result.returncode != 0:
+        raise Exception(f"curl exit {result.returncode}")
+    content = result.stdout.decode('utf-8', errors='replace')
+    if len(content) < 200:
+        raise Exception(f"curl too short: {len(content)} chars")
+    return content
 
 async def scrape_no3(page, url):
     """No.3 Club: bot-blocked site. Use Jina Reader as primary fetch method.
@@ -411,10 +421,10 @@ async def scrape_no3(page, url):
     raw = ''
     # Strategy 1: Jina Reader (most reliable for blocked sites)
     try:
-        raw = await fetch_via_jina(url)
-        print(f"  No.3 Club: Jina Reader fetched {len(raw)} chars")
+        raw = await fetch_bypass(url)
+        print(f"  No.3 Club: curl fetched {len(raw)} chars")
     except Exception as ex:
-        print(f"  No.3 Jina failed: {ex}, trying direct fetch")
+        print(f"  No.3 curl failed: {ex}, trying direct fetch")
         # Strategy 2: Direct fetch with proper browser headers
         try:
             import urllib.request as _ul
