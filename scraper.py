@@ -392,28 +392,49 @@ async def scrape_shhh(page, url):
     return events
 
 async def scrape_no3(page, url):
-    """No.3 Club: ALL events (exception to standard filter rule)."""
-    api_events = await scrape_wp_api(page, 'https://theno3club.co.uk', 'No.3 Club', 'Chorley, Lancashire', 'no3', url)
-    if api_events: return api_events
+    """No.3 Club: events are on the homepage as plain text.
+    Format: 'Saturday 23rd May - Event Name' or 'Saturday 23rd May - Event Name 8:30pm'
+    Show ALL events (no standard night filter)."""
     await page.goto(url, wait_until='domcontentloaded', timeout=25000)
-    await page.wait_for_timeout(3500)
+    await page.wait_for_timeout(3000)
+    text = await page.inner_text('body')
     events = []
-    for sel in ['h3 a', 'h2 a', '.tribe-event-url', '.tribe-events-calendar-list__event-title a']:
-        items = await page.query_selector_all(sel)
-        if items:
-            for item in items:
-                title = (await item.inner_text()).strip()
-                href = await item.get_attribute('href') or url
-                parent = await item.evaluate_handle('el => el.closest("article") || el.parentElement.parentElement')
-                try:
-                    ptext = await parent.inner_text()
-                except:
-                    ptext = title
-                dt = parse_date_text(ptext)
-                if dt:
-                    e = make_event(dt, 'No.3 Club', 'Chorley, Lancashire', 'no3', title, href)
-                    if e: events.append(e)
-            if events: return events
+    seen = set()
+    # Pattern: day-of-week + date + dash + event name
+    pattern = re.compile(
+        r'(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+'
+        r'(\d{1,2})[a-z]{0,2}\s+'
+        r'(January|February|March|April|May|June|July|August|September|October|November|December)'
+        r'\s*[–\-]+\s*(.+?)(?=
+||$)',
+        re.I
+    )
+    cur_year = NOW.year
+    # Figure out which year from context
+    for m in pattern.finditer(text):
+        day_num = int(m.group(1))
+        month_name = m.group(2)
+        event_name = m.group(3).strip()
+        # Clean up event name - strip time and price info
+        event_name = re.sub(r'\s+\d{1,2}[:.]\d{2}\s*[-–].*$', '', event_name).strip()
+        event_name = re.sub(r'\s+from \d{1,2}.*$', '', event_name, flags=re.I).strip()
+        event_name = re.sub(r'\s+\d{1,2}:\d{2}.*$', '', event_name).strip()
+        event_name = re.sub(r'\s*[–\-]\s*\d{1,2}:\d{2}.*$', '', event_name).strip()
+        if not event_name or len(event_name) < 4: continue
+        if len(event_name) > 80: event_name = event_name[:80].strip()
+        month = MMAP[month_name.lower()]
+        try:
+            dt = datetime(cur_year, month, day_num)
+            if dt < NOW - timedelta(days=1):
+                dt = datetime(cur_year + 1, month, day_num)
+            if not in_range(dt): continue
+            key = (dt.strftime('%Y-%m-%d'), event_name[:15])
+            if key in seen: continue
+            seen.add(key)
+            e = make_event(dt, 'No.3 Club', 'Chorley, Lancashire', 'no3', event_name, 'https://theno3club.co.uk/')
+            if e: events.append(e)
+        except:
+            pass
     return events
 
 async def scrape_wp_tribe_generic(page, base, club, city, cls, url, standard_filter=None):
@@ -575,7 +596,7 @@ async def scrape_all(page):
             print(f"  ERROR: {ex}")
             results[name] = []
 
-    await run("No.3 Club",        scrape_no3(page, "https://theno3club.co.uk/events/"))
+    await run("No.3 Club",        scrape_no3(page, "https://theno3club.co.uk/"))
     await run("Cupids",           scrape_wp_tribe_generic(page, "https://www.cupidsswingersclub.co.uk", "Cupids", "Swinton, Manchester", "cupids", "https://www.cupidsswingersclub.co.uk/events"))
     await run("Partners",         scrape_wp_tribe_generic(page, "https://www.partnersswingersclub.co.uk", "Partners", "Manchester/Bury", "partners", "https://www.partnersswingersclub.co.uk/events/"))
     await run("Pandoras",         scrape_wp_tribe_generic(page, "https://www.pandoraswingers.com", "Pandoras", "Leeds, West Yorkshire", "pandora", "https://www.pandoraswingers.com/events/"))
