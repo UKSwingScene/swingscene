@@ -14,13 +14,17 @@ def parse_date(text):
         r"(\d{1,2})[a-z]{0,2}\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{4})",
         r"(\d{1,2})[a-z]{0,2}\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d{4})",
         r"(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})[a-z]{0,2},?\s+(\d{4})",
+        r"(\d{1,2})/(\d{1,2})/(\d{4})",
     ]
     for pat in pats:
         m = re.search(pat, text, re.I)
         if m:
             g = m.groups()
             try:
-                if g[0].isdigit():
+                if g[0].isdigit() and g[1].isdigit():
+                    day, month, year = int(g[0]), int(g[1]), int(g[2])
+                    if month > 12: day, month = month, day
+                elif g[0].isdigit():
                     day, month, year = int(g[0]), MONTH_MAP[g[1].lower()], int(g[2])
                 else:
                     month, day, year = MONTH_MAP[g[0].lower()], int(g[1]), int(g[2])
