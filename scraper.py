@@ -638,6 +638,76 @@ async def scrape_wp_tribe_generic(page, base, club, city, cls, url, standard_fil
     return events
 
 
+async def scrape_xtasia(page, url):
+    """Xtasia: plain text diary, format 'Day DDth Month: Event Name (times)'
+    Site returns 403 to simple fetches — use Playwright with longer wait.
+    Keep all named events."""
+    XTASIA_STANDARD = {'guys and gals', 'ladies and couples night', 'open night',
+                       'standard club night', 'club night'}
+    # Try Playwright first
+    try:
+        await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+        await page.wait_for_timeout(5000)
+        text = await page.inner_text('body')
+    except Exception as ex:
+        print(f"  Xtasia Playwright failed: {ex}")
+        # Fallback: curl
+        try:
+            import subprocess
+            result = subprocess.run([
+                'curl', '-s', '-L', '--max-time', '20',
+                '-H', 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36',
+                '-H', 'Accept: text/html,application/xhtml+xml,*/*;q=0.8',
+                '-H', 'Accept-Language: en-GB,en;q=0.9',
+                url
+            ], capture_output=True, timeout=25)
+            import html as _html
+            raw = result.stdout.decode('utf-8', errors='replace')
+            text = re.sub(r'<[^>]+>', ' ', raw)
+            text = _html.unescape(text)
+        except Exception as ex2:
+            print(f"  Xtasia curl also failed: {ex2}")
+            return []
+    # Normalise dashes
+    for ch in ['\u2013', '\u2014']:
+        text = text.replace(ch, '-')
+    events = []
+    seen = set()
+    # Format: "Day DDth Month: Event Name (times)" all on one line
+    pattern = re.compile(
+        r'(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+'
+        r'(\d{1,2})[a-z]{0,2}\s+'
+        r'(January|February|March|April|May|June|July|August|September|October|November|December)'
+        r'\s*:\s*(.+?)(?:\n|\r|$)',
+        re.I
+    )
+    cur_year = NOW.year
+    for m in pattern.finditer(text):
+        day_num = int(m.group(1))
+        month = MMAP[m.group(2).lower()]
+        raw_name = m.group(3).strip()
+        # Strip times like "(8pm - 3am)"
+        event_name = re.sub(r'\s*\(\d.*?\)\s*$', '', raw_name).strip()
+        event_name = re.sub(r'\s*\d{1,2}pm.*$', '', event_name, flags=re.I).strip()
+        event_name = event_name[:80].strip()
+        if not event_name or len(event_name) < 4: continue
+        if event_name.lower() in XTASIA_STANDARD: continue
+        try:
+            dt = datetime(cur_year, month, day_num)
+            if dt < NOW - timedelta(days=1):
+                dt = datetime(cur_year + 1, month, day_num)
+            if not in_range(dt): continue
+            key = dt.strftime('%Y-%m-%d') + event_name[:15]
+            if key in seen: continue
+            seen.add(key)
+            e = make_event(dt, 'Xtasia', 'West Bromwich', 'xtasia', event_name, url)
+            if e: events.append(e)
+        except:
+            pass
+    print(f"  Xtasia parsed {len(events)} events")
+    return events
+
+
 async def scrape_pandoras(page, url):
     """Pandoras: 123-reg static site, plain text diary.
     Filter: Biphoria (every Thu), Relaxed Sunday, generic open nights."""
@@ -790,7 +860,7 @@ async def scrape_all(page):
     await run("Partners",         scrape_partners(page, "https://partnersswingersclub.com/events/"))
     await run("Pandoras",         scrape_pandoras(page, "https://www.pandoraswingers.com/event-diary"))
     await run("Club Play",        scrape_clubplay(page, "https://clubplay.net/events/"))
-    await run("Xtasia",           scrape_wp_tribe_generic(page, "https://www.xtasia.co.uk", "Xtasia", "West Bromwich", "xtasia", "https://www.xtasia.co.uk/page/2-months-diary"))
+    await run("Xtasia",           scrape_xtasia(page, "https://www.xtasia.co.uk/page/2-months-diary"))
     await run("Naughty Pineapple",scrape_naughtypineapple(page, "https://thenaughtypineapple.co.uk/all-events/"))
     await run("The Attic",        scrape_attic(page, "https://theatticexperience.com/events-prices-2/"))
     await run("Townhouse",        scrape_tickettailor(page, "https://www.tickettailor.com/events/townhousewirral", "Townhouse", "Birkenhead, Wirral", "townhouse"))
