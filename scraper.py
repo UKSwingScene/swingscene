@@ -1299,6 +1299,106 @@ async def scrape_partners(page, url):
     return events
 
 
+async def scrape_penthouse(page, url):
+    """Penthouse Playrooms Dunstable: custom Laravel app, Playwright.
+    Tries JSON data-page (Inertia), window state, then DOM selectors.
+    """
+    import sys, json as _json
+    events = []
+    try:
+        await page.goto(url, wait_until='networkidle', timeout=30000)
+        await page.wait_for_timeout(5000)
+
+        # Log what we can see for debugging
+        text = await page.evaluate("document.body.innerText")
+        print(f"Penthouse body text (first 500): {text[:500]}", file=sys.stderr)
+
+        # Try Inertia.js data-page JSON
+        inertia = await page.evaluate("""
+            (() => {
+                const el = document.querySelector('[data-page]');
+                if (el) return el.getAttribute('data-page');
+                return null;
+            })()
+        """)
+        if inertia:
+            try:
+                data = _json.loads(inertia)
+                print(f"Penthouse Inertia data keys: {list(data.keys())}", file=sys.stderr)
+                # Walk props for events
+                props = data.get('props', {})
+                for key in ['events', 'upcomingEvents', 'data']:
+                    if key in props:
+                        for ev in props[key]:
+                            name = ev.get('title') or ev.get('name') or ''
+                            date_str = ev.get('date') or ev.get('start_date') or ev.get('starts_at') or ''
+                            ev_url = ev.get('url') or ev.get('slug') or url
+                            if not ev_url.startswith('http'):
+                                ev_url = 'https://penthouse-playrooms.co.uk/' + ev_url.lstrip('/')
+                            if name and date_str:
+                                try:
+                                    dt = datetime.fromisoformat(str(date_str)[:10])
+                                    if in_range(dt):
+                                        e = make_event(dt, 'Penthouse Playrooms', 'Dunstable', 'penthouse', name, ev_url)
+                                        if e: events.append(e)
+                                except: pass
+                if events:
+                    print(f"Penthouse: {len(events)} events via Inertia", file=sys.stderr)
+                    return events
+            except Exception as ex:
+                print(f"Penthouse Inertia parse error: {ex}", file=sys.stderr)
+
+        # Try window.__page__ or similar state
+        for js_var in ['window.__page__', 'window.__INERTIA__', 'window.events', 'window.pageData']:
+            try:
+                val = await page.evaluate(f"JSON.stringify({js_var})")
+                if val and val != 'undefined':
+                    print(f"Penthouse {js_var}: {val[:200]}", file=sys.stderr)
+            except: pass
+
+        # DOM selectors — try common event card patterns
+        for sel in [
+            'article.event', '.event-card', '.event-item',
+            '[class*="event"] h2', '[class*="event"] h3',
+            'h2.event-title', 'h3.event-title',
+            '.events-list h2', '.events-list h3',
+            'main h2', 'main h3',
+        ]:
+            items = await page.query_selector_all(sel)
+            if not items:
+                continue
+            print(f"Penthouse selector '{sel}' matched {len(items)}", file=sys.stderr)
+            for item in items:
+                title = (await item.inner_text()).strip()
+                # Find nearest date text
+                parent = await item.evaluate_handle(
+                    "el => el.closest('article') || el.closest('section') || el.parentElement"
+                )
+                ptext = ''
+                try: ptext = await parent.inner_text()
+                except: pass
+                dt = parse_date_text(ptext) or parse_date_text(title)
+                href = url
+                try:
+                    a = await item.query_selector('a')
+                    if not a:
+                        a = await item.evaluate_handle("el => el.closest('a')")
+                    if a: href = await a.get_attribute('href') or url
+                except: pass
+                if not href.startswith('http'):
+                    href = 'https://penthouse-playrooms.co.uk/' + href.lstrip('/')
+                if dt:
+                    e = make_event(dt, 'Penthouse Playrooms', 'Dunstable', 'penthouse', title, href)
+                    if e: events.append(e)
+            if events: break
+
+    except Exception as ex:
+        print(f"Penthouse scraper error: {ex}", file=sys.stderr)
+
+    print(f"Penthouse: {len(events)} events", file=sys.stderr)
+    return events
+
+
 async def scrape_atlantis(page, url):
     """atlantisEVOLUTION Stoke-on-Trent: static HTML calendar, urllib.
     Standard nights filtered: MEGA Fridays, The NEW Saturdays, Evolutionfetish.
@@ -1430,6 +1530,7 @@ async def scrape_all(page):
     await run("Decadance",        scrape_decadance(page, "https://www.decadanceswingersclub.com/what-s-on-at-decadance"))
     await run("New Gatehouse",    scrape_wp_tribe_generic(page, "https://www.thenewgatehousebolton.co.uk", "New Gatehouse", "Bolton", "gatehouse", "https://www.thenewgatehousebolton.co.uk/about-1"))
     await run("Le Boudoir",       scrape_leboudoir(page))
+    await run("Penthouse Playrooms", scrape_penthouse(page, "https://penthouse-playrooms.co.uk/events"))
     await run("Club Ignite", scrape_ignite(page, "https://club-ignite.co.uk/events-new/"))
     await run("atlantisEVOLUTION", scrape_atlantis(page, "http://www.atlantisevolution.co.uk/calendar.htm"))
     await run("Chameleons",       scrape_chameleons(page, "https://www.chameleons.cc/darlaston-events/"))
