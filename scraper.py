@@ -27,7 +27,8 @@ def make_event(dt, club, city, cls, name, url, desc=None):
     }
 
 def in_range(dt):
-    return NOW <= dt <= CUTOFF
+    # Compare dates only so today's events are included regardless of time
+    return dt.date() >= NOW.date() and dt <= CUTOFF
 
 def parse_date_text(text):
     """Parse various date formats from text, return datetime or None."""
