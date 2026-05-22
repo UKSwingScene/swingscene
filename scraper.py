@@ -823,7 +823,7 @@ async def scrape_tickettailor(page, url, club, city, cls):
     """Tickettailor events page — uses h2/h3 selectors with bad-title filtering,
     falls back to line-by-line text parse."""
     import sys
-    await page.goto(url, wait_until='networkidle', timeout=30000)
+    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
     await page.wait_for_timeout(5000)
 
     BAD_TITLES = {'events list', 'event list', 'upcoming events', 'all events',
