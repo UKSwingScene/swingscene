@@ -820,24 +820,27 @@ async def scrape_clubalchemy(page, url):
 
 
 async def scrape_tickettailor(page, url, club, city, cls):
-    """Tickettailor events page."""
+    """Tickettailor events page — uses h2/h3 selectors with bad-title filtering,
+    falls back to line-by-line text parse."""
     import sys
-    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+    await page.goto(url, wait_until='networkidle', timeout=30000)
     await page.wait_for_timeout(5000)
 
     BAD_TITLES = {'events list', 'event list', 'upcoming events', 'all events',
-                  'buy tickets', 'sold out', 'more info'}
+                  'buy tickets', 'sold out', 'more info', 'no events found'}
 
     events = []
-    # Specific selectors first — only fall through if nothing useful found
+    # Try selectors — specific first, generic fallback
     for sel in [
         '[data-event-id] h3', '[data-event-id] h2',
         '.tc-event__name', '.event-name',
         '.event-item h2', '.event-item h3',
         '.tt-event-title',
+        'h3', 'h2',
     ]:
         items = await page.query_selector_all(sel)
         if not items: continue
+        found = []
         for item in items:
             title = (await item.inner_text()).strip()
             if not title or len(title) < 4: continue
@@ -850,14 +853,15 @@ async def scrape_tickettailor(page, url, club, city, cls):
             dt = parse_date_text(ptext)
             if dt and in_range(dt):
                 e = make_event(dt, club, city, cls, title, url)
-                if e: events.append(e)
-        if events:
-            print(f"{club} (selector '{sel}'): {len(events)} events", file=sys.stderr)
-            return events
+                if e: found.append(e)
+        if found:
+            print(f"{club} (selector '{sel}'): {len(found)} events", file=sys.stderr)
+            return found
 
-    # Text-parsing fallback — scan body line by line for date+name pairs
+    # Text-parsing fallback
     text = await page.inner_text('body')
     lines = [l.strip() for l in text.split('\n') if l.strip()]
+    seen = set()
     for i, line in enumerate(lines):
         dt = parse_date_text(line)
         if not dt or not in_range(dt): continue
@@ -867,8 +871,13 @@ async def scrape_tickettailor(page, url, club, city, cls):
                 if (len(candidate) > 5
                         and not parse_date_text(candidate)
                         and candidate.lower() not in BAD_TITLES):
-                    e = make_event(dt, club, city, cls, candidate, url)
-                    if e: events.append(e); break
+                    key = (dt.date(), candidate.lower())
+                    if key not in seen:
+                        e = make_event(dt, club, city, cls, candidate, url)
+                        if e:
+                            events.append(e)
+                            seen.add(key)
+                    break
 
     print(f"{club} (text parse): {len(events)} events", file=sys.stderr)
     return events
