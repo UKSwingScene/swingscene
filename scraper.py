@@ -15,6 +15,23 @@ def mk(dt): return MKS[dt.month-1]
 def make_event(dt, club, city, cls, name, url, desc=None):
     name = re.sub(r'[\U0001F000-\U0001FFFF\U00002600-\U000027FF]+', '', name).strip(' ·–—-')
     name = re.sub(r'\s+', ' ', name).strip()
+    # Strip dates from event titles — the card already shows the date
+    # Handles: "Saturday 6th June 2026 Broadway After Midnight", "Fri 22nd May - Black Friday" etc
+    name = re.sub(
+        r'^(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|'
+        r'Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*'
+        r'\s+\d{1,2}[a-z]{0,2}'
+        r'\s+(?:January|February|March|April|May|June|July|August|September|October|November|December|'
+        r'Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*'
+        r'(?:\s+\d{4})?'
+        r'\s*[-–:]*\s*',
+        '', name, flags=re.I
+    )
+    # Also strip bare DD/MM/YYYY or DDth Month formats at start
+    name = re.sub(r'^\d{1,2}/\d{1,2}/\d{2,4}\s*[-–:]*\s*', '', name)
+    name = re.sub(r'^\d{1,2}[a-z]{0,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*(?:\s+\d{4})?\s*[-–:]*\s*', '', name, flags=re.I)
+    name = name.strip(' ·–—-').strip()
+    name = re.sub(r'\s+', ' ', name).strip()
     if not name or len(name) < 3: return None
     if not desc:
         desc = f"{name} at {club}, {city}. Visit the website for full details and booking."
@@ -578,7 +595,10 @@ async def scrape_no3(page, url):
 async def scrape_cupids(page, url):
     """Cupids: Squarespace site. All events named. Filter only the generic
     weekly Wednesday 'couples & single females only night'."""
-    CUPIDS_STANDARD = {'couples & single females only night', 'couples & single females only'}
+    CUPIDS_STANDARD = {
+        'couples & single females only night', 'couples & single females only',
+        'tits out tuesday', 'm.o.t.d', 'motd',
+    }
     await page.goto(url, wait_until='domcontentloaded', timeout=30000)
     await page.wait_for_timeout(4000)
     events = []
