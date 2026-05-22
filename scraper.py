@@ -78,18 +78,18 @@ async def try_wp_api(page, base_url, club, city, cls, events_url):
         pass
     return []
 
-async def scrape_page(page, club, city, cls, url):
+async def scrape_single_page(page, club, city, cls, url):
+    """Scrape events from a single already-loaded page."""
     events = []
     try:
-        await page.goto(url, wait_until="domcontentloaded", timeout=25000)
-        await page.wait_for_timeout(3500)
-
+        # Try WP API first
         base = re.match(r"(https?://[^/]+)", url)
         if base:
             api_events = await try_wp_api(page, base.group(1), club, city, cls, url)
             if api_events:
                 return api_events
 
+        # Try structured event selectors
         for sel in ["article.type-tribe_events", ".tribe-event-url", ".event-item", ".event-card", "[class*='event']"]:
             try:
                 items = await page.query_selector_all(sel)
@@ -111,6 +111,7 @@ async def scrape_page(page, club, city, cls, url):
             except:
                 pass
 
+        # Fall back to full text parse
         text = await page.inner_text("body")
         lines = [l.strip() for l in text.split("\n") if l.strip() and len(l.strip()) > 3]
         seen = set()
@@ -118,22 +119,107 @@ async def scrape_page(page, club, city, cls, url):
             dt = parse_date(line)
             if not dt:
                 continue
-            # Collect candidates from surrounding lines
             candidates = []
             for j in list(range(max(0,i-5), i)) + list(range(i+1, min(len(lines),i+6))):
                 if not parse_date(lines[j]) and not is_junk(lines[j]) and len(lines[j]) > 10:
                     candidates.append(lines[j])
             if not candidates:
                 continue
-            # Pick the longest candidate as most likely to be the event name
             name = max(candidates, key=len)
             key = (dt.strftime("%Y-%m-%d"), name[:20])
             if key not in seen:
                 seen.add(key)
                 events.append(make_event(dt, club, city, cls, name, url))
     except Exception as e:
-        print(f"  Error: {e}")
+        print(f"  Error on {url}: {e}")
     return events
+
+async def get_next_page_url(page, current_url):
+    """Find the next page URL if pagination exists."""
+    try:
+        # Common pagination patterns
+        for sel in [
+            "a[rel='next']",
+            ".next a", "a.next",
+            "[class*='next'] a",
+            "a:has-text('Next')",
+            "a:has-text('>')",
+            ".tribe-events-nav-next a",
+            "[class*='pagination'] a[href*='pno=']",
+            "[class*='pagination'] a[href*='page=']",
+            "[class*='pagination'] a[href*='/page/']",
+        ]:
+            try:
+                el = await page.query_selector(sel)
+                if el:
+                    href = await el.get_attribute("href")
+                    if href and href != current_url and href != "#":
+                        if href.startswith("http"):
+                            return href
+                        base = re.match(r"(https?://[^/]+)", current_url)
+                        if base:
+                            return base.group(1) + href
+            except:
+                pass
+
+        # Also check for pno= style pagination in page links
+        links = await page.query_selector_all("a[href*='pno='], a[href*='page='], a[href*='/page/']")
+        current_page_num = None
+        m = re.search(r"pno=(\d+)|page[=/](\d+)", current_url)
+        if m:
+            current_page_num = int(m.group(1) or m.group(2))
+        else:
+            current_page_num = 1
+
+        for link in links:
+            href = await link.get_attribute("href")
+            if not href:
+                continue
+            m2 = re.search(r"pno=(\d+)|page[=/](\d+)", href)
+            if m2:
+                page_num = int(m2.group(1) or m2.group(2))
+                if page_num == current_page_num + 1:
+                    return href if href.startswith("http") else re.match(r"(https?://[^/]+)", current_url).group(1) + href
+
+    except Exception as e:
+        print(f"  Pagination check error: {e}")
+    return None
+
+async def scrape_page(page, club, city, cls, url):
+    """Scrape events from a URL, following pagination automatically."""
+    all_events = []
+    current_url = url
+    pages_visited = 0
+    max_pages = 5  # Safety limit
+
+    while current_url and pages_visited < max_pages:
+        try:
+            print(f"  Page {pages_visited + 1}: {current_url}")
+            await page.goto(current_url, wait_until="domcontentloaded", timeout=25000)
+            await page.wait_for_timeout(3000)
+
+            page_events = await scrape_single_page(page, club, city, cls, current_url)
+            print(f"    -> {len(page_events)} events on this page")
+
+            if not page_events and pages_visited > 0:
+                # No events on this page, stop paginating
+                break
+
+            all_events.extend(page_events)
+            pages_visited += 1
+
+            # Look for next page
+            next_url = await get_next_page_url(page, current_url)
+            if next_url and next_url != current_url:
+                current_url = next_url
+            else:
+                break
+
+        except Exception as e:
+            print(f"  Error on page {pages_visited + 1}: {e}")
+            break
+
+    return all_events
 
 async def scrape_tickettailor(page, club, city, cls, url):
     events = []
