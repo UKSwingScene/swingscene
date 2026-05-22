@@ -6,7 +6,7 @@ CUTOFF = datetime.now() + timedelta(days=365)
 MONTH_MAP = {"jan":1,"feb":2,"mar":3,"apr":4,"may":5,"jun":6,"jul":7,"aug":8,"sep":9,"oct":10,"nov":11,"dec":12,"january":1,"february":2,"march":3,"april":4,"may":5,"june":6,"july":7,"august":8,"september":9,"october":10,"november":11,"december":12}
 MONTH_SHORT = {1:"jan",2:"feb",3:"mar",4:"apr",5:"may",6:"jun",7:"jul",8:"aug",9:"sep",10:"oct",11:"nov",12:"dec"}
 DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
-JUNK = ["cookie","privacy","copyright","menu","home","contact","login","register","search","loading","javascript","please enable","click here","read more","view all","no events","coming soon","sign up","subscribe","follow us","share","tweet","facebook","instagram","terms","conditions","basket","checkout","cart","book now","find out","learn more","get tickets","buy ticket","events found","event name","results found","showing","filter","sort by","clear","back to","next page","previous page"]
+JUNK = ["cookie","privacy","copyright","menu","home","contact","login","register","search","loading","javascript","please enable","click here","read more","view all","no events","coming soon","sign up","subscribe","follow us","share","tweet","facebook","instagram","terms","conditions","basket","checkout","cart","book now","find out","learn more","get tickets","buy ticket","events found","event name","results found","showing","filter","sort by","clear","back to","next page","previous page","more info","more information","view event","event details","buy now","sold out","free entry","powered by","copyright","all rights"]
 TIME_PAT = re.compile(r"^\d{1,2}:\d{2}\s*(am|pm|AM|PM)", re.I)
 
 def parse_date(text):
