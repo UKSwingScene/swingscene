@@ -1485,9 +1485,31 @@ async def scrape_atlantis(page, url):
 
 
 async def scrape_ignite(page, url):
-    """Club Ignite West Drayton: WordPress/Tribe Events Calendar API."""
-    events = await scrape_wp_api(page, 'https://club-ignite.co.uk', 'Club Ignite', 'West Drayton', 'ignite', url)
-    return [e for e in events if e.get('event', '').lower() not in IGNITE_STANDARD]
+    """Club Ignite West Drayton: TEC REST API via urllib (browser fetch blocked by CORS)."""
+    import sys
+    api = 'https://club-ignite.co.uk/wp-json/tribe/events/v1/events?per_page=50&start_date=' + NOW.strftime('%Y-%m-%d')
+    try:
+        req = _urllib.Request(api, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/json',
+        })
+        with _urllib.urlopen(req, timeout=20) as r:
+            data = json.loads(r.read())
+        events = []
+        for ev in data.get('events', []):
+            try:
+                dt = datetime.fromisoformat(ev['start_date'][:10])
+                if in_range(dt):
+                    title = re.sub(r'<[^>]+>', '', ev.get('title', '')).strip()
+                    if title and title.lower() not in IGNITE_STANDARD:
+                        e = make_event(dt, 'Club Ignite', 'West Drayton', 'ignite', title, url)
+                        if e: events.append(e)
+            except: pass
+        print(f"Club Ignite: {len(events)} events", file=sys.stderr)
+        return events
+    except Exception as ex:
+        print(f"Club Ignite API error: {ex}", file=sys.stderr)
+        return []
 
 
 async def scrape_all(page):
@@ -1518,7 +1540,7 @@ async def scrape_all(page):
     await run("Xtasia",           scrape_xtasia(page, "https://www.xtasia.co.uk/page/2-months-diary"))
     await run("Naughty Pineapple",scrape_naughtypineapple(page, "https://thenaughtypineapple.co.uk/all-events/"))
     await run("The Attic",        scrape_attic(page, "https://theatticexperience.com/events-prices-2/"))
-    await run("Townhouse",        scrape_tickettailor(page, "https://www.tickettailor.com/events/townhousewirral", "Townhouse", "Birkenhead, Wirral", "townhouse"))
+    await run("Townhouse",        scrape_tickettailor(page, "https://www.tickettailor.com/events/townhousewirralltd", "Townhouse", "Birkenhead, Wirral", "townhouse"))
     await run("Swindon SC",       scrape_swindon(page))
     await run("Club Alchemy",     scrape_clubalchemy(page, "https://www.clubalchemy.co.uk/events"))
     await run("Infusion",         scrape_infusion(page))
