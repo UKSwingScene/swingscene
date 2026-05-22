@@ -199,6 +199,17 @@ async def main():
             print(f"Scraping {name}...")
             if mode == "tt":
                 evs = await scrape_tickettailor(page, name, city, cls, url)
+            elif mode == "xtasia":
+                # Xtasia needs longer wait for their diary page
+                try:
+                    await page.goto(url, wait_until="domcontentloaded", timeout=30000)
+                    await page.wait_for_timeout(5000)
+                    await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                    await page.wait_for_timeout(2000)
+                    evs = await scrape_page(page, name, city, cls, url)
+                except Exception as e:
+                    print(f"  Xtasia error: {e}")
+                    evs = []
             else:
                 evs = await scrape_page(page, name, city, cls, url)
             results[name] = evs
