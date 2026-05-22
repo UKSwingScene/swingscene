@@ -502,6 +502,58 @@ async def scrape_xtasia(page, url):
 # ─────────────────────────────────────────────
 # CLUB REGISTRY
 # ─────────────────────────────────────────────
+
+async def scrape_clubalchemy(page, url):
+    """Club Alchemy: custom JS-rendered site. Wait for render, parse event cards.
+    Event URLs have slug format: /events/event-name-YYYY-MM-DD"""
+    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+    await page.wait_for_timeout(6000)  # Heavy JS site needs extra time
+    events = []
+    # Try to find event links — URLs contain date in slug
+    links = await page.query_selector_all('a[href*="/events/"]')
+    for link in links:
+        href = await link.get_attribute('href') or ''
+        if not href or href.rstrip('/') == url.rstrip('/'): continue
+        # Extract date from URL slug e.g. /events/temptation-2026-05-16
+        m = re.search(r'(\d{4})-(\d{2})-(\d{2})', href)
+        if m:
+            try:
+                dt = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+                if not in_range(dt): continue
+                # Get event name from link text or slug
+                title = (await link.inner_text()).strip()
+                if not title or len(title) < 3:
+                    # Extract from URL slug
+                    slug = href.split('/events/')[-1].strip('/')
+                    slug = re.sub(r'-\d{4}-\d{2}-\d{2}.*', '', slug)
+                    title = slug.replace('-', ' ').title()
+                full_url = href if href.startswith('http') else 'https://www.clubalchemy.co.uk' + href
+                e = make_event(dt, 'Club Alchemy', 'UK', 'alchemy', title, full_url)
+                if e: events.append(e)
+            except:
+                pass
+    if events:
+        return events
+    # Fallback: look for event cards with text content
+    for sel in ['[class*="event"]', '[class*="Event"]', 'article', '.card', '[class*="card"]']:
+        items = await page.query_selector_all(sel)
+        if 0 < len(items) < 100:
+            for item in items:
+                try:
+                    text = await item.inner_text()
+                    if not text.strip(): continue
+                    dt = parse_date_text(text)
+                    if not dt: continue
+                    lines = [l.strip() for l in text.split('\n') if l.strip() and len(l.strip()) > 3]
+                    title = max((l for l in lines if not parse_date_text(l) and len(l) > 5), key=len, default=None)
+                    if title:
+                        e = make_event(dt, 'Club Alchemy', 'UK', 'alchemy', title, url)
+                        if e: events.append(e)
+                except:
+                    pass
+            if events: return events
+    return events
+
 async def scrape_all(page):
     results = {}
 
@@ -533,7 +585,7 @@ async def scrape_all(page):
     await run("The Attic",        scrape_attic(page, "https://theatticexperience.com/events-prices-2/"))
     await run("Townhouse",        scrape_tickettailor(page, "https://www.tickettailor.com/events/townhousewirral", "Townhouse", "Birkenhead, Wirral", "townhouse"))
     await run("Swindon SC",       scrape_wp_tribe_generic(page, "https://swindonswingers.com", "Swindon SC", "Swindon", "swindon", "https://swindonswingers.com/events/"))
-    await run("Club Alchemy",     scrape_wp_tribe_generic(page, "https://www.clubalchemy.co.uk", "Club Alchemy", "UK", "alchemy", "https://www.clubalchemy.co.uk/events"))
+    await run("Club Alchemy",     scrape_clubalchemy(page, "https://www.clubalchemy.co.uk/events"))
     await run("Infusion",         scrape_wp_tribe_generic(page, "https://www.infusionblackpool.co.uk", "Infusion", "Blackpool", "infusion", "https://www.infusionblackpool.co.uk/8.html"))
     await run("Quest",            scrape_quest(page, "https://questswingersclub.co.uk/upcoming-events/"))
     await run("Liberty Elite",    scrape_libertyelite(page, "https://libertyelite.co.uk/events/list/?tribe-bar-date=" + NOW.strftime('%Y-%m-%d')))
