@@ -160,6 +160,8 @@ QUEST_STANDARD = {'afternoon fun','evening sexy fun','evening naughtiness','fund
 
 MAMBA_STANDARD = {'play space','sunday sinners','bottomless munch social','singles night'}
 
+HU9_STANDARD = {'frisky friday','sexy saturday'}
+
 DECADANCE_STANDARD = {'sexxxy saturday','monday funday','friday night madness','spicy sunday',
                       'friday night madness 2.0'}
 
@@ -265,6 +267,46 @@ async def scrape_purplemamba(page, url):
         except:
             pass
     return events
+
+async def scrape_hu9(page, url):
+    """HU9 Hull: Wix — wait for JS, filter standard nights."""
+    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+    await page.wait_for_timeout(5000)
+    events = []
+    items = await page.query_selector_all('[data-hook="event-list-item"], .eventContainer, [class*="EventListItem"]')
+    if not items:
+        # fallback: parse body text
+        text = await page.inner_text('body')
+        lines = [l.strip() for l in text.split('\n') if l.strip()]
+        for i, line in enumerate(lines):
+            dt = parse_date_text(line)
+            if dt:
+                for j in [i-1, i-2, i+1, i+2]:
+                    if 0 <= j < len(lines):
+                        candidate = lines[j].strip()
+                        if len(candidate) > 5 and not parse_date_text(candidate):
+                            nl = candidate.lower()
+                            if not any(s in nl for s in HU9_STANDARD):
+                                e = make_event(dt, 'HU9', 'Hull', 'hu9', candidate, url)
+                                if e: events.append(e)
+                            break
+        return events
+    for item in items:
+        try:
+            title_el = await item.query_selector('[data-hook="event-title"], [class*="title"], a')
+            if not title_el: continue
+            title = (await title_el.inner_text()).strip()
+            if not title: continue
+            if any(s in title.lower() for s in HU9_STANDARD): continue
+            item_text = await item.inner_text()
+            dt = parse_date_text(item_text)
+            if dt:
+                e = make_event(dt, 'HU9', 'Hull', 'hu9', title, url)
+                if e: events.append(e)
+        except:
+            pass
+    return events
+
 
 async def scrape_libertyelite(page, url):
     """Liberty Elite: Tribe Events Calendar with WP API."""
@@ -1274,6 +1316,7 @@ async def scrape_all(page):
     await run("Quest",            scrape_quest(page, "https://questswingersclub.co.uk/upcoming-events/"))
     await run("Liberty Elite",    scrape_libertyelite(page, "https://libertyelite.co.uk/events/list/?tribe-bar-date=" + NOW.strftime('%Y-%m-%d')))
     await run("Purple Mamba",     scrape_purplemamba(page, "https://www.purplemambaclub.com/what-s-on-tickets"))
+    await run("HU9",              scrape_hu9(page, "https://my-site-nek40ye0-swingerspridegc.wix-vibe-site.com/events"))
     await run("Shhh",             scrape_shhh(page, "https://www.shhhclub.co.uk/events"))
     await run("Decadance",        scrape_decadance(page, "https://www.decadanceswingersclub.com/what-s-on-at-decadance"))
     await run("New Gatehouse",    scrape_wp_tribe_generic(page, "https://www.thenewgatehousebolton.co.uk", "New Gatehouse", "Bolton", "gatehouse", "https://www.thenewgatehousebolton.co.uk/about-1"))
@@ -1326,3 +1369,4 @@ async def main():
 
 
 asyncio.run(main())
+
