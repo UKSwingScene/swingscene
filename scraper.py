@@ -303,31 +303,103 @@ async def scrape_attic(page, url):
     return events
 
 async def scrape_quest(page, url):
-    """Quest: Long text page with bold date + event name."""
-    await page.goto(url, wait_until='domcontentloaded', timeout=25000)
-    await page.wait_for_timeout(3500)
+    """Quest: Long text page, blocks separated by *** lines.
+    Date + event name on same line OR name in subsequent line.
+    Filter all standard recurring nights."""
+    QUEST_STANDARD = {
+        'afternoon fun', 'evening sexy fun', 'evening naughtiness',
+        'funday sunday', 'funday sunday – couples & singles',
+        'm&n party night', 'bi tuesdays', 'bi tuesday',
+        't-girls, cds & admirers', 't-girls cds & admirers',
+        't-girls, cds & admirers event', 'greedy girls',
+        'couples & singles party night at quest',
+        'couples and singles party night at quest',
+        'day event', 'night event', 'day/night event', 'evening event',
+        'afternoon even', 'couples & singles afternoon fun',
+    }
+    # Fetch directly — page is accessible
+    try:
+        import urllib.request as _ul
+        import html as _html
+        req = _ul.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36',
+            'Accept': 'text/html,*/*;q=0.8',
+            'Accept-Language': 'en-GB,en;q=0.9',
+        })
+        with _ul.urlopen(req, timeout=20) as r:
+            raw = r.read().decode('utf-8', errors='replace')
+        text = re.sub(r'<[^>]+>', ' ', raw)
+        text = _html.unescape(text)
+    except Exception as ex:
+        print(f"  Quest direct fetch failed: {ex}, trying Playwright")
+        await page.goto(url, wait_until='domcontentloaded', timeout=25000)
+        await page.wait_for_timeout(3500)
+        text = await page.inner_text('body')
+
+    for ch in ['\u2013', '\u2014']:
+        text = text.replace(ch, '-')
+
     events = []
-    text = await page.inner_text('body')
-    # Pattern: "Saturday 2nd May 2026 – Event Name"
-    pattern = re.compile(
+    seen = set()
+    # Split into blocks on lines of asterisks
+    blocks = re.split(r'\*{5,}', text)
+    date_pattern = re.compile(
         r'(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\s+'
         r'(\d{1,2})[a-z]{0,2}\s+'
         r'(January|February|March|April|May|June|July|August|September|October|November|December)'
-        r'\s+(\d{4})\s*[–\-:]+\s*(.+?)(?=\n|\*\*\*|\Z)',
+        r'\s+(\d{4})',
         re.I
     )
-    for m in pattern.finditer(text):
-        day_num, month_name, year, event_name = int(m.group(1)), m.group(2), int(m.group(3)), m.group(4).strip()
-        if any(s in event_name.lower() for s in QUEST_STANDARD): continue
-        if len(event_name) < 5 or len(event_name) > 120: continue
+    for block in blocks:
+        block = block.strip()
+        if not block: continue
+        dm = date_pattern.search(block)
+        if not dm: continue
+        day_num = int(dm.group(1))
+        month = MMAP[dm.group(2).lower()]
+        year = int(dm.group(3))
         try:
-            dt = datetime(year, MMAP[month_name.lower()], day_num)
-            if in_range(dt):
-                e = make_event(dt, 'Quest', 'Leeds', 'quest', event_name, url)
-                if e: events.append(e)
-        except:
-            pass
+            dt = datetime(year, month, day_num)
+            if not in_range(dt): continue
+        except: continue
+
+        # Get the part of the date line after the last dash
+        date_line = block[dm.start():block.find('\n', dm.start())].strip()
+        # Extract event name: text after final '-' on the date line
+        after_dash = re.split(r'\s*-\s*', date_line)
+        candidate = after_dash[-1].strip() if after_dash else ''
+
+        # If candidate is generic, scan block lines for a better name
+        if not candidate or candidate.lower() in QUEST_STANDARD or len(candidate) < 5:
+            lines_in_block = [l.strip() for l in block.split('\n') if l.strip()]
+            candidate = None
+            for line in lines_in_block:
+                # Skip the date line itself and pricing/door info
+                if date_pattern.search(line): continue
+                ln = line.lower()
+                if any(s in ln for s in QUEST_STANDARD): continue
+                if re.search(r'£\d|doors open|entrance|per couple|per single|members entrance', ln, re.I): continue
+                if re.search(r'join us for|end your week|for all couples|all bisexual', ln, re.I): continue
+                if len(line) < 5 or len(line) > 100: continue
+                candidate = line.strip()
+                break
+
+        if not candidate: continue
+        event_name = candidate[:80].strip()
+        if event_name.lower() in QUEST_STANDARD: continue
+        if any(s in event_name.lower() for s in QUEST_STANDARD): continue
+        if len(event_name) < 5: continue
+
+        key = dt.strftime('%Y-%m-%d') + event_name[:15]
+        if key in seen: continue
+        seen.add(key)
+        e = make_event(dt, 'Quest', 'Leeds', 'quest', event_name,
+                       'https://questswingersclub.co.uk/upcoming-events/')
+        if e: events.append(e)
+
+    print(f"  Quest: {len(events)} events")
     return events
+
 
 async def scrape_decadance(page, url):
     """Decadance: Find special events — text-based sections that aren't regular nights."""
