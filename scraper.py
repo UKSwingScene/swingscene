@@ -1296,6 +1296,91 @@ async def scrape_partners(page, url):
     return events
 
 
+async def scrape_atlantis(page, url):
+    """atlantisEVOLUTION Stoke-on-Trent: static HTML calendar, urllib.
+    Standard nights filtered: MEGA Fridays, The NEW Saturdays, Evolutionfetish.
+    """
+    import sys
+    try:
+        req = _urllib.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        })
+        with _urllib.urlopen(req, timeout=20) as r:
+            html = r.read().decode('utf-8', errors='replace')
+    except Exception as e:
+        print(f"atlantisEVOLUTION fetch error: {e}", file=sys.stderr)
+        return []
+
+    text = re.sub(r'<[^>]+>', ' ', html)
+    text = re.sub(r'&nbsp;', ' ', text)
+    text = re.sub(r'&amp;', '&', text)
+    text = re.sub(r'\s+', ' ', text)
+
+    MONTHS_PAT = 'January|February|March|April|May|June|July|August|September|October|November|December'
+    DAYS_PAT   = 'Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday'
+    MMAP_L = {'january':1,'february':2,'march':3,'april':4,'may':5,'june':6,
+               'july':7,'august':8,'september':9,'october':10,'november':11,'december':12}
+
+    dpat = re.compile(rf'({DAYS_PAT})\s+(\d{{1,2}})\s+({MONTHS_PAT})(?:\s+(\d{{4}}))?', re.I)
+    matches = list(dpat.finditer(text))
+
+    ATLANTIS_STD = {
+        'mega friday', 'mega fridays', 'the new saturday', 'evolutionfetish',
+        'closed', 'christmas day', 'boxing day'
+    }
+
+    events = []
+    for i, m in enumerate(matches):
+        dname, dnum, mname, ystr = m.groups()
+        year  = int(ystr) if ystr else NOW.year
+        month = MMAP_L[mname.lower()]
+        try:
+            dt = datetime(year, month, int(dnum))
+            if not ystr and dt.date() < (NOW - timedelta(days=30)).date():
+                dt = datetime(year + 1, month, int(dnum))
+        except ValueError:
+            continue
+        if not in_range(dt):
+            continue
+
+        seg_start = m.end()
+        seg_end   = matches[i+1].start() if i+1 < len(matches) else len(text)
+        segment   = text[seg_start:seg_end].strip()
+
+        # Remove "Singles and Couples Friday 9pm-2am ... Bring Proper ID to Join" boilerplate
+        segment = re.sub(
+            r'(?:Singles and Couples|Couples and Single Fems).*?(?:Bring Proper ID to Join)',
+            '', segment, flags=re.I|re.S).strip()
+        segment = re.sub(r'\s+', ' ', segment).strip()
+
+        name = re.split(r'\s{2,}', segment)[0].strip()[:120].strip(" '|.")
+
+        # Strip Atlantis-specific trailing taglines
+        name = re.sub(r'\s+BOUNCY\b.*',           '', name, flags=re.I).strip()
+        name = re.sub(r'\s+Dress-up if you.*',      '', name, flags=re.I).strip()
+        name = re.sub(r'\s+\d+ Years of.*',         '', name, flags=re.I).strip()
+        name = re.sub(r'\s+Hot Diggity.*',           '', name, flags=re.I).strip()
+        name = re.sub(r'\s+All the Clubland.*',      '', name, flags=re.I).strip()
+        name = re.sub(r"\s+Meet \|.*",              '', name, flags=re.I).strip()
+        name = re.sub(r"\s+A proper fun-filled.*",   '', name, flags=re.I).strip()
+        name = name.strip(" '|.")
+
+        if not name or len(name) < 4:
+            continue
+        nl = name.lower()
+        if any(s in nl for s in ATLANTIS_STD):
+            continue
+        if re.match(r'^(extended|visit friday|bring proper)', nl, re.I):
+            continue
+
+        e = make_event(dt, 'atlantisEVOLUTION', 'Stoke-on-Trent', 'atlantis', name, url)
+        if e:
+            events.append(e)
+
+    print(f"atlantisEVOLUTION: {len(events)} events", file=sys.stderr)
+    return events
+
+
 async def scrape_all(page):
     results = {}
 
@@ -1336,6 +1421,7 @@ async def scrape_all(page):
     await run("Decadance",        scrape_decadance(page, "https://www.decadanceswingersclub.com/what-s-on-at-decadance"))
     await run("New Gatehouse",    scrape_wp_tribe_generic(page, "https://www.thenewgatehousebolton.co.uk", "New Gatehouse", "Bolton", "gatehouse", "https://www.thenewgatehousebolton.co.uk/about-1"))
     await run("Le Boudoir",       scrape_leboudoir(page))
+    await run("atlantisEVOLUTION", scrape_atlantis(page, "http://www.atlantisevolution.co.uk/calendar.htm"))
     await run("Chameleons",       scrape_chameleons(page, "https://www.chameleons.cc/darlaston-events/"))
 
     return results
