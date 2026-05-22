@@ -1,100 +1,123 @@
+Clicked I Confirm
 
-=== https://my-site-nek40ye0-swingerspridegc.wix-vibe-site.com/events ===
-  Status: 200
-  HTML: 37887 chars, text lines: 117
-  First 300: 18+
-Age Verification
+HTML length: 37887
+Text lines: 117
 
-You must be 18 years or older to enter this site. By clicking "I Confirm", you certify that you are at least 18 years of age.
-
-I Decline
-I Confirm
-Home
-Events
-Gallery
-About
-Membership
-Etiquette
-Contact
-Book Now
-EVENT CALENDAR
-
-Explore our exciting themed parties and special eve
-
-=== https://hu9swingersclub.co.uk/events ===
-  Status: 200
-  HTML: 37887 chars, text lines: 117
-  First 300: 18+
-Age Verification
-
-You must be 18 years or older to enter this site. By clicking "I Confirm", you certify that you are at least 18 years of age.
-
-I Decline
-I Confirm
-Home
-Events
-Gallery
-About
-Membership
-Etiquette
-Contact
-Book Now
-EVENT CALENDAR
-
-Explore our exciting themed parties and special eve
-
-=== https://www.skiddle.com/whats-on/Hull/Hu9-Club/ ===
-  Status: 200
-  HTML: 754611 chars, text lines: 155
-  First 300: We use cookies to make sure we give you the best experience possible. By continuing, you're accepting that you're happy with our cookie policy. Click here to find out more.
-
-Gigs
-Clubs
-Festivals
-What's on
-Things to do
-Add event
-​
-Home
-Events
-Hull Events
-
-Hu9 Club
-
-Hu9 Club
-
-Hull
-
-FOLLOW VENUE
-
-4
-
-Ev
-
-=== https://www.purplemambaclub.com/what-s-on-tickets ===
-  Status: 200
-  HTML: 1362137 chars, text lines: 126
-  First 300: Skip to Main Content
-Exclusive Private Members Club
-See our What's On page
-
-Home
-
-About
-
-What's On & Tickets
-
-Membership
-
-Gallery
-
-More
-
-0
-What's On....
-
- 
-
- 
-
-Want to know when party nights, live music, comedians, workshops or events are happening at Purple Mamba Club? Click on the events to see de
+=== ALL BODY TEXT ===
+[000] 18+
+[001] Age Verification
+[002] You must be 18 years or older to enter this site. By clicking "I Confirm", you certify that you are at least 18 years of age.
+[003] I Decline
+[004] I Confirm
+[005] Home
+[006] Events
+[007] Gallery
+[008] About
+[009] Membership
+[010] Etiquette
+[011] Contact
+[012] Book Now
+[013] EVENT CALENDAR
+[014] Explore our exciting themed parties and special events
+[015] April 2026
+[016] 13 events this month
+[017] 2nd
+[018] Thursday
+[019] Fetish Night (8pm - 1am)
+[020] 3rd
+[021] Friday
+[022] Frisky Friday (9pm - 3am)
+[023] 4th
+[024] Saturday
+[025] Sexy Saturday (9pm - 3am)
+[026] 9th
+[027] Thursday
+[028] Hot Tub Party (8pm - 1am)
+[029] 10th
+[030] Friday
+[031] Frisky Friday (9pm - 3am)
+[032] 11th
+[033] Saturday
+[034] Sexy Saturday (9pm - 3am)
+[035] 16th
+[036] Thursday
+[037] Hotwife Night (8pm - 1am)
+[038] 17th
+[039] Friday
+[040] Frisky Friday (9pm - 3am)
+[041] 18th
+[042] Saturday
+[043] Sexy Saturday (9pm - 3am)
+[044] 23rd
+[045] Thursday
+[046] Greedy Girl Night (8pm - 1am)
+[047] 24th
+[048] Friday
+[049] Frisky Friday (9pm - 3am)
+[050] 25th
+[051] Saturday
+[052] MR HU9s Birthday Bash (9pm - 3am)
+[053] 30th
+[054] Thursday
+[055] Gang Bang Party (8pm - 1am)
+[056] May 2026
+[057] 16 events this month
+[058] June 2026
+[059] 12 events this month
+[060] Entry Pricing
+[061] Prices vary by day of the week
+[062] Thursday
+[063] Single Females
+[064] £5
+[065] Single Males
+[066] £2
+[067] Couples
+[068] £20
+[069] Trans
+[070] £15
+[071] Friday
+[072] Single Females
+[073] £10
+[074] Single Males
+[075] £25
+[076] Couples
+[077] £25
+[078] Trans
+[079] £15
+[080] Saturday
+[081] Single Females
+[082] £10
+[083] Single Males
+[084] £30
+[085] Couples
+[086] £25
+[087] Trans
+[088] £15
+[089] Special events
+[090] Single Females
+[091] £15
+[092] Single Males
+[093] £35
+[094] Couples
+[095] £30
+[096] Trans
+[097] £20
+[098] hu9swingersclub.co.uk
+[099] Hull's premier swingers club. A safe, welcoming space for adventurous adults to explore and connect.
+[100] Contact
+[101] 142 Witham, Hull HU9 1AS
+[102] 07581 392886
+[103] Contact via form
+[104] Opening Hours
+[105] Monday - Wednesday:
+[106] Closed
+[107] Thursday:
+[108] 8pm - 1am
+[109] Friday - Saturday:
+[110] 9pm - 3am
+[111] Sunday:
+[112] Closed*
+[113] *Open 8pm-3am on bank holidays
+[114] © 2026 hu9swingersclub.co.uk. All rights reserved.
+[115] Privacy Policy
+[116] Terms of Service
