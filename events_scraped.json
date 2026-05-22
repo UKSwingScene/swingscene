@@ -3,6 +3,17 @@
     "d": "2026-05-23",
     "m": "may",
     "day": "Saturday 23 May 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "8:00 pm - 3:00 am",
+    "url": "https://clubplay.net/events/",
+    "desc": "8:00 pm - 3:00 am at Club Play, Blackpool. Visit the website for full details."
+  },
+  {
+    "d": "2026-05-23",
+    "m": "may",
+    "day": "Saturday 23 May 2026",
     "club": "Liberty Elite",
     "city": "Midlands",
     "cls": "liberty",
@@ -17,9 +28,9 @@
     "club": "Club Play",
     "city": "Blackpool",
     "cls": "clubplay",
-    "event": "MORE INFO",
+    "event": "2:00 pm - 11:59 pm",
     "url": "https://clubplay.net/events/",
-    "desc": "MORE INFO at Club Play, Blackpool. Visit the website for full details."
+    "desc": "2:00 pm - 11:59 pm at Club Play, Blackpool. Visit the website for full details."
   },
   {
     "d": "2026-05-24",
@@ -39,9 +50,9 @@
     "club": "Club Play",
     "city": "Blackpool",
     "cls": "clubplay",
-    "event": "MORE INFO",
+    "event": "8:00 pm - 3:00 am",
     "url": "https://clubplay.net/events/",
-    "desc": "MORE INFO at Club Play, Blackpool. Visit the website for full details."
+    "desc": "8:00 pm - 3:00 am at Club Play, Blackpool. Visit the website for full details."
   },
   {
     "d": "2026-05-29",
@@ -61,9 +72,9 @@
     "club": "Club Play",
     "city": "Blackpool",
     "cls": "clubplay",
-    "event": "MORE INFO",
+    "event": "8:00 pm - 3:00 am",
     "url": "https://clubplay.net/events/",
-    "desc": "MORE INFO at Club Play, Blackpool. Visit the website for full details."
+    "desc": "8:00 pm - 3:00 am at Club Play, Blackpool. Visit the website for full details."
   },
   {
     "d": "2026-05-30",
@@ -86,6 +97,17 @@
     "event": "Vibe 80&#8217;s Party",
     "url": "https://www.libertyelite.co.uk/events/",
     "desc": "Vibe 80&#8217;s Party at Liberty Elite, Midlands. Visit the website for full details."
+  },
+  {
+    "d": "2026-06-05",
+    "m": "jun",
+    "day": "Friday 5 June 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "8:00 pm - 3:00 am",
+    "url": "https://clubplay.net/events/",
+    "desc": "8:00 pm - 3:00 am at Club Play, Blackpool. Visit the website for full details."
   },
   {
     "d": "2026-06-05",
@@ -171,9 +193,9 @@
     "club": "Club Play",
     "city": "Blackpool",
     "cls": "clubplay",
-    "event": "MORE INFO",
+    "event": "8:00 pm - 3:00 am",
     "url": "https://clubplay.net/events/",
-    "desc": "MORE INFO at Club Play, Blackpool. Visit the website for full details."
+    "desc": "8:00 pm - 3:00 am at Club Play, Blackpool. Visit the website for full details."
   },
   {
     "d": "2026-06-12",
@@ -193,9 +215,9 @@
     "club": "Club Play",
     "city": "Blackpool",
     "cls": "clubplay",
-    "event": "MORE INFO",
+    "event": "8:00 pm - 3:00 am",
     "url": "https://clubplay.net/events/",
-    "desc": "MORE INFO at Club Play, Blackpool. Visit the website for full details."
+    "desc": "8:00 pm - 3:00 am at Club Play, Blackpool. Visit the website for full details."
   },
   {
     "d": "2026-06-13",
@@ -229,6 +251,17 @@
     "event": "The CMnf Organisation",
     "url": "https://www.libertyelite.co.uk/events/",
     "desc": "The CMnf Organisation at Liberty Elite, Midlands. Visit the website for full details."
+  },
+  {
+    "d": "2026-06-19",
+    "m": "jun",
+    "day": "Friday 19 June 2026",
+    "club": "Club Play",
+    "city": "Blackpool",
+    "cls": "clubplay",
+    "event": "8:00 pm - 3:00 am",
+    "url": "https://clubplay.net/events/",
+    "desc": "8:00 pm - 3:00 am at Club Play, Blackpool. Visit the website for full details."
   },
   {
     "d": "2026-06-19",
