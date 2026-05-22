@@ -162,6 +162,11 @@ MAMBA_STANDARD = {'play space','sunday sinners','bottomless munch social','singl
 
 HU9_STANDARD = {'frisky friday','sexy saturday'}
 
+CHAMELEONS_STANDARD = {
+    'club night', 'couples night', 'couples and singles night',
+    'open night', 'members night', 'friday night', 'saturday night',
+}
+
 IGNITE_STANDARD = {'couples & singles friday','couples & singles saturday',
                    'silks & skins spa day','half off friday'}
 
@@ -352,26 +357,72 @@ async def scrape_libertyelite(page, url):
     return events
 
 async def scrape_chameleons(page, url):
-    """Chameleons: h3 event name + date text below."""
-    await page.goto(url, wait_until='domcontentloaded', timeout=25000)
-    await page.wait_for_timeout(3000)
+    """Chameleons Darlaston: TEC REST API (urllib first), Playwright scroll fallback.
+    Page lazy-loads events on scroll — API is much more reliable.
+    """
+    import sys
+
+    # Try TEC API first
+    api = 'https://www.chameleons.cc/wp-json/tribe/events/v1/events?per_page=100&start_date=' + NOW.strftime('%Y-%m-%d')
+    try:
+        req = _urllib.Request(api, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/json',
+        })
+        with _urllib.urlopen(req, timeout=20) as r:
+            data = json.loads(r.read())
+        events = []
+        for ev in data.get('events', []):
+            try:
+                dt = datetime.fromisoformat(ev['start_date'][:10])
+                if in_range(dt):
+                    title = re.sub(r'<[^>]+>', '', ev.get('title', '')).strip()
+                    if title and title.lower() not in CHAMELEONS_STANDARD:
+                        e = make_event(dt, 'Chameleons', 'Darlaston, West Midlands', 'chameleons', title, url)
+                        if e: events.append(e)
+            except: pass
+        if events:
+            print(f"Chameleons (API): {len(events)} events", file=sys.stderr)
+            return events
+    except Exception as ex:
+        print(f"Chameleons API error: {ex} — trying Playwright", file=sys.stderr)
+
+    # Playwright fallback — scroll to bottom to trigger lazy loading
     events = []
-    text = await page.inner_text('body')
-    lines = [l.strip() for l in text.split('\n') if l.strip()]
-    for i, line in enumerate(lines):
-        dt = parse_date_text(line)
-        if not dt: continue
-        # Event title is usually the h3 before or the line before the date
-        title = None
-        for j in [i-1, i-2, i+1]:
-            if 0 <= j < len(lines):
-                candidate = lines[j].strip()
-                if candidate and not parse_date_text(candidate) and len(candidate) > 4 and len(candidate) < 100:
-                    title = candidate
-                    break
-        if title:
-            e = make_event(dt, 'Chameleons', 'Darlaston, West Midlands', 'chameleons', title, url)
-            if e: events.append(e)
+    try:
+        await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+        await page.wait_for_timeout(3000)
+
+        # Scroll down repeatedly to trigger lazy load
+        for _ in range(8):
+            await page.evaluate("window.scrollBy(0, 1200)")
+            await page.wait_for_timeout(800)
+
+        text = await page.inner_text('body')
+        lines = [l.strip() for l in text.split('\n') if l.strip()]
+        seen = set()
+        for i, line in enumerate(lines):
+            dt = parse_date_text(line)
+            if not dt or not in_range(dt): continue
+            title = None
+            for j in [i-1, i-2, i+1]:
+                if 0 <= j < len(lines):
+                    candidate = lines[j].strip()
+                    if (candidate and not parse_date_text(candidate)
+                            and 4 < len(candidate) < 100
+                            and candidate.lower() not in CHAMELEONS_STANDARD):
+                        title = candidate
+                        break
+            if title:
+                key = (dt.date(), title.lower())
+                if key not in seen:
+                    seen.add(key)
+                    e = make_event(dt, 'Chameleons', 'Darlaston, West Midlands', 'chameleons', title, url)
+                    if e: events.append(e)
+    except Exception as ex:
+        print(f"Chameleons Playwright error: {ex}", file=sys.stderr)
+
+    print(f"Chameleons (scroll): {len(events)} events", file=sys.stderr)
     return events
 
 async def scrape_attic(page, url):
