@@ -423,8 +423,7 @@ async def scrape_no3(page, url):
         r'(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)[a-z]*\s+'
         r'(\d{1,2})[a-z]{0,2}\s+'
         r'(January|February|March|April|May|June|July|August|September|October|November|December)'
-        r'\s*[-]+\s*(.+?)(?:
-||$)',
+        r'\s*[-]+\s*(.+?)(?:\n|\r|$)',
         re.I | re.UNICODE
     )
     cur_year = NOW.year
