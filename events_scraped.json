@@ -132,6 +132,17 @@
     "desc": "Sinsational at Purple Mamba, Nottingham. Visit the website for full details and booking."
   },
   {
+    "d": "2026-05-30",
+    "m": "may",
+    "day": "Saturday 30 May 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "U2-4-US2",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "U2-4-US2 at Club Alchemy. Visit the website for full details and tickets."
+  },
+  {
     "d": "2026-05-31",
     "m": "may",
     "day": "Sunday 31 May 2026",
@@ -229,6 +240,17 @@
     "event": "East Midlands Social Takeover",
     "url": "https://www.purplemambaclub.com/what-s-on-tickets",
     "desc": "East Midlands Social Takeover at Purple Mamba, Nottingham. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-06",
+    "m": "jun",
+    "day": "Saturday 6 June 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Curve Nation",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Curve Nation at Club Alchemy. Visit the website for full details and tickets."
   },
   {
     "d": "2026-06-07",
@@ -561,6 +583,17 @@
     "desc": "Passion Casino at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
+    "d": "2026-07-04",
+    "m": "jul",
+    "day": "Saturday 4 July 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Dark Velvet",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Dark Velvet at Club Alchemy. Visit the website for full details and tickets."
+  },
+  {
     "d": "2026-07-05",
     "m": "jul",
     "day": "Sunday 5 July 2026",
@@ -671,6 +704,17 @@
     "desc": "Liberty Lounge at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
+    "d": "2026-07-18",
+    "m": "jul",
+    "day": "Saturday 18 July 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Temptation",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Temptation at Club Alchemy. Visit the website for full details and tickets."
+  },
+  {
     "d": "2026-07-24",
     "m": "jul",
     "day": "Friday 24 July 2026",
@@ -726,6 +770,17 @@
     "desc": "Mr and Miss Agadoo will be hosting another fabulous party night. Theme and details TBC. at Decadance, Rochdale. Visit the website for full details and booking."
   },
   {
+    "d": "2026-07-25",
+    "m": "jul",
+    "day": "Saturday 25 July 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "U2-4-US2",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "U2-4-US2 at Club Alchemy. Visit the website for full details and tickets."
+  },
+  {
     "d": "2026-07-31",
     "m": "jul",
     "day": "Friday 31 July 2026",
@@ -746,6 +801,17 @@
     "event": "LiberateD",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
     "desc": "LiberateD at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-08-01",
+    "m": "aug",
+    "day": "Saturday 1 August 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Dark Velvet",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Dark Velvet at Club Alchemy. Visit the website for full details and tickets."
   },
   {
     "d": "2026-08-02",
@@ -869,6 +935,17 @@
     "desc": "Movie Night at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
+    "d": "2026-08-22",
+    "m": "aug",
+    "day": "Saturday 22 August 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Fuckalicious",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Fuckalicious at Club Alchemy. Visit the website for full details and tickets."
+  },
+  {
     "d": "2026-08-23",
     "m": "aug",
     "day": "Sunday 23 August 2026",
@@ -990,6 +1067,17 @@
     "desc": "Passion Casino at Liberty Elite, Midlands. Visit the website for full details and booking."
   },
   {
+    "d": "2026-09-05",
+    "m": "sep",
+    "day": "Saturday 5 September 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Dark Velvet",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Dark Velvet at Club Alchemy. Visit the website for full details and tickets."
+  },
+  {
     "d": "2026-09-06",
     "m": "sep",
     "day": "Sunday 6 September 2026",
@@ -1065,6 +1153,17 @@
     "event": "Liberty Lounge",
     "url": "https://libertyelite.co.uk/events/list/?tribe-bar-date=2026-05-22",
     "desc": "Liberty Lounge at Liberty Elite, Midlands. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-09-19",
+    "m": "sep",
+    "day": "Saturday 19 September 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "U2-4-US2",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "U2-4-US2 at Club Alchemy. Visit the website for full details and tickets."
   },
   {
     "d": "2026-09-25",
@@ -1144,6 +1243,17 @@
     "desc": "The Kink Night at The Attic, Derby. Visit the website for full details and booking."
   },
   {
+    "d": "2026-10-03",
+    "m": "oct",
+    "day": "Saturday 3 October 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Temptation",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Temptation at Club Alchemy. Visit the website for full details and tickets."
+  },
+  {
     "d": "2026-10-10",
     "m": "oct",
     "day": "Saturday 10 October 2026",
@@ -1164,6 +1274,17 @@
     "event": "Blue Lights Party",
     "url": "https://theatticexperience.com/events-prices-2/",
     "desc": "Blue Lights Party at The Attic, Derby. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-10-17",
+    "m": "oct",
+    "day": "Saturday 17 October 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Fuckalicious",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Fuckalicious at Club Alchemy. Visit the website for full details and tickets."
   },
   {
     "d": "2026-10-23",
@@ -1210,6 +1331,17 @@
     "desc": "Halloween Party at The Attic, Derby. Visit the website for full details and booking."
   },
   {
+    "d": "2026-10-31",
+    "m": "oct",
+    "day": "Saturday 31 October 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Halloween Party",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Halloween Party at Club Alchemy. Visit the website for full details and tickets."
+  },
+  {
     "d": "2026-11-06",
     "m": "nov",
     "day": "Friday 6 November 2026",
@@ -1219,6 +1351,17 @@
     "event": "The Kink Night",
     "url": "https://theatticexperience.com/events-prices-2/",
     "desc": "The Kink Night at The Attic, Derby. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-11-07",
+    "m": "nov",
+    "day": "Saturday 7 November 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Dark Velvet",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Dark Velvet at Club Alchemy. Visit the website for full details and tickets."
   },
   {
     "d": "2026-11-14",
@@ -1243,6 +1386,17 @@
     "desc": "Mandy's Birthday 8pm-2am details TBC at Decadance, Rochdale. Visit the website for full details and booking."
   },
   {
+    "d": "2026-11-21",
+    "m": "nov",
+    "day": "Saturday 21 November 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Temptation",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Temptation at Club Alchemy. Visit the website for full details and tickets."
+  },
+  {
     "d": "2026-11-28",
     "m": "nov",
     "day": "Saturday 28 November 2026",
@@ -1252,6 +1406,28 @@
     "event": "Military Party",
     "url": "https://theatticexperience.com/events-prices-2/",
     "desc": "Military Party at The Attic, Derby. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-12-05",
+    "m": "dec",
+    "day": "Saturday 5 December 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Fuckalicious",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Fuckalicious at Club Alchemy. Visit the website for full details and tickets."
+  },
+  {
+    "d": "2026-12-19",
+    "m": "dec",
+    "day": "Saturday 19 December 2026",
+    "club": "Club Alchemy",
+    "city": "UK",
+    "cls": "alchemy",
+    "event": "Club Alchemy Christmas Party",
+    "url": "https://www.clubalchemy.co.uk/events",
+    "desc": "Club Alchemy Christmas Party at Club Alchemy. Visit the website for full details and tickets."
   },
   {
     "d": "2026-12-24",
