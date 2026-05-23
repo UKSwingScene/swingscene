@@ -53,6 +53,10 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-
 .rec-city{font-size:14px;color:var(--muted);margin-bottom:6px;}
 .rec-schedule{font-size:17px;color:#7a7590;line-height:1.6;}
 .rec-line::before{content:"· ";color:var(--gold);}
+.rec-desc{font-size:13px;color:var(--text);opacity:.82;line-height:1.55;margin:7px 0 9px;}
+.rec-contact{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;}
+.rec-contact a{font-size:12px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:4px;}
+.rec-contact a:hover{color:var(--gold);}
 .site-footer{background:var(--surf2);border-top:1px solid var(--border);padding:18px 16px;font-size:15px;color:var(--muted);line-height:1.7;margin-top:8px;text-align:center;}
 .site-footer strong{color:var(--gold);}
 .empty{text-align:center;padding:48px 16px;color:var(--dim);font-size:20px;}
@@ -118,18 +122,54 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-
 <script>
 const EVENTS=EVENTS_JS_PLACEHOLDER;
 const RECURRING=[
-  {club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",lines:["Sat: Mixed Swing Night 8:30pm-1:30am","Sun (fortnightly): Super Sexy Sunday 4pm-10pm","Wed (1st & 3rd): Greedy Girls Day 1pm-8pm","First visit MUST call Mary - 07835 870772"],url:"https://theno3club.co.uk/"},
-  {club:"Cupids",city:"Swinton, Manchester",cls:"cupids",lines:["Open 7 nights a week","30+ year heritage","Couples & singles welcome"],url:"https://www.cupidsswingersclub.co.uk/events"},
-  {club:"Chameleons",city:"Darlaston, West Midlands",cls:"chameleons",lines:["Open 7 days a week","Hot tub, sauna, themed playrooms"],url:"https://www.chameleons.cc/darlaston-events/"},
-  {club:"Townhouse",city:"Birkenhead, Wirral",cls:"townhouse",lines:["Regular Fri & Sat events","4 floors, hot tubs, dungeon","LGBTQ+ friendly"],url:"https://www.tickettailor.com/events/townhousewirral"},
-  {club:"Xtasia",city:"West Bromwich",cls:"xtasia",lines:["UK's longest-established lifestyle club","Nightclub, Spa, Pool, Cinema, Hotel"],url:"https://www.xtasia.co.uk/page/2-months-diary"},
-  {club:"Infusion",city:"Blackpool",cls:"infusion",lines:["North West's largest lifestyle venue","Multiple play areas & jacuzzi"],url:"https://www.infusionblackpool.co.uk/8.html"},
-  {club:"Purple Mamba",city:"Nottingham",cls:"mamba",lines:["Weekly Saturday events","Premium lifestyle club"],url:"https://www.purplemambaclub.com/what-s-on-tickets"},
-  {club:"Shhh",city:"Newcastle",cls:"shhh",lines:["Regular weekend events","Easy online membership"],url:"https://www.shhhclub.co.uk/events"},
-  {club:"Penthouse Playrooms",city:"Dunstable",cls:"penthouse",lines:["Luxury venue","Hot tubs & themed events"],url:"https://penthouse-playrooms.co.uk/events"},
-  {club:"Club Ignite",city:"West Drayton",cls:"ignite",lines:["Special themed nights","Near Heathrow"],url:"https://club-ignite.co.uk/events-new/"},
-  {club:"atlantisEVOLUTION",city:"Stoke-on-Trent",cls:"atlantis",lines:["Special themed nights","Stoke-on-Trent"],url:"http://www.atlantisevolution.co.uk/calendar.htm"},
-    {club:"HU9",city:"Hull",cls:"hu9",lines:["Regular club nights","Couples & singles welcome"],url:"https://my-site-nek40ye0-swingerspridegc.wix-vibe-site.com/events"},
+  {club:"No.3 Club",city:"Chorley, Lancashire",cls:"no3",
+   desc:"A luxurious, modern swingers club in the heart of Lancashire. 21+ with a fully licensed bar, stylish surroundings and an unbeatable friendly atmosphere. First-time visitors must call Mary before attending.",
+   lines:["Sat: Mixed Swing Night 8:30pm–1:30am","Sun (fortnightly): Super Sexy Sunday 4pm–10pm","Wed (1st & 3rd): Greedy Girls Day 1pm–8pm","2nd Fri of month: Intro Night 8:30pm–1:30am"],
+   phone:"07835 870772",email:"",url:"https://theno3club.co.uk/"},
+  {club:"Cupids",city:"Swinton, Manchester",cls:"cupids",
+   desc:"One of the UK's most established lifestyle clubs with 30+ years of heritage and 25,000+ members. Open 7 nights and 5 days a week. UV bar, dungeon and play rooms just minutes from Manchester city centre. 21+ members only.",
+   lines:["Open 7 nights & 5 daytimes a week","Mon–Thu evenings from 6pm","Fri–Sat from 6pm (til 3am)","Sun evenings from 6pm"],
+   phone:"",email:"",url:"https://www.cupidsswingersclub.co.uk/events"},
+  {club:"Chameleons",city:"Darlaston, West Midlands",cls:"chameleons",
+   desc:"Self-titled UK's No.1 Swingers Club with sauna-based venues in Darlaston (Birmingham) and Newport (Wales). A safe, pressure-free atmosphere for couples and singles. Also home to a strong calendar of themed special events.",
+   lines:["Club Nights — Fri & Sat from 9pm","Couples Nights — regular schedule","Open & Members Nights throughout the week","Newport venue also available"],
+   phone:"0121 526 5002",email:"chameleonsclub@gmail.com",url:"https://www.chameleons.cc/darlaston-events/"},
+  {club:"Townhouse",city:"Birkenhead, Wirral",cls:"townhouse",
+   desc:"A multi-floor lifestyle, fetish and alternative club on the Wirral. Four floors of fun including hot tubs, dungeon and themed play areas. LGBTQ+ friendly with 30+ events on the calendar each month.",
+   lines:["Fri & Sat: Regular club nights","4 floors — bar, hot tubs, dungeon, play rooms","LGBTQ+ friendly. 18+"],
+   phone:"07788 634 850",email:"infotownhouse@aol.com",url:"https://www.tickettailor.com/events/townhousewirralltd"},
+  {club:"Xtasia",city:"West Bromwich, Midlands",cls:"xtasia",
+   desc:"Established in the 1980s, Xtasia is the UK's longest-running swingers club and has been voted #1 by its peers. The complex now spans a nightclub, spa, Flirts Bar, cinema, dungeon and on-site hotel rooms — all under one roof.",
+   lines:["Swingers & fetish events weekly","On-site hotel & spa now open","Nightclub, Bar, Cinema, Dungeon — all in one venue","Call or check diary for current schedule"],
+   phone:"07850 236 053",email:"",url:"https://www.xtasia.co.uk/page/2-months-diary"},
+  {club:"Infusion",city:"Blackpool",cls:"infusion",
+   desc:"The North West's largest purpose-built lifestyle club, open since 2005. A swimming pool, spa, sauna, 12 themed playrooms and a dungeon. Located in Blackpool town centre with hotels nearby. Open 5 days a week.",
+   lines:["Wed–Sat: 11am–5pm & 8pm–late","Sun: 1pm–10pm","1st Sat evening: Couples & Females only","Swimming pool, spa, 12 themed playrooms"],
+   phone:"01253 749 939",email:"info@infusionblackpool.co.uk",url:"https://www.infusionblackpool.co.uk/8.html"},
+  {club:"Purple Mamba",city:"Nottingham",cls:"mamba",
+   desc:"The Midlands' Premier Lifestyle Club, tucked behind West Bridgford at Trent Bridge, Nottingham. An exclusive private members club with a regular Saturday event programme, gallery nights and an active podcast community.",
+   lines:["Weekly Saturday events","Private members club — register first","Play Space & Sunday Sinners regular nights","Bottomless Munch Social events"],
+   phone:"07837 346 026",email:"",url:"https://www.purplemambaclub.com/what-s-on-tickets"},
+  {club:"Shhh",city:"Nationwide (Ibiza & UK venues)",cls:"shhh",
+   desc:"Not a traditional club venue — Shhh is a collective of house music lovers creating high-end, invite-only experiences. From exclusive manor house takeovers to Pikes Ibiza residencies. Sign up to find out about upcoming events.",
+   lines:["High-end invite-only events","UK venue takeovers & Ibiza residencies","Sign up at shhhclub.co.uk for access","The nights that turn into mornings"],
+   phone:"",email:"info@shhhclub.co.uk",url:"https://www.shhhclub.co.uk/events"},
+  {club:"Penthouse Playrooms",city:"Dunstable",cls:"penthouse",
+   desc:"A sophisticated lifestyle venue in Dunstable, Bedfordshire with multiple elaborately themed playrooms. Over 17 events monthly, all named special nights with a welcoming community atmosphere.",
+   lines:["17+ events per month","Multiple themed play areas","Couples & singles welcome","Check website for current schedule"],
+   phone:"07525 760 128",email:"",url:"https://penthouse-playrooms.co.uk/events"},
+  {club:"Club Ignite",city:"West Drayton (nr Heathrow)",cls:"ignite",
+   desc:"Where passion burns bright. An ethics-first private members club for adults 21+. Daytime naturist spa and evening parties with a steadfast commitment to consent and trust. Members only — register before attending.",
+   lines:["Mon & Wed: 11am–10pm (Spa/Naturist)","Fri & Sat: Evening parties 9pm–2am","Sun: 11am–8pm (Spa)","Members club — pre-register on website"],
+   phone:"07702 567 205",email:"info@club-ignite.co.uk",url:"https://club-ignite.co.uk/events-new/"},
+  {club:"atlantisEVOLUTION",city:"Stoke-on-Trent",cls:"atlantis",
+   desc:"A well-established lifestyle venue in Burslem, Stoke-on-Trent with regular weekly nights and a packed calendar of themed special events. Full membership required before attending.",
+   lines:["MEGA Fridays & The NEW Saturdays weekly","Themed special events throughout the year","Full membership required before attending","Check calendar at atlantisevolution.co.uk"],
+   phone:"07971 185 999",email:"enquiries@atlantisevolution.co.uk",url:"http://www.atlantisevolution.co.uk/calendar.htm"},
+  {club:"HU9",city:"Hull",cls:"hu9",
+   desc:"Hull's premier lifestyle club at 142 Witham, Hull HU9 1AS. Regular Wednesday to Saturday evenings plus major ticketed events including Swingfest — one of the biggest lifestyle events in the North.",
+   lines:["Wed–Sat evenings — regular club nights","Frisky Friday & Sexy Saturday weekly","Major events incl. Swingfest (Aug)","See website for booking & pricing"],
+   phone:"07581 392 886",email:"",url:"https://hu9swingersclub.co.uk/events"},
 ];
 const MKS=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 function buildMonths(){
@@ -207,7 +247,9 @@ document.getElementById('recBody').innerHTML=RECURRING.map(r=>`
   <a class="rec-card c-${r.cls}" href="${r.url}" target="_blank" rel="noopener">
     <div class="rec-club">${r.club}</div>
     <div class="rec-city">&#128205; ${r.city}</div>
+    <div class="rec-desc">${r.desc}</div>
     <div class="rec-schedule">${r.lines.map(l=>`<div class="rec-line">${l}</div>`).join('')}</div>
+    <div class="rec-contact">${r.phone?`<a href="tel:${r.phone.replace(/\s/g,'')}" onclick="event.stopPropagation()">&#128222; ${r.phone}</a>`:''} ${r.email?`<a href="mailto:${r.email}" onclick="event.stopPropagation()">&#9993; ${r.email}</a>`:''}</div>
   </a>`).join('');
 render();
 updateSticky();
