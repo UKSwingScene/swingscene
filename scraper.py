@@ -560,72 +560,90 @@ async def scrape_quest(page, url):
 
 
 async def scrape_decadance(page, url):
-    """Decadance: Find special events — text-based sections + nav menu links (DD/MM Name)."""
-    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-    await page.wait_for_timeout(5000)
-    events = []
-    seen_dates = set()
-    cur_year = NOW.year
-    text = await page.inner_text('body')
-    lines = [l.strip() for l in text.split('\n') if l.strip()]
+    """Decadance: Scrape special events via 'Events Coming Soon' nav links.
 
-    # --- Pass 1: text-section parse (date heading then event name on next lines) ---
-    date_pattern = re.compile(r'^(\d{1,2})[a-z]{0,2}\s+(January|February|March|April|May|June|July|August|September|October|November|December)$', re.I)
-    for i, line in enumerate(lines):
-        dm = date_pattern.match(line.strip())
-        if not dm: continue
-        day_num = int(dm.group(1))
-        month = MMAP[dm.group(2).lower()]
-        try:
-            dt = datetime(cur_year, month, day_num)
-            if dt < NOW - timedelta(days=1): dt = datetime(cur_year+1, month, day_num)
-            if not in_range(dt): continue
-        except:
-            continue
-        for j in range(i+1, min(i+8, len(lines))):
-            candidate = lines[j].strip()
-            if not candidate or len(candidate) < 5: continue
-            if date_pattern.match(candidate): break
-            nl = candidate.lower()
-            if any(s in nl for s in DECADANCE_STANDARD): continue
-            if candidate.startswith('http') or candidate in ['Home','Contact','About','Events']: continue
-            e = make_event(dt, 'Decadance', 'Rochdale', 'decadance', candidate, url)
-            if e:
-                events.append(e)
-                seen_dates.add(dt.date())
-                break
+    Strategy:
+      1. Load the main events page.
+      2. Find all nav links whose href contains /events-coming-soon/ and whose
+         text matches DD/MM Event Name — this is how Decadance lists upcoming
+         special events in their site navigation.
+      3. Visit each detail page to extract a proper description from the body.
+      4. Parse date from the DD/MM prefix in the link text.
+      5. Skip standard/filtered nights.
 
-    # --- Pass 2: nav menu links with "DD/MM Event Name" format ---
-    # These catch image-only events that have no text under their date heading
+    This approach is robust to image-only date sections on the main page —
+    the nav links are always text, and the detail pages always have descriptions.
+    """
+    BASE = 'https://www.decadanceswingersclub.com'
     nav_pattern = re.compile(r'^(\d{2})/(\d{2})\s+(.+)$')
+    cur_year = NOW.year
+    events = []
+
+    # Step 1: load main events page and collect all Events Coming Soon links
+    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+    await page.wait_for_timeout(4000)
+
+    detail_links = []  # list of (day, month, name, href)
     anchors = await page.query_selector_all('a')
     for anchor in anchors:
         try:
+            href = (await anchor.get_attribute('href') or '').strip()
             link_text = (await anchor.inner_text()).strip()
         except:
             continue
+        if '/events-coming-soon/' not in href:
+            continue
         nm = nav_pattern.match(link_text)
-        if not nm: continue
-        day_num, month_num, name = int(nm.group(1)), int(nm.group(2)), nm.group(3).strip()
-        # Strip emoji from name
+        if not nm:
+            continue
+        day_num, month_num = int(nm.group(1)), int(nm.group(2))
+        name = nm.group(3).strip()
+        # Strip emoji
         name = re.sub(r'[^\x00-\x7F\u00C0-\u024F\u1E00-\u1EFF]+', '', name).strip()
-        if not name or len(name) < 4: continue
-        nl = name.lower()
-        if any(s in nl for s in DECADANCE_STANDARD): continue
+        if not name or len(name) < 4:
+            continue
+        if any(s in name.lower() for s in DECADANCE_STANDARD):
+            continue
+        if not href.startswith('http'):
+            href = BASE + href
+        detail_links.append((day_num, month_num, name, href))
+
+    # Step 2: visit each detail page to get a proper description
+    for day_num, month_num, name, detail_url in detail_links:
         try:
             dt = datetime(cur_year, month_num, day_num)
-            if dt < NOW - timedelta(days=1): dt = datetime(cur_year+1, month_num, day_num)
-            if not in_range(dt): continue
+            if dt < NOW - timedelta(days=1):
+                dt = datetime(cur_year + 1, month_num, day_num)
+            if not in_range(dt):
+                continue
         except:
             continue
-        if dt.date() in seen_dates: continue  # already got this date from pass 1
-        href = await anchor.get_attribute('href') or url
-        if not href.startswith('http'):
-            href = 'https://www.decadanceswingersclub.com' + href
-        e = make_event(dt, 'Decadance', 'Rochdale', 'decadance', name, href)
+
+        # Fetch the detail page for description
+        desc = f'{name} at Decadance, Rochdale.'
+        try:
+            await page.goto(detail_url, wait_until='domcontentloaded', timeout=20000)
+            await page.wait_for_timeout(2000)
+            body_text = await page.inner_text('body')
+            # Find the first substantive paragraph after the nav block
+            # (skip short lines, nav items, and image-only lines)
+            para_lines = [l.strip() for l in body_text.split('\n') if len(l.strip()) > 60]
+            # Skip nav/header lines that are link text
+            skip_phrases = ['what\'s on', 'events coming soon', 'regular weekly', 'find us on',
+                            'facebook', 'instagram', 'copyright', 'privacy policy']
+            for para in para_lines:
+                if any(s in para.lower() for s in skip_phrases):
+                    continue
+                desc = para[:300]
+                break
+        except:
+            pass  # fallback to default desc
+
+        e = make_event(dt, 'Decadance', 'Rochdale', 'decadance', name, detail_url)
         if e:
+            # Inject the richer description
+            e['desc'] = desc
             events.append(e)
-            seen_dates.add(dt.date())
 
     return events
 
