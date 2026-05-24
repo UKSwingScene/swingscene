@@ -350,5 +350,27 @@
     "event": "Peaky Blinders Night",
     "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance/events-coming-soon/30-05-peaky-blinders",
     "desc": "Peaky Blinders Night at Decadance, Rochdale. Hosted by Mr & Miss Agadoo."
+  },
+  {
+    "d": "2026-06-27",
+    "m": "jun",
+    "day": "Saturday 27 June 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Mr & Miss Agadoo's Night - Theme TBC",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "Mr & Miss Agadoo's Night at Decadance, Rochdale. Theme to be confirmed."
+  },
+  {
+    "d": "2026-07-25",
+    "m": "jul",
+    "day": "Saturday 25 July 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Mr & Miss Agadoo's Night - Theme TBC",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "Mr & Miss Agadoo's Night at Decadance, Rochdale. Theme to be confirmed."
   }
 ]
