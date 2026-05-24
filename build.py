@@ -1,5 +1,8 @@
-import json, base64
-from datetime import datetime
+import json, base64, re as _re
+from datetime import datetime, date
+
+# Today's date string for filtering past events
+TODAY = date.today().strftime('%Y-%m-%d')
 
 # Load manually researched events (always present as fallback)
 with open('events.json') as f:
@@ -14,9 +17,6 @@ except:
     scraped = []
     print("No scraped events, using manual only")
 
-# Merge: manual first, scraped overrides only if event name is clean
-# Manual events always win — scraped only adds NEW events not in manual
-import re as _re
 def _is_bad(name):
     if not name or len(name) < 6: return True
     n = name.lower()
@@ -34,12 +34,15 @@ for e in manual:
 for e in scraped:
     key = (e['d'], e['club'])
     ev = e.get('event', '')
-    # Only add scraped event if: not in manual AND has a clean name
     if key not in merged and not _is_bad(ev):
         merged[key] = e
 
-events = sorted(merged.values(), key=lambda x: x['d'])
-print(f"Total merged events: {len(events)}")
+# Filter out events where date has already passed
+events = sorted(
+    [e for e in merged.values() if e.get('d', '') >= TODAY],
+    key=lambda x: x['d']
+)
+print(f"Total merged events (future only): {len(events)}")
 
 with open('gemini_logo.mp4', 'rb') as f:
     vid_b64 = base64.b64encode(f.read()).decode()
@@ -51,7 +54,6 @@ events_js = json.dumps(events, ensure_ascii=False)
 with open('template.html') as f:
     html = f.read()
 
-# Build stats line
 num_events = len(events)
 num_clubs  = len({e['club'] for e in events})
 stats_line = f'{num_events} events across {num_clubs} clubs'
