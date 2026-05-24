@@ -85,6 +85,8 @@ def parse_date_text(text):
         (r'(fri|sat|sun)\s+(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)', 'dow_dm_noyear'),
         # Liberty Elite TEC format: "Sunday May 24th @ 2:00 pm" — day-name month day, no year
         (r'(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})[a-z]{0,2}', 'dow_mdy_noyear'),
+        # "Saturday 28th November" — day-name day month, no year (Chunky Muffins etc.)
+        (r'(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s+(\d{1,2})[a-z]{0,2}\s+(january|february|march|april|may|june|july|august|september|october|november|december)[a-z]*', 'dow_dm_noyear_full'),
     ]
     cur_year = NOW.year
     for pat, fmt in patterns:
@@ -115,6 +117,14 @@ def parse_date_text(text):
                 continue
             elif fmt == 'dow_mdy_noyear':
                 month, day = MMAP[g[1].lower()], int(g[2])
+                year = cur_year
+                dt = datetime(year, month, day)
+                if dt.date() < (NOW - timedelta(days=7)).date():
+                    dt = datetime(year + 1, month, day)
+                if in_range(dt): return dt
+                continue
+            elif fmt == 'dow_dm_noyear_full':
+                day, month = int(g[1]), MMAP[g[2].lower()]
                 year = cur_year
                 dt = datetime(year, month, day)
                 if dt.date() < (NOW - timedelta(days=7)).date():
@@ -1720,6 +1730,149 @@ async def scrape_ignite(page, url):
     return events
 
 
+V2V_STANDARD = {
+    'soft landing social', 'flirtatious thursday',
+    'the weekend warm up', 'the seductive social',
+}
+
+async def scrape_v2v(page, url):
+    """V2V Club Nuneaton: Squarespace events page.
+    Title from h1 a, date from Google Calendar URL (dates=YYYYMMDD).
+    Standard nights filtered: social/social-thursday recurring nights."""
+    import sys, html as _hmod
+
+    try:
+        req = _urllib.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'text/html,*/*;q=0.8',
+        })
+        with _urllib.urlopen(req, timeout=20) as r:
+            html = r.read().decode('utf-8', errors='replace')
+    except Exception as ex:
+        print(f"V2V urllib error: {ex} — trying Playwright", file=sys.stderr)
+        try:
+            await page.goto(url, wait_until='domcontentloaded', timeout=25000)
+            await page.wait_for_timeout(3000)
+            html = await page.content()
+        except Exception as ex2:
+            print(f"V2V Playwright error: {ex2}", file=sys.stderr)
+            return []
+
+    # Build ordered list of titles and Google Calendar dates from raw HTML
+    items = []
+    # h1 with event link: <h1 ...><a href="https://v2v.uk/events/slug">Name</a></h1>
+    for m in re.finditer(r'<h1[^>]*>\s*<a\s[^>]*href="(https://v2v\.uk/events/[^"#]+)"[^>]*>(.*?)</a>', html, re.I | re.S):
+        title = _hmod.unescape(re.sub(r'<[^>]+>', '', m.group(2))).strip()
+        if title:
+            items.append((m.start(), 'title', title, m.group(1)))
+    # Google Calendar link: dates=YYYYMMDDTHHMMSSZ
+    for m in re.finditer(r'google\.com/calendar/event\?[^"\'<]*dates=(\d{8})T', html, re.I):
+        items.append((m.start(), 'date', m.group(1), ''))
+    items.sort(key=lambda x: x[0])
+
+    events = []
+    pending_title = pending_url = None
+    for _, typ, data, extra in items:
+        if typ == 'title':
+            pending_title, pending_url = data, extra
+        elif typ == 'date' and pending_title:
+            try:
+                dt = datetime.strptime(data, '%Y%m%d')
+            except Exception:
+                pending_title = None
+                continue
+            if in_range(dt) and pending_title.lower() not in V2V_STANDARD:
+                e = make_event(dt, 'V2V', 'Nuneaton, Warwickshire', 'v2v', pending_title, pending_url)
+                if e:
+                    events.append(e)
+            pending_title = pending_url = None
+
+    print(f"V2V: {len(events)} events", file=sys.stderr)
+    return events
+
+
+CHUNKYMUFFINS_STANDARD = {'important information'}
+
+async def scrape_chunkymuffins(page, url):
+    """Chunky Muffins Boston Lincolnshire: Wix blog. Click-through method.
+    1. Fetch /news blog listing via Playwright.
+    2. Collect all /post/ links.
+    3. Visit each post: title = h1, date = first line of body text.
+    Standard nights (Social, Intro, Curvylicious etc.) not posted as blog events."""
+    import sys, html as _hmod
+
+    blog_url = 'https://www.chunkymuffins.co.uk/news'
+    try:
+        await page.goto(blog_url, wait_until='domcontentloaded', timeout=30000)
+        await page.wait_for_timeout(4000)
+        # Scroll to load more posts
+        for _ in range(4):
+            await page.evaluate('window.scrollBy(0, 1500)')
+            await page.wait_for_timeout(800)
+        listing_html = await page.content()
+    except Exception as ex:
+        print(f"Chunky Muffins listing error: {ex}", file=sys.stderr)
+        return []
+
+    # Collect unique /post/ URLs
+    post_urls = []
+    seen = set()
+    for m in re.finditer(r'href="(https://www\.chunkymuffins\.co\.uk/post/[^"]+)"', listing_html, re.I):
+        u = m.group(1).split('?')[0].rstrip('/')
+        if u not in seen:
+            seen.add(u)
+            post_urls.append(u)
+
+    events = []
+    for post_url in post_urls:
+        try:
+            await page.goto(post_url, wait_until='domcontentloaded', timeout=20000)
+            await page.wait_for_timeout(1500)
+            post_html = await page.content()
+        except Exception as ex:
+            print(f"Chunky Muffins post error {post_url}: {ex}", file=sys.stderr)
+            continue
+
+        # Title: og:title meta or h1
+        title = ''
+        tm = re.search(r'<meta\s+property="og:title"\s+content="([^"]+)"', post_html, re.I)
+        if tm:
+            title = _hmod.unescape(tm.group(1)).strip()
+        if not title:
+            hm = re.search(r'<h1[^>]*>(.*?)</h1>', post_html, re.I | re.S)
+            if hm:
+                title = _hmod.unescape(re.sub(r'<[^>]+>', '', hm.group(1))).strip()
+        if not title or title.lower() in CHUNKYMUFFINS_STANDARD:
+            continue
+
+        # Date: search body text — clean commas, try to parse
+        # Get og:description which contains the first lines of the post
+        dt = None
+        desc_m = re.search(r'<meta\s+(?:property="og:description"|name="description")\s+content="([^"]+)"', post_html, re.I)
+        if desc_m:
+            desc_text = _hmod.unescape(desc_m.group(1))
+            # Clean commas and collapse spaces for reliable date parsing
+            cleaned = re.sub(r',', ' ', desc_text)
+            cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+            dt = parse_date_text(cleaned)
+        if not dt:
+            # Fallback: scan all text on page
+            body_text = re.sub(r'<[^>]+>', ' ', post_html)
+            body_text = _hmod.unescape(re.sub(r',', ' ', body_text))
+            body_text = re.sub(r'\s+', ' ', body_text)
+            dt = parse_date_text(body_text)
+
+        if not dt or not in_range(dt):
+            continue
+
+        e = make_event(dt, 'Chunky Muffins', 'Boston, Lincolnshire', 'chunkymuffins', title, post_url)
+        if e:
+            events.append(e)
+
+    print(f"Chunky Muffins: {len(events)} events", file=sys.stderr)
+    return events
+
+
 JAYDEES_STANDARD = {
     'sexy saturday', 'naturist spa day', 'frisky friday newbie night',
 }
@@ -1826,6 +1979,8 @@ async def scrape_all(page):
     await run("atlantisEVOLUTION", scrape_atlantis(page, "http://www.atlantisevolution.co.uk/calendar.htm"))
     await run("Chameleons",       scrape_chameleons(page, "https://www.chameleons.cc/darlaston-events/"))
     await run("Jay-Dees",         scrape_jaydees(page, "https://jay-dees.com/events.html"))
+    await run("V2V",              scrape_v2v(page, "https://v2v.uk/events"))
+    await run("Chunky Muffins",   scrape_chunkymuffins(page, "https://www.chunkymuffins.co.uk"))
 
     return results
 
