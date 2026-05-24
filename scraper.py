@@ -1736,56 +1736,53 @@ V2V_STANDARD = {
 }
 
 async def scrape_v2v(page, url):
-    """V2V Club Nuneaton: Squarespace events page.
-    Title from h1 a, date from Google Calendar URL (dates=YYYYMMDD).
-    Standard nights filtered: social/social-thursday recurring nights."""
-    import sys, html as _hmod
+    """V2V Club Nuneaton: Squarespace events page. Uses Playwright.
+    Title from h1 a[href*='/events/'], date from Google Calendar URL.
+    Standard nights filtered: social/warm-up recurring nights."""
+    import sys
 
-    try:
-        req = _urllib.Request(url, headers={
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Accept': 'text/html,*/*;q=0.8',
-        })
-        with _urllib.urlopen(req, timeout=20) as r:
-            html = r.read().decode('utf-8', errors='replace')
-    except Exception as ex:
-        print(f"V2V urllib error: {ex} — trying Playwright", file=sys.stderr)
-        try:
-            await page.goto(url, wait_until='domcontentloaded', timeout=25000)
-            await page.wait_for_timeout(3000)
-            html = await page.content()
-        except Exception as ex2:
-            print(f"V2V Playwright error: {ex2}", file=sys.stderr)
-            return []
-
-    # Build ordered list of titles and Google Calendar dates from raw HTML
-    items = []
-    # h1 with event link: <h1 ...><a href="https://v2v.uk/events/slug">Name</a></h1>
-    for m in re.finditer(r'<h1[^>]*>\s*<a\s[^>]*href="(https://v2v\.uk/events/[^"#]+)"[^>]*>(.*?)</a>', html, re.I | re.S):
-        title = _hmod.unescape(re.sub(r'<[^>]+>', '', m.group(2))).strip()
-        if title:
-            items.append((m.start(), 'title', title, m.group(1)))
-    # Google Calendar link: dates=YYYYMMDDTHHMMSSZ
-    for m in re.finditer(r'google\.com/calendar/event\?[^"\'<]*dates=(\d{8})T', html, re.I):
-        items.append((m.start(), 'date', m.group(1), ''))
-    items.sort(key=lambda x: x[0])
+    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+    await page.wait_for_timeout(4000)
 
     events = []
-    pending_title = pending_url = None
-    for _, typ, data, extra in items:
-        if typ == 'title':
-            pending_title, pending_url = data, extra
-        elif typ == 'date' and pending_title:
+    seen = set()
+    links = await page.query_selector_all('h1 a[href*="/events/"], h2 a[href*="/events/"]')
+    for link in links:
+        title = (await link.inner_text()).strip()
+        if not title or len(title) < 3:
+            continue
+        if title.lower() in V2V_STANDARD:
+            continue
+        href = await link.get_attribute('href') or url
+        if not href.startswith('http'):
+            href = 'https://v2v.uk' + href
+        container = await link.evaluate_handle(
+            'el => el.closest("article") || el.closest(".eventlist-event") || el.parentElement.parentElement.parentElement'
+        )
+        dt = None
+        try:
+            gcal = await container.query_selector('a[href*="dates="]')
+            if gcal:
+                gcal_href = await gcal.get_attribute('href') or ''
+                m = re.search(r'dates=(\d{8})T', gcal_href)
+                if m:
+                    ds = m.group(1)
+                    dt = datetime(int(ds[:4]), int(ds[4:6]), int(ds[6:8]))
+        except Exception:
+            pass
+        if not dt:
             try:
-                dt = datetime.strptime(data, '%Y%m%d')
+                ptext = await container.inner_text()
+                dt = parse_date_text(ptext)
             except Exception:
-                pending_title = None
-                continue
-            if in_range(dt) and pending_title.lower() not in V2V_STANDARD:
-                e = make_event(dt, 'V2V', 'Nuneaton, Warwickshire', 'v2v', pending_title, pending_url)
+                pass
+        if dt and in_range(dt):
+            key = dt.strftime('%Y-%m-%d') + title[:15]
+            if key not in seen:
+                seen.add(key)
+                e = make_event(dt, 'V2V', 'Nuneaton, Warwickshire', 'v2v', title, href)
                 if e:
                     events.append(e)
-            pending_title = pending_url = None
 
     print(f"V2V: {len(events)} events", file=sys.stderr)
     return events
