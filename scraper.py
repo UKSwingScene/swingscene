@@ -1732,46 +1732,123 @@ async def scrape_ignite(page, url):
 
 async def scrape_clubf(page, url):
     """Club F Stanley, County Durham: JS-rendered SPA.
-    Uses Playwright with extended wait and multiple selector attempts.
-    Logs body text first run for debugging selector choices."""
+    Strategy: intercept all XHR/fetch network requests (Le Boudoir technique)
+    to discover the API endpoint the SPA uses, then call it directly.
+    Falls back to DOM parsing if no API found."""
     import sys, json as _json
+
     events = []
+    captured_responses = []
+
+    # Intercept network responses to find the events API
+    async def handle_response(response):
+        try:
+            rurl = response.url
+            ct = response.headers.get('content-type', '')
+            # Look for JSON responses that might be events data
+            if 'json' in ct and any(kw in rurl.lower() for kw in [
+                'event', 'api', 'data', 'calendar', 'booking', 'programme'
+            ]):
+                try:
+                    body = await response.json()
+                    captured_responses.append((rurl, body))
+                    print(f"Club F API hit: {rurl} -> keys={list(body.keys()) if isinstance(body, dict) else type(body).__name__}", file=sys.stderr)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+    page.on('response', handle_response)
+
     try:
         await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-        await page.wait_for_timeout(6000)
+        await page.wait_for_timeout(6000)  # Let all async API calls complete
+        page.remove_listener('response', handle_response)
 
         # Log rendered body for debugging
         body_text = await page.evaluate("document.body.innerText")
-        print(f"Club F body (first 800):\n{body_text[:800]}", file=sys.stderr)
+        print(f"Club F body (first 1000):\n{body_text[:1000]}", file=sys.stderr)
 
-        # Try React/Vue hydrated JSON in common window vars or script tags
-        for js_expr in [
-            'window.__INITIAL_STATE__', 'window.__STATE__', 'window.__DATA__',
-            'window.events', 'window.pageData', 'window.__NUXT__',
-        ]:
+        # --- APPROACH 1: Parse intercepted API responses ---
+        for api_url, data in captured_responses:
+            print(f"Club F parsing API: {api_url}", file=sys.stderr)
+            # Walk common structures: list of events, {events:[...]}, {data:{events:[...]}}
+            ev_list = None
+            if isinstance(data, list):
+                ev_list = data
+            elif isinstance(data, dict):
+                for key in ['events', 'data', 'items', 'results', 'upcoming', 'listings']:
+                    v = data.get(key)
+                    if isinstance(v, list) and v:
+                        ev_list = v
+                        break
+                    elif isinstance(v, dict):
+                        for k2 in ['events', 'data', 'items']:
+                            v2 = v.get(k2)
+                            if isinstance(v2, list) and v2:
+                                ev_list = v2
+                                break
+            if not ev_list:
+                continue
+            print(f"Club F API event list ({len(ev_list)} items), first: {str(ev_list[0])[:200]}", file=sys.stderr)
+            seen = set()
+            for ev in ev_list:
+                if not isinstance(ev, dict):
+                    continue
+                name = (ev.get('title') or ev.get('name') or ev.get('event_name') or
+                        ev.get('eventName') or ev.get('summary') or '')
+                date_val = (ev.get('date') or ev.get('start_date') or ev.get('startDate') or
+                            ev.get('start') or ev.get('event_date') or ev.get('eventDate') or
+                            ev.get('starts_at') or '')
+                ev_href = (ev.get('url') or ev.get('link') or ev.get('slug') or url)
+                if not ev_href.startswith('http'):
+                    ev_href = 'https://www.clubf.uk' + ev_href
+                if name and date_val:
+                    try:
+                        dt = datetime.fromisoformat(str(date_val)[:10])
+                        if in_range(dt):
+                            key = (dt.strftime('%Y-%m-%d'), name[:20])
+                            if key not in seen:
+                                seen.add(key)
+                                e = make_event(dt, 'Club F', 'Stanley, County Durham', 'clubf', name, ev_href)
+                                if e:
+                                    events.append(e)
+                    except Exception:
+                        pass
+        if events:
+            print(f"Club F: {len(events)} events via API intercept", file=sys.stderr)
+            return events
+
+        # --- APPROACH 2: Try Le Boudoir-style browser fetch() to probe common API paths ---
+        for api_path in ['/api/events', '/api/v1/events', '/events/data', '/api/calendar',
+                         '/api/upcoming', '/wp-json/tribe/events/v1/events']:
             try:
-                val = await page.evaluate(f"typeof {js_expr} !== 'undefined' ? JSON.stringify({js_expr}) : null")
-                if val:
-                    print(f"Club F {js_expr}: {val[:300]}", file=sys.stderr)
+                result = await page.evaluate(f"""
+                    fetch('https://www.clubf.uk{api_path}', {{
+                        headers: {{'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest'}}
+                    }}).then(r => r.ok ? r.json() : null).catch(() => null)
+                """)
+                if result:
+                    print(f"Club F fetch {api_path}: {str(result)[:300]}", file=sys.stderr)
             except Exception:
                 pass
 
-        # Try to extract events from inline script JSON blobs
+        # --- APPROACH 3: Inline JSON in <script> tags ---
         html_content = await page.content()
-        for m in _re.finditer(r'"(?:date|start_date|event_date)"\s*:\s*"(\d{4}-\d{2}-\d{2})"', html_content):
-            pass  # just probe; full parse below if needed
+        for m in _re.finditer(r'<script[^>]*>\s*(?:window\.\w+\s*=\s*)?(\{["\'](?:events|data)["\'].*?\})\s*</script>', html_content, _re.S):
+            try:
+                blob = _json.loads(m.group(1))
+                print(f"Club F inline script JSON keys: {list(blob.keys())}", file=sys.stderr)
+            except Exception:
+                pass
 
-        # DOM selector sweep — try many common patterns
-        found_via_dom = False
+        # --- APPROACH 4: DOM selectors ---
         for sel in [
-            '.event-card', '.event-item', '.event-tile',
-            'article.event', '[class*="EventCard"]', '[class*="event-card"]',
-            '[class*="EventItem"]', '[class*="event-item"]',
+            '.event-card', '.event-item', '.event-tile', 'article.event',
+            '[class*="EventCard"]', '[class*="event-card"]', '[class*="EventItem"]',
             '.events-grid article', '.events-list article',
             '[class*="Event"] h2', '[class*="Event"] h3',
-            'h2[class*="event"]', 'h3[class*="event"]',
-            'main article h2', 'main article h3',
-            'main h2', 'main h3', 'section h2', 'section h3',
+            'main article h2', 'main article h3', 'main h2', 'main h3',
         ]:
             items = await page.query_selector_all(sel)
             if not items:
@@ -1795,9 +1872,7 @@ async def scrape_clubf(page, url):
                     continue
                 href = url
                 try:
-                    a = await item.query_selector('a')
-                    if not a:
-                        a = await item.evaluate_handle("el => el.closest('a')")
+                    a = await item.query_selector('a') or await item.evaluate_handle("el => el.closest('a')")
                     if a:
                         h = await a.get_attribute('href')
                         if h:
@@ -1811,19 +1886,17 @@ async def scrape_clubf(page, url):
                     if e:
                         events.append(e)
             if events:
-                found_via_dom = True
                 break
 
-        # Text-parse fallback — parse all body text for date+event pairs
+        # --- APPROACH 5: Full body text parse ---
         if not events:
-            print("Club F: DOM selectors found nothing — falling back to text parse", file=sys.stderr)
+            print("Club F: all selectors failed — text parse", file=sys.stderr)
             lines = [l.strip() for l in body_text.split('\n') if l.strip()]
             seen = set()
             for i, line in enumerate(lines):
                 dt = parse_date_text(line)
                 if not dt or not in_range(dt):
                     continue
-                # Look adjacent lines for event name
                 for j in [i+1, i-1, i+2]:
                     if 0 <= j < len(lines):
                         candidate = lines[j].strip()
