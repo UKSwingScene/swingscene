@@ -339,5 +339,16 @@
     "event": "New Year's Eve party",
     "url": "https://www.chameleons.cc/darlaston-events/",
     "desc": "New Year's Eve party at Chameleons, Darlaston."
+  },
+  {
+    "d": "2026-05-30",
+    "m": "may",
+    "day": "Saturday 30 May 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Peaky Blinders Night",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance/events-coming-soon/30-05-peaky-blinders",
+    "desc": "Peaky Blinders Night at Decadance, Rochdale. Hosted by Mr & Miss Agadoo."
   }
 ]
