@@ -560,15 +560,17 @@ async def scrape_quest(page, url):
 
 
 async def scrape_decadance(page, url):
-    """Decadance: Find special events — text-based sections that aren't regular nights."""
+    """Decadance: Find special events — text-based sections + nav menu links (DD/MM Name)."""
     await page.goto(url, wait_until='domcontentloaded', timeout=30000)
     await page.wait_for_timeout(5000)
     events = []
+    seen_dates = set()
+    cur_year = NOW.year
     text = await page.inner_text('body')
     lines = [l.strip() for l in text.split('\n') if l.strip()]
-    # Sections are headed by h3 with date like "30th May" or "27th June"
+
+    # --- Pass 1: text-section parse (date heading then event name on next lines) ---
     date_pattern = re.compile(r'^(\d{1,2})[a-z]{0,2}\s+(January|February|March|April|May|June|July|August|September|October|November|December)$', re.I)
-    cur_year = NOW.year
     for i, line in enumerate(lines):
         dm = date_pattern.match(line.strip())
         if not dm: continue
@@ -580,19 +582,51 @@ async def scrape_decadance(page, url):
             if not in_range(dt): continue
         except:
             continue
-        # Look at next lines for event name
         for j in range(i+1, min(i+8, len(lines))):
             candidate = lines[j].strip()
             if not candidate or len(candidate) < 5: continue
             if date_pattern.match(candidate): break
             nl = candidate.lower()
             if any(s in nl for s in DECADANCE_STANDARD): continue
-            # Skip image-only lines or navigation lines
             if candidate.startswith('http') or candidate in ['Home','Contact','About','Events']: continue
             e = make_event(dt, 'Decadance', 'Rochdale', 'decadance', candidate, url)
             if e:
                 events.append(e)
+                seen_dates.add(dt.date())
                 break
+
+    # --- Pass 2: nav menu links with "DD/MM Event Name" format ---
+    # These catch image-only events that have no text under their date heading
+    nav_pattern = re.compile(r'^(\d{2})/(\d{2})\s+(.+)$')
+    anchors = await page.query_selector_all('a')
+    for anchor in anchors:
+        try:
+            link_text = (await anchor.inner_text()).strip()
+        except:
+            continue
+        nm = nav_pattern.match(link_text)
+        if not nm: continue
+        day_num, month_num, name = int(nm.group(1)), int(nm.group(2)), nm.group(3).strip()
+        # Strip emoji from name
+        name = re.sub(r'[^\x00-\x7F\u00C0-\u024F\u1E00-\u1EFF]+', '', name).strip()
+        if not name or len(name) < 4: continue
+        nl = name.lower()
+        if any(s in nl for s in DECADANCE_STANDARD): continue
+        try:
+            dt = datetime(cur_year, month_num, day_num)
+            if dt < NOW - timedelta(days=1): dt = datetime(cur_year+1, month_num, day_num)
+            if not in_range(dt): continue
+        except:
+            continue
+        if dt.date() in seen_dates: continue  # already got this date from pass 1
+        href = await anchor.get_attribute('href') or url
+        if not href.startswith('http'):
+            href = 'https://www.decadanceswingersclub.com' + href
+        e = make_event(dt, 'Decadance', 'Rochdale', 'decadance', name, href)
+        if e:
+            events.append(e)
+            seen_dates.add(dt.date())
+
     return events
 
 async def scrape_shhh(page, url):
