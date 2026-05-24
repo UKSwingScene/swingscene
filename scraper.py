@@ -1730,6 +1730,119 @@ async def scrape_ignite(page, url):
     return events
 
 
+async def scrape_clubf(page, url):
+    """Club F Stanley, County Durham: JS-rendered SPA.
+    Uses Playwright with extended wait and multiple selector attempts.
+    Logs body text first run for debugging selector choices."""
+    import sys, json as _json
+    events = []
+    try:
+        await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+        await page.wait_for_timeout(6000)
+
+        # Log rendered body for debugging
+        body_text = await page.evaluate("document.body.innerText")
+        print(f"Club F body (first 800):\n{body_text[:800]}", file=sys.stderr)
+
+        # Try React/Vue hydrated JSON in common window vars or script tags
+        for js_expr in [
+            'window.__INITIAL_STATE__', 'window.__STATE__', 'window.__DATA__',
+            'window.events', 'window.pageData', 'window.__NUXT__',
+        ]:
+            try:
+                val = await page.evaluate(f"typeof {js_expr} !== 'undefined' ? JSON.stringify({js_expr}) : null")
+                if val:
+                    print(f"Club F {js_expr}: {val[:300]}", file=sys.stderr)
+            except Exception:
+                pass
+
+        # Try to extract events from inline script JSON blobs
+        html_content = await page.content()
+        for m in _re.finditer(r'"(?:date|start_date|event_date)"\s*:\s*"(\d{4}-\d{2}-\d{2})"', html_content):
+            pass  # just probe; full parse below if needed
+
+        # DOM selector sweep — try many common patterns
+        found_via_dom = False
+        for sel in [
+            '.event-card', '.event-item', '.event-tile',
+            'article.event', '[class*="EventCard"]', '[class*="event-card"]',
+            '[class*="EventItem"]', '[class*="event-item"]',
+            '.events-grid article', '.events-list article',
+            '[class*="Event"] h2', '[class*="Event"] h3',
+            'h2[class*="event"]', 'h3[class*="event"]',
+            'main article h2', 'main article h3',
+            'main h2', 'main h3', 'section h2', 'section h3',
+        ]:
+            items = await page.query_selector_all(sel)
+            if not items:
+                continue
+            print(f"Club F selector '{sel}': {len(items)} matches", file=sys.stderr)
+            seen = set()
+            for item in items:
+                title = (await item.inner_text()).strip()
+                if not title or len(title) < 4:
+                    continue
+                parent = await item.evaluate_handle(
+                    "el => el.closest('article') || el.closest('section') || el.closest('[class*=\"card\"]') || el.parentElement"
+                )
+                ptext = ''
+                try:
+                    ptext = await parent.inner_text()
+                except Exception:
+                    pass
+                dt = parse_date_text(ptext) or parse_date_text(title)
+                if not dt or not in_range(dt):
+                    continue
+                href = url
+                try:
+                    a = await item.query_selector('a')
+                    if not a:
+                        a = await item.evaluate_handle("el => el.closest('a')")
+                    if a:
+                        h = await a.get_attribute('href')
+                        if h:
+                            href = h if h.startswith('http') else 'https://www.clubf.uk' + h
+                except Exception:
+                    pass
+                key = (dt.strftime('%Y-%m-%d'), title[:20])
+                if key not in seen:
+                    seen.add(key)
+                    e = make_event(dt, 'Club F', 'Stanley, County Durham', 'clubf', title, href)
+                    if e:
+                        events.append(e)
+            if events:
+                found_via_dom = True
+                break
+
+        # Text-parse fallback — parse all body text for date+event pairs
+        if not events:
+            print("Club F: DOM selectors found nothing — falling back to text parse", file=sys.stderr)
+            lines = [l.strip() for l in body_text.split('\n') if l.strip()]
+            seen = set()
+            for i, line in enumerate(lines):
+                dt = parse_date_text(line)
+                if not dt or not in_range(dt):
+                    continue
+                # Look adjacent lines for event name
+                for j in [i+1, i-1, i+2]:
+                    if 0 <= j < len(lines):
+                        candidate = lines[j].strip()
+                        if candidate and 4 < len(candidate) < 80 and not parse_date_text(candidate):
+                            key = (dt.strftime('%Y-%m-%d'), candidate[:20])
+                            if key not in seen:
+                                seen.add(key)
+                                e = make_event(dt, 'Club F', 'Stanley, County Durham', 'clubf', candidate, url)
+                                if e:
+                                    events.append(e)
+                            break
+
+    except Exception as ex:
+        print(f"Club F error: {ex}", file=sys.stderr)
+
+    print(f"Club F: {len(events)} events", file=sys.stderr)
+    return events
+
+
 V2V_STANDARD = {
     'soft landing social', 'flirtatious thursday',
     'the weekend warm up', 'the seductive social',
@@ -1978,6 +2091,7 @@ async def scrape_all(page):
     await run("Jay-Dees",         scrape_jaydees(page, "https://jay-dees.com/events.html"))
     await run("V2V",              scrape_v2v(page, "https://v2v.uk/events"))
     await run("Chunky Muffins",   scrape_chunkymuffins(page, "https://www.chunkymuffins.co.uk"))
+    await run("Club F",           scrape_clubf(page, "https://www.clubf.uk/events"))
 
     return results
 
