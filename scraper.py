@@ -83,6 +83,8 @@ def parse_date_text(text):
         (r'(mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\s+(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d{4})', 'dow_dmy'),
         (r'(mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})[a-z]*,?\s+(\d{4})', 'dow_mdy'),
         (r'(fri|sat|sun)\s+(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)', 'dow_dm_noyear'),
+        # Liberty Elite TEC format: "Sunday May 24th @ 2:00 pm" — day-name month day, no year
+        (r'(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})[a-z]{0,2}', 'dow_mdy_noyear'),
     ]
     cur_year = NOW.year
     for pat, fmt in patterns:
@@ -109,6 +111,14 @@ def parse_date_text(text):
                 if dt < NOW - timedelta(days=7):
                     year += 1
                     dt = datetime(year, month, day)
+                if in_range(dt): return dt
+                continue
+            elif fmt == 'dow_mdy_noyear':
+                month, day = MMAP[g[1].lower()], int(g[2])
+                year = cur_year
+                dt = datetime(year, month, day)
+                if dt.date() < (NOW - timedelta(days=7)).date():
+                    dt = datetime(year + 1, month, day)
                 if in_range(dt): return dt
                 continue
             else:
@@ -1546,8 +1556,14 @@ async def scrape_atlantis(page, url):
         with _urllib.urlopen(req, timeout=20) as r:
             html = r.read().decode('utf-8', errors='replace')
     except Exception as e:
-        print(f"atlantisEVOLUTION fetch error: {e}", file=sys.stderr)
-        return []
+        print(f"atlantisEVOLUTION urllib error: {e} — trying Playwright", file=sys.stderr)
+        try:
+            await page.goto(url, wait_until='domcontentloaded', timeout=25000)
+            await page.wait_for_timeout(3000)
+            html = await page.content()
+        except Exception as e2:
+            print(f"atlantisEVOLUTION Playwright error: {e2}", file=sys.stderr)
+            return []
 
     text = re.sub(r'<[^>]+>', ' ', html)
     text = re.sub(r'&nbsp;', ' ', text)
@@ -1704,6 +1720,61 @@ async def scrape_ignite(page, url):
     return events
 
 
+JAYDEES_STANDARD = {
+    'sexy saturday', 'naturist spa day', 'frisky friday newbie night',
+}
+
+async def scrape_jaydees(page, url):
+    """Jay-Dees St Neots: static HTML, h5 = date header, h6 = event name.
+    Standard nights filtered: Sexy Saturday, Naturist Spa Day, Frisky Friday Newbie Night."""
+    import sys, html as _html_mod
+
+    try:
+        req = _urllib.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'text/html,*/*;q=0.8',
+        })
+        with _urllib.urlopen(req, timeout=20) as r:
+            raw = r.read().decode('utf-8', errors='replace')
+    except Exception as ex:
+        print(f"Jay-Dees urllib error: {ex} — trying Playwright", file=sys.stderr)
+        try:
+            await page.goto(url, wait_until='domcontentloaded', timeout=25000)
+            await page.wait_for_timeout(2000)
+            raw = await page.content()
+        except Exception as ex2:
+            print(f"Jay-Dees Playwright error: {ex2}", file=sys.stderr)
+            return []
+
+    # Build ordered list of (position, type, text) for h5 (dates) and h6 (event names)
+    items = []
+    for m in re.finditer(r'<h5[^>]*>(.*?)</h5>', raw, re.I | re.S):
+        text = _html_mod.unescape(re.sub(r'<[^>]+>', '', m.group(1))).strip()
+        if text:
+            items.append((m.start(), 'date', text))
+    for m in re.finditer(r'<h6[^>]*>(.*?)</h6>', raw, re.I | re.S):
+        text = _html_mod.unescape(re.sub(r'<[^>]+>', '', m.group(1))).strip()
+        if text:
+            items.append((m.start(), 'event', text))
+    items.sort(key=lambda x: x[0])
+
+    events = []
+    current_dt = None
+    for _, typ, text in items:
+        if typ == 'date':
+            dt = parse_date_text(text)
+            current_dt = dt if (dt and in_range(dt)) else None
+        elif typ == 'event' and current_dt and text:
+            if text.lower() not in JAYDEES_STANDARD:
+                e = make_event(current_dt, 'Jay-Dees', 'St Neots, Cambridgeshire', 'jaydees', text, url)
+                if e:
+                    events.append(e)
+            current_dt = None  # one event per date block
+
+    print(f"Jay-Dees: {len(events)} events", file=sys.stderr)
+    return events
+
+
 async def scrape_all(page):
     results = {}
 
@@ -1754,6 +1825,7 @@ async def scrape_all(page):
     await run("Club Ignite", scrape_ignite(page, "https://club-ignite.co.uk/events-new/"))
     await run("atlantisEVOLUTION", scrape_atlantis(page, "http://www.atlantisevolution.co.uk/calendar.htm"))
     await run("Chameleons",       scrape_chameleons(page, "https://www.chameleons.cc/darlaston-events/"))
+    await run("Jay-Dees",         scrape_jaydees(page, "https://jay-dees.com/events.html"))
 
     return results
 
