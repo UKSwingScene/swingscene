@@ -39,11 +39,11 @@ def make_event(dt, club, city, cls, name, url, desc=None):
     name = re.sub(r'\s+\d$', '', name).strip()
 
     # --- DATE+TIME STRIPPING FROM END ---
-    # "Saturday, 6 June 2026 19:30–01:30..." (Club Alchemy)
+    # "Saturday, 6 June 2026 19:30â01:30..." (Club Alchemy)
     name = re.sub(rf'\s*,?\s*{DF},?\s+\d{{1,2}}[a-z]{{0,2}}\s+{M}\s+\d{{4}}.*$', '', name, flags=re.I).strip()
     # Time from end: "8pm till 3am"
     name = re.sub(r'\s+\d{1,2}(?::\d{2})?\s*(?:am|pm)\s*(?:till|until|to|-)?.*$', '', name, flags=re.I).strip()
-    # *** "DDth Month" at end FIRST — preserves "FILTHY FRIDAY" ***
+    # *** "DDth Month" at end FIRST â preserves "FILTHY FRIDAY" ***
     name = re.sub(rf'\s+\d{{1,2}}(?:st|nd|rd|th)?\s+{M}(?:\s+\d{{4}})?$', '', name, flags=re.I).strip()
     # "Day DDth Month" at end: "FRIDAY 5th JUNE", "Saturday 8th August"
     name = re.sub(rf'\s+{DF}\s+\d{{1,2}}[a-z]{{0,2}}\s+{M}(?:\s+\d{{4}})?$', '', name, flags=re.I).strip()
@@ -83,9 +83,9 @@ def parse_date_text(text):
         (r'(mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\s+(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d{4})', 'dow_dmy'),
         (r'(mon|tue|wed|thu|fri|sat|sun)[a-z]*,?\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})[a-z]*,?\s+(\d{4})', 'dow_mdy'),
         (r'(fri|sat|sun)\s+(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)', 'dow_dm_noyear'),
-        # Liberty Elite TEC format: "Sunday May 24th @ 2:00 pm" — day-name month day, no year
+        # Liberty Elite TEC format: "Sunday May 24th @ 2:00 pm" â day-name month day, no year
         (r'(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2})[a-z]{0,2}', 'dow_mdy_noyear'),
-        # "Saturday 28th November" — day-name day month, no year (Chunky Muffins etc.)
+        # "Saturday 28th November" â day-name day month, no year (Chunky Muffins etc.)
         (r'(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s+(\d{1,2})[a-z]{0,2}\s+(january|february|march|april|may|june|july|august|september|october|november|december)[a-z]*', 'dow_dm_noyear_full'),
     ]
     cur_year = NOW.year
@@ -140,9 +140,9 @@ def parse_date_text(text):
     return None
 
 
-# ─────────────────────────────────────────────
+# âââââââââââââââââââââââââââââââââââââââââââââ
 # CLUB-SPECIFIC SCRAPERS
-# ─────────────────────────────────────────────
+# âââââââââââââââââââââââââââââââââââââââââââââ
 
 async def scrape_wp_api(page, base_url, club, city, cls, events_url):
     """Try WordPress/Tribe Events REST API."""
@@ -256,7 +256,7 @@ async def scrape_naughtypineapple(page, url):
     return events
 
 async def scrape_purplemamba(page, url):
-    """Purple Mamba: Wix — wait for JS, find event items."""
+    """Purple Mamba: Wix â wait for JS, find event items."""
     await page.goto(url, wait_until='domcontentloaded', timeout=30000)
     await page.wait_for_timeout(5000)
     events = []
@@ -297,7 +297,7 @@ async def scrape_purplemamba(page, url):
     return events
 
 async def scrape_hu9(page, url):
-    """HU9 Hull: Skiddle API (venue ID 87332) — picks up all ticketed special events.
+    """HU9 Hull: Skiddle API (venue ID 87332) â picks up all ticketed special events.
     Requires SKIDDLE_API_KEY env var (free key from skiddle.com/api/join.php).
     Wix Vibe site blocks cloud IPs, so direct scraping is not possible.
     """
@@ -305,7 +305,7 @@ async def scrape_hu9(page, url):
 
     api_key = os.environ.get('SKIDDLE_API_KEY', '')
     if not api_key:
-        print("HU9: SKIDDLE_API_KEY not set — skipping", file=sys.stderr)
+        print("HU9: SKIDDLE_API_KEY not set â skipping", file=sys.stderr)
         return []
 
     events = []
@@ -322,7 +322,7 @@ async def scrape_hu9(page, url):
         result_count = len(data.get('results', []))
         print(f"HU9 Skiddle API: {result_count} events returned", file=sys.stderr)
         if data.get('error') not in (0, None, '0', ''):
-            print(f"HU9 Skiddle API error code: {data.get('error')} — {data.get('errormsg', '')}", file=sys.stderr)
+            print(f"HU9 Skiddle API error code: {data.get('error')} â {data.get('errormsg', '')}", file=sys.stderr)
 
         for ev in data.get('results', []):
             name = (ev.get('eventname') or ev.get('headline') or ev.get('EventTitle') or '').strip()
@@ -378,7 +378,7 @@ async def scrape_libertyelite(page, url):
 
 async def scrape_chameleons(page, url):
     """Chameleons Darlaston: TEC REST API (urllib first), Playwright scroll fallback.
-    Page lazy-loads events on scroll — API is much more reliable.
+    Page lazy-loads events on scroll â API is much more reliable.
     """
     import sys
 
@@ -405,9 +405,9 @@ async def scrape_chameleons(page, url):
             print(f"Chameleons (API): {len(events)} events", file=sys.stderr)
             return events
     except Exception as ex:
-        print(f"Chameleons API error: {ex} — trying Playwright", file=sys.stderr)
+        print(f"Chameleons API error: {ex} â trying Playwright", file=sys.stderr)
 
-    # Playwright fallback — scroll to bottom to trigger lazy loading
+    # Playwright fallback â scroll to bottom to trigger lazy loading
     events = []
     try:
         await page.goto(url, wait_until='domcontentloaded', timeout=30000)
@@ -455,7 +455,7 @@ async def scrape_attic(page, url):
     pattern = re.compile(
         r'(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+(\d{1,2})[a-z]{0,2}\s+'
         r'(January|February|March|April|May|June|July|August|September|October|November|December)'
-        r'\s*[:\-–]\s*(.+?)(?=\n|$)', re.I
+        r'\s*[:\-â]\s*(.+?)(?=\n|$)', re.I
     )
     cur_year = NOW.year
     for m in pattern.finditer(text):
@@ -482,7 +482,7 @@ async def scrape_quest(page, url):
     Filter all standard recurring nights."""
     QUEST_STANDARD = {
         'afternoon fun', 'evening sexy fun', 'evening naughtiness',
-        'funday sunday', 'funday sunday – couples & singles',
+        'funday sunday', 'funday sunday â couples & singles',
         'm&n party night', 'bi tuesdays', 'bi tuesday',
         't-girls, cds & admirers', 't-girls cds & admirers',
         't-girls, cds & admirers event', 'greedy girls',
@@ -491,7 +491,7 @@ async def scrape_quest(page, url):
         'day event', 'night event', 'day/night event', 'evening event',
         'afternoon even', 'couples & singles afternoon fun',
     }
-    # Site blocks urllib — use Playwright first (real browser bypasses 403), curl fallback
+    # Site blocks urllib â use Playwright first (real browser bypasses 403), curl fallback
     try:
         await page.goto(url, wait_until='domcontentloaded', timeout=30000)
         await page.wait_for_timeout(4000)
@@ -556,7 +556,7 @@ async def scrape_quest(page, url):
                 if date_pattern.search(line): continue
                 ln = line.lower()
                 if any(s in ln for s in QUEST_STANDARD): continue
-                if re.search(r'£\d|doors open|entrance|per couple|per single|members entrance', ln, re.I): continue
+                if re.search(r'Â£\d|doors open|entrance|per couple|per single|members entrance', ln, re.I): continue
                 if re.search(r'join us for|end your week|for all couples|all bisexual', ln, re.I): continue
                 if len(line) < 5 or len(line) > 100: continue
                 candidate = line.strip()
@@ -585,13 +585,13 @@ async def scrape_decadance(page, url):
     Strategy:
       1. Load the main events page.
       2. Find all nav links whose href contains /events-coming-soon/ and whose
-         text matches DD/MM Event Name — this is how Decadance lists upcoming
+         text matches DD/MM Event Name â this is how Decadance lists upcoming
          special events in their site navigation.
       3. Visit each detail page to extract a proper description from the body.
       4. Parse date from the DD/MM prefix in the link text.
       5. Skip standard/filtered nights.
 
-    This approach is robust to image-only date sections on the main page —
+    This approach is robust to image-only date sections on the main page â
     the nav links are always text, and the detail pages always have descriptions.
     """
     BASE = 'https://www.decadanceswingersclub.com'
@@ -759,7 +759,7 @@ async def scrape_no3(page, url):
     text = re.sub(r'<[^>]+>', ' ', raw)
     text = _html.unescape(text)
     # Normalise all dash types to hyphen
-    for ch in ['–', '—', '‒', '‑']:
+    for ch in ['â', 'â', 'â', 'â']:
         text = text.replace(ch, '-')
     # Collapse whitespace but keep newlines
     text = re.sub(r'[ 	]+', ' ', text)
@@ -780,7 +780,7 @@ async def scrape_no3(page, url):
         event_name = re.sub(r'\s+from\s+\d.*$', '', event_name, flags=re.I).strip()
         event_name = re.sub(r'\s+\d{1,2}[:.]\d{2}.*$', '', event_name).strip()
         # Strip leading emoji
-        event_name = re.sub(r'^[𐀀-􏿿☀-⟿\s]+', '', event_name).strip()
+        event_name = re.sub(r'^[ð-ô¿¿â-â¿\s]+', '', event_name).strip()
         if not event_name or len(event_name) < 4: continue
         event_name = event_name[:80].strip()
         month = MMAP[month_name.lower()]
@@ -854,7 +854,10 @@ async def scrape_cupids(page, url):
 async def scrape_clubalchemy(page, url):
     """Club Alchemy: custom JS-rendered site. Extract date from URL slug."""
     await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-    await page.wait_for_timeout(6000)
+    try:
+        await page.wait_for_selector('a[href*="/events/"]', timeout=12000)
+    except Exception:
+        await page.wait_for_timeout(3000)
     events = []
     seen = set()
     links = await page.query_selector_all('a[href*="/events/"]')
@@ -877,7 +880,7 @@ async def scrape_clubalchemy(page, url):
                     slug = href.split('/events/')[-1].strip('/')
                     slug = re.sub(r'-\d{4}-\d{2}-\d{2}.*', '', slug)
                     title = slug.replace('-', ' ').title()
-                # Strip description text — keep only first line
+                # Strip description text â keep only first line
                 title = title.split('\n')[0].strip()
                 # Strip "Saturday, DD Month YYYY HH:MM" and anything after
                 title = re.sub(r'\s*,?\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*,?\s+\d{1,2}.*$', '', title, flags=re.I).strip()
@@ -892,7 +895,7 @@ async def scrape_clubalchemy(page, url):
 
 
 async def scrape_tickettailor(page, url, club, city, cls):
-    """Tickettailor events page — uses h2/h3 selectors with bad-title filtering,
+    """Tickettailor events page â uses h2/h3 selectors with bad-title filtering,
     falls back to line-by-line text parse."""
     import sys
     await page.goto(url, wait_until='domcontentloaded', timeout=30000)
@@ -902,7 +905,7 @@ async def scrape_tickettailor(page, url, club, city, cls):
                   'buy tickets', 'sold out', 'more info', 'no events found'}
 
     events = []
-    # Try selectors — specific first, generic fallback
+    # Try selectors â specific first, generic fallback
     for sel in [
         '[data-event-id] h3', '[data-event-id] h2',
         '.tc-event__name', '.event-name',
@@ -1123,7 +1126,7 @@ async def scrape_swindon(page):
             except: continue
 
             # Get theme: rest of line after date, or next non-empty line
-            after_date = line[dm.end():].strip().strip('–-—').strip()
+            after_date = line[dm.end():].strip().strip('â-â').strip()
             # Clean junk like "(This one is on the second weekend...)"
             after_date = re.sub(r'\(.*?\)', '', after_date).strip()
             after_date = re.sub(r'^\*+|\*+$', '', after_date).strip()
@@ -1141,7 +1144,7 @@ async def scrape_swindon(page):
                     if not candidate or len(candidate) < 3: continue
                     cu = candidate.upper()
                     if cu in ('TBA', 'TBC', '21:00', '02:30', 'RSVP'): continue
-                    if re.match(r'^[£\d]', candidate): continue
+                    if re.match(r'^[Â£\d]', candidate): continue
                     if re.search(r'membership|pay on|door|tickets|mailing', candidate, re.I): continue
                     # Skip if candidate is just more dates
                     if re.search(r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}', candidate, re.I): continue
@@ -1165,7 +1168,7 @@ async def scrape_swindon(page):
 
 
 async def scrape_infusion(page):
-    """Infusion Blackpool: separate page per month, events separated by ●♡●♡●
+    """Infusion Blackpool: separate page per month, events separated by ââ¡ââ¡â
     Format: 'Day DDth EVENT NAME description'
     Fetches current + next month pages."""
     MONTH_PAGES = {1:3,2:4,3:5,4:7,5:8,6:11,7:13,8:14,9:15,10:17,11:20,12:24}
@@ -1212,13 +1215,13 @@ async def scrape_infusion(page):
             except:
                 continue
 
-        # Validate year — skip if page still shows old year
+        # Validate year â skip if page still shows old year
         if str(year) not in text and str(year-1) in text:
             print(f"  Infusion {url} still showing {year-1} data, skipping")
             continue
 
         # Split on separator
-        parts = re.split(r'●♡●♡●|●|♡', text)
+        parts = re.split(r'ââ¡ââ¡â|â|â¡', text)
         day_pattern = re.compile(
             r'(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*\s+'
             r'(\d{1,2})[a-z]{0,2}\s*(.+)',
@@ -1231,7 +1234,7 @@ async def scrape_infusion(page):
             if not m: continue
             day_num = int(m.group(1))
             rest = m.group(2).strip()
-            # Extract event name — all-caps portion at start
+            # Extract event name â all-caps portion at start
             name_match = re.match(r'^([A-Z][A-Z\s\':&!\-\.0-9]+?)(?:\s+[a-z]|\s*$)', rest)
             if name_match:
                 event_name = name_match.group(1).strip().rstrip('-').strip()
@@ -1259,7 +1262,7 @@ async def scrape_infusion(page):
 
 async def scrape_xtasia(page, url):
     """Xtasia: plain text diary, format 'Day DDth Month: Event Name (times)'
-    Site returns 403 to simple fetches — use Playwright with longer wait.
+    Site returns 403 to simple fetches â use Playwright with longer wait.
     Keep all named events."""
     XTASIA_STANDARD = {'guys and gals', 'ladies and couples night', 'open night',
                        'standard club night', 'club night'}
@@ -1379,8 +1382,8 @@ async def scrape_pandoras(page, url):
                 cl = candidate.lower()
                 if any(sk in cl for sk in SKIP_LINES): continue
                 if re.match(r'^\d', candidate): continue
-                if re.match(r'^£', candidate): continue
-                # Skip "X is hosting..." lines — get the name after
+                if re.match(r'^Â£', candidate): continue
+                # Skip "X is hosting..." lines â get the name after
                 if re.search(r'\bis hosting\b', candidate, re.I):
                     continue
                 if cl in PANDORA_STANDARD: continue
@@ -1427,7 +1430,7 @@ async def scrape_partners(page, url):
                 dt = datetime(cur_year + 1, month, day_num)
             if not in_range(dt): continue
         except: continue
-        # Event name is in next few lines — skip label lines, find the name
+        # Event name is in next few lines â skip label lines, find the name
         event_name = None
         for j in range(i+1, min(i+6, len(lines))):
             candidate = lines[j].strip()
@@ -1511,7 +1514,7 @@ async def scrape_penthouse(page, url):
                     print(f"Penthouse {js_var}: {val[:200]}", file=sys.stderr)
             except: pass
 
-        # DOM selectors — try common event card patterns
+        # DOM selectors â try common event card patterns
         for sel in [
             'article.event', '.event-card', '.event-item',
             '[class*="event"] h2', '[class*="event"] h3',
@@ -1566,7 +1569,7 @@ async def scrape_atlantis(page, url):
         with _urllib.urlopen(req, timeout=20) as r:
             html = r.read().decode('utf-8', errors='replace')
     except Exception as e:
-        print(f"atlantisEVOLUTION urllib error: {e} — trying Playwright", file=sys.stderr)
+        print(f"atlantisEVOLUTION urllib error: {e} â trying Playwright", file=sys.stderr)
         try:
             await page.goto(url, wait_until='domcontentloaded', timeout=25000)
             await page.wait_for_timeout(3000)
@@ -1647,7 +1650,7 @@ async def scrape_atlantis(page, url):
 
 async def scrape_ignite(page, url):
     """Club Ignite West Drayton: TEC REST API (urllib first, Playwright DOM fallback).
-    Their security plugin blocks the API from some IPs — fall back to page scraping.
+    Their security plugin blocks the API from some IPs â fall back to page scraping.
     """
     import sys
 
@@ -1674,9 +1677,9 @@ async def scrape_ignite(page, url):
             print(f"Club Ignite (API): {len(events)} events", file=sys.stderr)
             return events
     except Exception as ex:
-        print(f"Club Ignite API error: {ex} — trying Playwright", file=sys.stderr)
+        print(f"Club Ignite API error: {ex} â trying Playwright", file=sys.stderr)
 
-    # Playwright DOM fallback — load events page, parse TEC event cards
+    # Playwright DOM fallback â load events page, parse TEC event cards
     events = []
     try:
         await page.goto(url, wait_until='domcontentloaded', timeout=30000)
@@ -1700,7 +1703,7 @@ async def scrape_ignite(page, url):
                 print(f"Club Ignite (in-page fetch): {len(events)} events", file=sys.stderr)
                 return events
 
-        # DOM scraping — TEC event titles + date text
+        # DOM scraping â TEC event titles + date text
         for sel in [
             '.tribe-events-calendar-list__event-title a',
             '.tribe-event-url', 'h2.tribe-events-list-event-title a',
@@ -1735,7 +1738,7 @@ async def scrape_clubf(page, url):
     Strategy: intercept all XHR/fetch network requests (Le Boudoir technique)
     to discover the API endpoint the SPA uses, then call it directly.
     Falls back to DOM parsing if no API found."""
-    import sys, json as _json
+    import sys, json as _json, re as _re
 
     events = []
     captured_responses = []
@@ -1772,6 +1775,20 @@ async def scrape_clubf(page, url):
         # --- APPROACH 1: Parse intercepted API responses ---
         for api_url, data in captured_responses:
             print(f"Club F parsing API: {api_url}", file=sys.stderr)
+            # Handle event-dates.json format: {tBirdsDates:[{date,iso}], ...}
+            if isinstance(data, dict) and any(k in data for k in ('tBirdsDates', 'teaseTuesdayDates', 'biPartyDates')):
+                _name_map = {'tBirdsDates': 'T-Birds Night', 'teaseTuesdayDates': 'Tease Tuesday', 'biPartyDates': 'Bi-Party'}
+                for _key, _ename in _name_map.items():
+                    for _item in data.get(_key, []):
+                        _iso = _item.get('iso', '')
+                        if not _iso: continue
+                        try:
+                            _dt = datetime.fromisoformat(_iso)
+                            if not in_range(_dt): continue
+                            _e = make_event(_dt, 'Club F', 'Stanley, County Durham', 'clubf', _ename, url)
+                            if _e: events.append(_e)
+                        except Exception: pass
+                continue
             # Walk common structures: list of events, {events:[...]}, {data:{events:[...]}}
             ev_list = None
             if isinstance(data, list):
@@ -1890,7 +1907,7 @@ async def scrape_clubf(page, url):
 
         # --- APPROACH 5: Full body text parse ---
         if not events:
-            print("Club F: all selectors failed — text parse", file=sys.stderr)
+            print("Club F: all selectors failed â text parse", file=sys.stderr)
             lines = [l.strip() for l in body_text.split('\n') if l.strip()]
             seen = set()
             for i, line in enumerate(lines):
@@ -2028,7 +2045,7 @@ async def scrape_chunkymuffins(page, url):
         if not title or title.lower() in CHUNKYMUFFINS_STANDARD:
             continue
 
-        # Date: search body text — clean commas, try to parse
+        # Date: search body text â clean commas, try to parse
         # Get og:description which contains the first lines of the post
         dt = None
         desc_m = re.search(r'<meta\s+(?:property="og:description"|name="description")\s+content="([^"]+)"', post_html, re.I)
@@ -2073,7 +2090,7 @@ async def scrape_jaydees(page, url):
         with _urllib.urlopen(req, timeout=20) as r:
             raw = r.read().decode('utf-8', errors='replace')
     except Exception as ex:
-        print(f"Jay-Dees urllib error: {ex} — trying Playwright", file=sys.stderr)
+        print(f"Jay-Dees urllib error: {ex} â trying Playwright", file=sys.stderr)
         try:
             await page.goto(url, wait_until='domcontentloaded', timeout=25000)
             await page.wait_for_timeout(2000)
