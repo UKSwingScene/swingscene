@@ -8,7 +8,7 @@
     "cls": "no3",
     "event": "Black Friday",
     "url": "https://theno3club.co.uk/",
-    "desc": "Black Friday at The No.3 Club, Chorley. 8:30pm–1:30am. Guest list applies. Call Mary on 07835 870772."
+    "desc": "Black Friday at The No.3 Club, Chorley. 8:30pmâ1:30am. Guest list applies. Call Mary on 07835 870772."
   },
   {
     "d": "2026-05-22",
@@ -28,9 +28,9 @@
     "club": "No.3 Club",
     "city": "Chorley, Lancashire",
     "cls": "no3",
-    "event": "15th Anniversary Party – Schools Out",
+    "event": "15th Anniversary Party â Schools Out",
     "url": "https://theno3club.co.uk/",
-    "desc": "The No.3 Club 15th Anniversary Party. Theme: Schools Out. Guest list only — must book with Mary direct. 07835 870772."
+    "desc": "The No.3 Club 15th Anniversary Party. Theme: Schools Out. Guest list only â must book with Mary direct. 07835 870772."
   },
   {
     "d": "2026-05-28",
@@ -63,7 +63,7 @@
     "cls": "no3",
     "event": "Mixed Swing Night",
     "url": "https://theno3club.co.uk/",
-    "desc": "Mixed Swing Night at The No.3 Club, Chorley. 8:30pm–1:30am. Call Mary on 07835 870772 for details."
+    "desc": "Mixed Swing Night at The No.3 Club, Chorley. 8:30pmâ1:30am. Call Mary on 07835 870772 for details."
   },
   {
     "d": "2026-05-30",
@@ -438,5 +438,82 @@
     "event": "Greedy Girl Night",
     "url": "https://hu9swingersclub.co.uk/events",
     "desc": "Greedy Girl Night at HU9 Swingers Club, Hull. 8pm - 1am."
+  },
+  {
+    "d": "2026-05-29",
+    "m": "may",
+    "day": "Friday 29 May 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "Curvy Cuties Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Couples and singles themed night with shots on arrival. Non-members must contact Hannah on 07469 699874 or message JoDaveQuestSwing on FAB Swingers. Open 8.30pm-2.00am."
+  },
+  {
+    "d": "2026-06-04",
+    "m": "jun",
+    "day": "Thursday 4 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "Kinky Little M's Sexy Siren Soirée",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Ladies-only cowboy/hoedown themed night at Quest. Massages by Hannah available (30-45 min, £20-£30). Contact Hannah on 07469 699874 to book. Open 7.00pm-11.00pm."
+  },
+  {
+    "d": "2026-06-05",
+    "m": "jun",
+    "day": "Friday 5 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "Red Light Green Light Swing Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Colour-coded wristband event — pick your band at reception to signal your interests. Free shots, savouries and sweet treats. Non-members contact Hannah on 07469 699874. Open 8.30pm-2.00am."
+  },
+  {
+    "d": "2026-06-12",
+    "m": "jun",
+    "day": "Friday 12 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "World Cup Seduction Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "World Cup themed couples and singles night. Fancy dress welcome. Non-members contact Hannah on 07469 699874 or JoDaveQuestSwing on FAB Swingers. Open 8.30pm-2.00am."
+  },
+  {
+    "d": "2026-06-18",
+    "m": "jun",
+    "day": "Thursday 18 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "MO BDSM Fetish Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Monthly BDSM and fetish night for Doms, Mistresses, fetishists and kinksters. Dress code: fetish wear or smart casual. Open 7.00pm-11.00pm, £15 per person."
+  },
+  {
+    "d": "2026-06-19",
+    "m": "jun",
+    "day": "Friday 19 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "Curvy Cuties Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Couples and singles themed night with shots on arrival. Non-members must contact Hannah on 07469 699874 or message JoDaveQuestSwing on FAB Swingers. Open 8.30pm-2.00am."
+  },
+  {
+    "d": "2026-06-26",
+    "m": "jun",
+    "day": "Friday 26 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "Hannah's Birthday – Barbie & Ken Celebration Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Birthday party for Hannah with Barbie & Ken fancy dress theme (optional). Shots, sweet treats and snacks included. Non-members contact Hannah on 07469 699874. Open 8.30pm-2.00am."
   }
 ]
