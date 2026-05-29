@@ -801,54 +801,11 @@ async def scrape_no3(page, url):
 
 
 async def scrape_cupids(page, url):
-    """Cupids: Squarespace site. All events named. Filter only the generic
-    weekly Wednesday 'couples & single females only night'."""
-    CUPIDS_STANDARD = {
-        'couples & single females only night', 'couples & single females only',
-        'tits out tuesday', 'm.o.t.d', 'motd',
-    }
-    await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-    await page.wait_for_timeout(4000)
-    events = []
-    seen = set()
-    # Squarespace: event titles in h1 tags with links to /events/slug
-    # Dates in Google Calendar links: dates=YYYYMMDDTHHMMSSZ
-    links = await page.query_selector_all('h1 a[href*="/events/"], h2 a[href*="/events/"]')
-    for link in links:
-        title = (await link.inner_text()).strip()
-        if not title or len(title) < 3: continue
-        if title.lower().rstrip() in CUPIDS_STANDARD: continue
-        if 'couples & single females only' in title.lower(): continue
-        href = await link.get_attribute('href') or url
-        if not href.startswith('http'):
-            href = 'https://www.cupidsswingersclub.co.uk' + href
-        # Get parent container for date
-        container = await link.evaluate_handle(
-            'el => el.closest("article") || el.closest(".eventlist-event") || el.parentElement.parentElement.parentElement'
-        )
-        dt = None
-        try:
-            # Look for Google Calendar link with ISO date
-            gcal = await container.query_selector('a[href*="dates="]')
-            if gcal:
-                gcal_href = await gcal.get_attribute('href') or ''
-                m = re.search(r'dates=(\d{8})T', gcal_href)
-                if m:
-                    ds = m.group(1)
-                    dt = datetime(int(ds[:4]), int(ds[4:6]), int(ds[6:8]))
-        except: pass
-        if not dt:
-            try:
-                ptext = await container.inner_text()
-                dt = parse_date_text(ptext)
-            except: pass
-        if dt and in_range(dt):
-            key = dt.strftime('%Y-%m-%d') + title[:15]
-            if key not in seen:
-                seen.add(key)
-                e = make_event(dt, 'Cupids', 'Swinton, Manchester', 'cupids', title, href)
-                if e: events.append(e)
-    return events
+    """Cupids: MANUAL ONLY. Site migrated from Squarespace to Framer (May 2026).
+    Framer site blocks all cloud/datacenter IPs (403 host_not_allowed).
+    Events must be read via web_fetch and added to events.json manually.
+    See: https://www.cupidsswingersclub.co.uk/events"""
+    return []
 
 
 async def scrape_clubalchemy(page, url):
