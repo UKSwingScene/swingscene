@@ -2085,80 +2085,348 @@ async def scrape_jaydees(page, url):
     return events
 
 
-async def scrape_all(page):
+
+# ─────────────────────────────────────────────────────────────
+# CLAUDE FALLBACK
+# Called when a Playwright scraper returns 0 events.
+# Uses the Anthropic API to web_fetch the page and extract events.
+# ─────────────────────────────────────────────────────────────
+
+# Clubs that are always manual — never attempt Claude fallback
+MANUAL_ONLY = {'No.3 Club', 'Quest', 'HU9', 'New Gatehouse'}
+
+# Standard night filters per club — passed to Claude so it applies same rules
+STANDARD_NIGHTS = {
+    'The Attic':           ['Greedy Girls','Cinema','Club Night','TV Admirers','Frisky Friday After Dark',
+                            'Humpday Evening Cinema','Daytime Cinema','Standard Club Night'],
+    'Purple Mamba':        ['Play Space','Sunday Sinners','Bottomless Munch Social'],
+    'Decadance':           ['SeXXXy Saturday','Monday Funday','Friday Night Madness','Spicy Sunday'],
+    'Cupids':              ['Couples & Single Females Only Night','TITS OUT TUESDAY','M.O.T.D'],
+    'Partners':            ['Biphoria Bisexual Day & Night','Swing Sunday'],
+    'Pandoras':            ['Biphoria','Relaxed Sunday','Open to all members'],
+    'Xtasia':              ['Guys and Gals','Standard Club Night'],
+    'Infusion':            ['Wicked Wednesday','Greedy Girls','Pure','Chillout Sunday',
+                            'Chill Zone Sunday','Sexy Sunday','Seductive Sunday','Thirsty Thursday'],
+    'atlantisEVOLUTION':   ['MEGA Fridays','The NEW Saturdays','Evolutionfetish','Christmas Day','Boxing Day'],
+    'Club Ignite':         ['Couples & Singles Friday','Couples & Singles Saturday',
+                            'Silks & Skins Spa Day','Half Off Friday'],
+    'Chameleons':          ['Club Night','Couples Night','Open Night','Members Night',
+                            'Friday Night','Saturday Night'],
+    'Swindon SC':          ['TBA'],
+}
+
+# Club metadata needed by fallback
+CLUB_META = {
+    'Cupids':              ('Swinton, Manchester', 'cupids',    'https://www.cupidsswingersclub.co.uk/events'),
+    'Partners':            ('Peterborough',        'partners',  'https://partnersswingersclub.com/events/'),
+    'Pandoras':            ('Romford',             'pandora',   'https://www.pandoraswingers.com/event-diary'),
+    'Club Play':           ('Blackpool',           'clubplay',  'https://clubplay.net/events/'),
+    'Xtasia':              ('West Bromwich',       'xtasia',    'https://www.xtasia.co.uk/page/2-months-diary'),
+    'Naughty Pineapple':   ('Bristol',             'pineapple', 'https://thenaughtypineapple.co.uk/all-events/'),
+    'The Attic':           ('Scunthorpe',          'attic',     'https://theatticexperience.com/events-prices-2/'),
+    'Townhouse':           ('Birkenhead, Wirral',  'townhouse', 'https://www.tickettailor.com/events/townhousewirralltd'),
+    'Swindon SC':          ('Swindon',             'swindon',   'https://swindonswingers.com'),
+    'Club Alchemy':        ('Northwich',           'alchemy',   'https://www.clubalchemy.co.uk/events'),
+    'Infusion':            ('Blackpool',           'infusion',  'https://www.infusionblackpool.co.uk/8.html'),
+    'Liberty Elite':       ('Coventry',            'liberty',   'https://libertyelite.co.uk/events/list/'),
+    'Purple Mamba':        ('Coventry',            'mamba',     'https://www.purplemambaclub.com/what-s-on-tickets'),
+    'Shhh':                ('Newcastle',           'shhh',      'https://www.shhhclub.co.uk/events'),
+    'Decadance':           ('Rochdale',            'decadance', 'https://decadanceswingersclub.com/what-s-on-at-decadance'),
+    'Le Boudoir':          ('London',              'leboudoir', 'https://leboudoir.club/events'),
+    'Penthouse Playrooms': ('Dunstable',           'penthouse', 'https://penthouse-playrooms.co.uk/events'),
+    'Club Ignite':         ('West Drayton',        'ignite',    'https://club-ignite.co.uk/events-new/'),
+    'atlantisEVOLUTION':   ('Stoke-on-Trent',     'atlantis',  'http://www.atlantisevolution.co.uk/calendar.htm'),
+    'Chameleons':          ('Darlaston',           'chameleons','https://www.chameleons.cc/darlaston-events/'),
+    'Jay-Dees':            ('St Neots',            'jaydees',   'https://jay-dees.com/events.html'),
+    'V2V':                 ('Nuneaton',            'v2v',       'https://v2v.uk/events'),
+    'Chunky Muffins':      ('Boston, Lincolnshire','penthouse', 'https://www.chunkymuffins.co.uk'),
+    'Club F':              ('Coventry',            'clubf',     'https://www.clubf.uk/events'),
+}
+
+
+async def claude_fallback(club_name, browser):
+    """
+    Fallback: call Anthropic API to web_fetch the club's events page
+    and extract upcoming special events as structured JSON.
+    Returns list of event dicts in standard format, or [].
+    """
+    import os, sys
+    import urllib.request as ul
+    import urllib.error
+
+    api_key = os.environ.get('ANTHROPIC_API_KEY', '')
+    if not api_key:
+        print(f"  [fallback] No ANTHROPIC_API_KEY — skipping {club_name}", file=sys.stderr)
+        return []
+
+    meta = CLUB_META.get(club_name)
+    if not meta:
+        print(f"  [fallback] No metadata for {club_name}", file=sys.stderr)
+        return []
+
+    city, cls, url = meta
+    standard = STANDARD_NIGHTS.get(club_name, [])
+    standard_str = ', '.join(f'"{s}"' for s in standard) if standard else 'none'
+    today = NOW.strftime('%Y-%m-%d')
+    month_abbrs = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+
+    system_prompt = f"""You are a data extraction assistant for SwingScene UK, a swingers club events aggregator.
+
+Your job: fetch the events page for {club_name} and extract all upcoming SPECIAL events.
+
+RULES:
+- Only include named special/themed events (e.g. "Wild West Night", "Halloween Party", "Anniversary Ball")
+- Do NOT include standard recurring weekly nights: {standard_str}
+- Only include events from {today} onwards
+- Ignore any event that is just a generic club night with no specific theme or name
+
+OUTPUT FORMAT — respond with ONLY a JSON array, no other text, no markdown:
+[
+  {{
+    "d": "YYYY-MM-DD",
+    "m": "jan",
+    "day": "Saturday 7 June 2026",
+    "club": "{club_name}",
+    "city": "{city}",
+    "cls": "{cls}",
+    "event": "Event Name",
+    "url": "{url}",
+    "desc": "Brief description of the event."
+  }}
+]
+
+The "m" field must be a 3-letter lowercase month abbreviation.
+The "day" field must be in format "Weekday D Month YYYY".
+If there are no upcoming special events, return an empty array: []
+Do not include any explanation, just the JSON array."""
+
+    user_prompt = f"Please fetch {url} and extract all upcoming special events for {club_name}."
+
+    payload = json.dumps({
+        "model": "claude-sonnet-4-20250514",
+        "max_tokens": 4000,
+        "tools": [{"type": "web_search_20250305", "name": "web_search"}],
+        "system": system_prompt,
+        "messages": [{"role": "user", "content": user_prompt}]
+    }).encode()
+
+    req = ul.Request(
+        'https://api.anthropic.com/v1/messages',
+        data=payload,
+        method='POST',
+        headers={
+            'x-api-key': api_key,
+            'anthropic-version': '2023-06-01',
+            'anthropic-beta': 'interleaved-thinking-2025-05-14',
+            'content-type': 'application/json',
+        }
+    )
+
+    try:
+        with ul.urlopen(req, timeout=60) as r:
+            data = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        body = e.read().decode('utf-8', errors='replace')
+        print(f"  [fallback] API error {e.code} for {club_name}: {body[:200]}", file=sys.stderr)
+        return []
+    except Exception as e:
+        print(f"  [fallback] Request failed for {club_name}: {e}", file=sys.stderr)
+        return []
+
+    # Extract text from response — may be across multiple content blocks
+    raw_text = ''
+    for block in data.get('content', []):
+        if block.get('type') == 'text':
+            raw_text += block.get('text', '')
+
+    if not raw_text.strip():
+        print(f"  [fallback] Empty response for {club_name}", file=sys.stderr)
+        return []
+
+    # Parse JSON — strip any markdown fences
+    raw_text = raw_text.strip()
+    raw_text = re.sub(r'^```(?:json)?\s*', '', raw_text)
+    raw_text = re.sub(r'\s*```$', '', raw_text)
+    raw_text = raw_text.strip()
+
+    # Find JSON array in response
+    m = re.search(r'\[.*\]', raw_text, re.DOTALL)
+    if not m:
+        print(f"  [fallback] No JSON array found for {club_name}: {raw_text[:200]}", file=sys.stderr)
+        return []
+
+    try:
+        events = json.loads(m.group(0))
+    except json.JSONDecodeError as e:
+        print(f"  [fallback] JSON parse error for {club_name}: {e}", file=sys.stderr)
+        return []
+
+    if not isinstance(events, list):
+        return []
+
+    # Validate and clean each event
+    valid = []
+    required = {'d', 'm', 'day', 'club', 'city', 'cls', 'event', 'url', 'desc'}
+    for ev in events:
+        if not isinstance(ev, dict):
+            continue
+        if not required.issubset(ev.keys()):
+            continue
+        # Validate date format
+        try:
+            dt = datetime.strptime(ev['d'], '%Y-%m-%d')
+            if not in_range(dt):
+                continue
+        except:
+            continue
+        # Validate month abbreviation
+        if ev.get('m') not in month_abbrs:
+            try:
+                ev['m'] = month_abbrs[dt.month - 1]
+            except:
+                continue
+        # Basic event name sanity
+        if not ev.get('event') or len(ev['event']) < 3:
+            continue
+        valid.append(ev)
+
+    print(f"  [fallback] {club_name}: {len(valid)} events extracted by Claude", file=sys.stderr)
+    return valid
+
+
+# ─────────────────────────────────────────────────────────────
+# MAIN ORCHESTRATION — isolated context per club + Claude fallback
+# ─────────────────────────────────────────────────────────────
+
+CLUB_SCRAPERS = [
+    # (club_name, url, scraper_fn or None for special-case)
+    ("No.3 Club",          "https://theno3club.co.uk/",                                              scrape_no3),
+    ("Cupids",             "https://www.cupidsswingersclub.co.uk/events",                            scrape_cupids),
+    ("Partners",           "https://partnersswingersclub.com/events/",                               scrape_partners),
+    ("Pandoras",           "https://www.pandoraswingers.com/event-diary",                            scrape_pandoras),
+    ("Club Play",          "https://clubplay.net/events/",                                           scrape_clubplay),
+    ("Xtasia",             "https://www.xtasia.co.uk/page/2-months-diary",                           scrape_xtasia),
+    ("Naughty Pineapple",  "https://thenaughtypineapple.co.uk/all-events/",                          scrape_naughtypineapple),
+    ("The Attic",          "https://theatticexperience.com/events-prices-2/",                        scrape_attic),
+    ("Townhouse",          "https://www.tickettailor.com/events/townhousewirralltd",                 None),
+    ("Swindon SC",         "https://swindonswingers.com",                                            None),
+    ("Club Alchemy",       "https://www.clubalchemy.co.uk/events",                                   scrape_clubalchemy),
+    ("Infusion",           "https://www.infusionblackpool.co.uk/8.html",                             None),
+    ("Quest",              "https://questswingersclub.co.uk/upcoming-events/",                       scrape_quest),
+    ("Liberty Elite",      "https://libertyelite.co.uk/events/list/?tribe-bar-date=" + NOW.strftime('%Y-%m-%d'), scrape_libertyelite),
+    ("Purple Mamba",       "https://www.purplemambaclub.com/what-s-on-tickets",                      scrape_purplemamba),
+    ("HU9",                "https://hu9swingersclub.co.uk/events",                                   scrape_hu9),
+    ("Shhh",               "https://www.shhhclub.co.uk/events",                                      scrape_shhh),
+    ("Decadance",          "https://www.decadanceswingersclub.com/what-s-on-at-decadance",           scrape_decadance),
+    ("New Gatehouse",      "https://www.thenewgatehousebolton.co.uk",                                None),
+    ("Le Boudoir",         "https://leboudoir.club/events",                                          None),
+    ("Penthouse Playrooms","https://penthouse-playrooms.co.uk/events",                               scrape_penthouse),
+    ("Club Ignite",        "https://club-ignite.co.uk/events-new/",                                  scrape_ignite),
+    ("atlantisEVOLUTION",  "http://www.atlantisevolution.co.uk/calendar.htm",                        scrape_atlantis),
+    ("Chameleons",         "https://www.chameleons.cc/darlaston-events/",                            scrape_chameleons),
+    ("Jay-Dees",           "https://jay-dees.com/events.html",                                       scrape_jaydees),
+    ("V2V",                "https://v2v.uk/events",                                                  scrape_v2v),
+    ("Chunky Muffins",     "https://www.chunkymuffins.co.uk",                                        scrape_chunkymuffins),
+    ("Club F",             "https://www.clubf.uk/events",                                            scrape_clubf),
+]
+
+
+async def scrape_club(browser, club_name, scraper_fn, url):
+    """
+    Run a single club scraper in its own isolated browser context.
+    Returns list of events (may be empty).
+    """
+    import sys
+    ctx = await browser.new_context(
+        user_agent='Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 '
+                   '(KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+        viewport={'width': 390, 'height': 844},
+        locale='en-GB',
+    )
+    await ctx.add_init_script("Object.defineProperty(navigator,'webdriver',{get:()=>undefined})")
+    page = await ctx.new_page()
+    try:
+        # Special-case scrapers that manage their own URL / have different signatures
+        if club_name == 'Infusion':
+            evs = await scrape_infusion(page)
+        elif club_name == 'Swindon SC':
+            evs = await scrape_swindon(page)
+        elif club_name == 'Le Boudoir':
+            evs = await scrape_leboudoir(page)
+        elif club_name == 'New Gatehouse':
+            evs = await scrape_wp_tribe_generic(
+                page,
+                "https://www.thenewgatehousebolton.co.uk",
+                "New Gatehouse", "Bolton", "gatehouse",
+                "https://www.thenewgatehousebolton.co.uk/about-1"
+            )
+        elif club_name == 'Townhouse':
+            evs = await scrape_tickettailor(page, url, "Townhouse", "Birkenhead, Wirral", "townhouse")
+        elif scraper_fn is not None:
+            evs = await scraper_fn(page, url)
+        else:
+            evs = []
+    except Exception as ex:
+        print(f"  ERROR {club_name}: {ex}", file=sys.stderr)
+        evs = []
+    finally:
+        try:
+            await ctx.close()
+        except:
+            pass
+
+    # Deduplicate
+    seen = set()
+    uniq = []
+    for e in evs:
+        k = (e['d'], e['event'][:20])
+        if k not in seen:
+            seen.add(k)
+            uniq.append(e)
+    return uniq
+
+
+async def scrape_all(browser):
+    import sys
     results = {}
 
-    async def run(name, coro):
-        print(f"Scraping {name}...")
-        try:
-            evs = await coro
-            seen = set()
-            uniq = []
-            for e in evs:
-                k = (e['d'], e['event'][:20])
-                if k not in seen:
-                    seen.add(k)
-                    uniq.append(e)
-            results[name] = uniq
-            print(f"  -> {len(uniq)} events")
-        except Exception as ex:
-            print(f"  ERROR {name}: {ex}")
-            results[name] = []
-        finally:
-            # Reset page after each club to prevent corrupted state from affecting next scraper
-            try:
-                await page.goto("about:blank", timeout=5000)
-            except:
-                pass
+    for club_name, url, scraper_fn in CLUB_SCRAPERS:
 
-    await run("No.3 Club",        scrape_no3(page, "https://theno3club.co.uk/"))
-    await run("Cupids",           scrape_cupids(page, "https://www.cupidsswingersclub.co.uk/events"))
-    await run("Partners",         scrape_partners(page, "https://partnersswingersclub.com/events/"))
-    await run("Pandoras",         scrape_pandoras(page, "https://www.pandoraswingers.com/event-diary"))
-    await run("Club Play",        scrape_clubplay(page, "https://clubplay.net/events/"))
-    await run("Xtasia",           scrape_xtasia(page, "https://www.xtasia.co.uk/page/2-months-diary"))
-    await run("Naughty Pineapple",scrape_naughtypineapple(page, "https://thenaughtypineapple.co.uk/all-events/"))
-    await run("The Attic",        scrape_attic(page, "https://theatticexperience.com/events-prices-2/"))
-    await run("Townhouse",        scrape_tickettailor(page, "https://www.tickettailor.com/events/townhousewirralltd", "Townhouse", "Birkenhead, Wirral", "townhouse"))
-    await run("Swindon SC",       scrape_swindon(page))
-    await run("Club Alchemy",     scrape_clubalchemy(page, "https://www.clubalchemy.co.uk/events"))
-    await run("Infusion",         scrape_infusion(page))
-    await run("Quest",            scrape_quest(page, "https://questswingersclub.co.uk/upcoming-events/"))
-    await run("Liberty Elite",    scrape_libertyelite(page, "https://libertyelite.co.uk/events/list/?tribe-bar-date=" + NOW.strftime('%Y-%m-%d')))
-    await run("Purple Mamba",     scrape_purplemamba(page, "https://www.purplemambaclub.com/what-s-on-tickets"))
-    await run("HU9",              scrape_hu9(page, "https://hu9swingersclub.co.uk/events"))
-    await run("Shhh",             scrape_shhh(page, "https://www.shhhclub.co.uk/events"))
-    await run("Decadance",        scrape_decadance(page, "https://www.decadanceswingersclub.com/what-s-on-at-decadance"))
-    await run("New Gatehouse",    scrape_wp_tribe_generic(page, "https://www.thenewgatehousebolton.co.uk", "New Gatehouse", "Bolton", "gatehouse", "https://www.thenewgatehousebolton.co.uk/about-1"))
-    await run("Le Boudoir",       scrape_leboudoir(page))
-    await run("Penthouse Playrooms", scrape_penthouse(page, "https://penthouse-playrooms.co.uk/events"))
-    await run("Club Ignite", scrape_ignite(page, "https://club-ignite.co.uk/events-new/"))
-    await run("atlantisEVOLUTION", scrape_atlantis(page, "http://www.atlantisevolution.co.uk/calendar.htm"))
-    await run("Chameleons",       scrape_chameleons(page, "https://www.chameleons.cc/darlaston-events/"))
-    await run("Jay-Dees",         scrape_jaydees(page, "https://jay-dees.com/events.html"))
-    await run("V2V",              scrape_v2v(page, "https://v2v.uk/events"))
-    await run("Chunky Muffins",   scrape_chunkymuffins(page, "https://www.chunkymuffins.co.uk"))
-    await run("Club F",           scrape_clubf(page, "https://www.clubf.uk/events"))
+        print(f"Scraping {club_name}...")
+
+        # Manual-only clubs — skip scraper and fallback, rely on events.json
+        if club_name in MANUAL_ONLY:
+            print(f"  -> manual-only, skipping")
+            results[club_name] = []
+            continue
+
+        # Run Playwright scraper
+        evs = await scrape_club(browser, club_name, scraper_fn, url)
+        print(f"  -> {len(evs)} events")
+
+        # If 0 results, try Claude fallback
+        if len(evs) == 0:
+            print(f"  -> 0 events, trying Claude fallback...")
+            evs = await claude_fallback(club_name, browser)
+            if evs:
+                print(f"  -> fallback got {len(evs)} events")
+            else:
+                print(f"  -> fallback also got 0 events")
+
+        results[club_name] = evs
 
     return results
 
 
 async def main():
+    import sys
     async with async_playwright() as p:
         browser = await p.chromium.launch(
             headless=True,
             args=['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage',
                   '--disable-blink-features=AutomationControlled']
         )
-        ctx = await browser.new_context(
-            user_agent='Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 '
-                       '(KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
-            viewport={'width': 390, 'height': 844},
-            locale='en-GB',
-        )
-        await ctx.add_init_script("Object.defineProperty(navigator,'webdriver',{get:()=>undefined})")
-        page = await ctx.new_page()
-        results = await scrape_all(page)
+        results = await scrape_all(browser)
         await browser.close()
 
     all_events = []
@@ -2176,13 +2444,16 @@ async def main():
     with open('events_scraped.json', 'w') as f:
         json.dump(unique, f, indent=2)
 
-    print("\n=== RESULTS ===")
+    print("\n=== RESULTS ===", file=sys.stderr)
+    fallback_used = []
     total = 0
     for name, evs in results.items():
-        status = f"YES {len(evs)}" if evs else "NO"
-        print(f"  {name}: {status}")
+        status = f"YES {len(evs)}" if evs else "NO "
+        print(f"  {status}  {name}: {len(evs)}", file=sys.stderr)
         total += len(evs)
-    print(f"\nTotal scraped: {total}")
+
+    print(f"\nTotal scraped: {total}", file=sys.stderr)
+    print(f"Written to events_scraped.json")
 
 
 asyncio.run(main())
