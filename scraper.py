@@ -2124,7 +2124,7 @@ CLUB_META = {
     'Xtasia':              ('West Bromwich',       'xtasia',    'https://www.xtasia.co.uk/page/2-months-diary'),
     'Naughty Pineapple':   ('Bristol',             'pineapple', 'https://thenaughtypineapple.co.uk/all-events/'),
     'The Attic':           ('Scunthorpe',          'attic',     'https://theatticexperience.com/events-prices-2/'),
-    'Townhouse':           ('Birkenhead, Wirral',  'townhouse', 'https://www.tickettailor.com/events/townhousewirralltd'),
+    'Townhouse':           ('Birkenhead, Wirral',  'townhouse', 'https://townhouseswingers.com/event-directory/'),
     'Swindon SC':          ('Swindon',             'swindon',   'https://swindonswingers.com'),
     'Club Alchemy':        ('Northwich',           'alchemy',   'https://www.clubalchemy.co.uk/events'),
     'Infusion':            ('Blackpool',           'infusion',  'https://www.infusionblackpool.co.uk/8.html'),
@@ -2352,9 +2352,10 @@ CLUB_SCRAPERS = [
     ("Naughty Pineapple",  "https://thenaughtypineapple.co.uk/all-events/",                          scrape_naughtypineapple),
     ("The Attic",          "https://theatticexperience.com/events-prices-2/",                        scrape_attic),
     ("Townhouse",          "https://www.tickettailor.com/events/townhousewirralltd",                 None),
+    ("Townhouse_old",      "https://www.tickettailor.com/events/townhousewirral",                      None),
     ("Swindon SC",         "https://swindonswingers.com",                                            None),
     ("Club Alchemy",       "https://www.clubalchemy.co.uk/events",                                   scrape_clubalchemy),
-    ("Infusion",           "https://www.infusionblackpool.co.uk/8.html",                             None),
+    ("Infusion",           "https://www.infusionblackpool.co.uk/8.html",                             "CLAUDE_ONLY"),
     ("Quest",              "https://questswingersclub.co.uk/upcoming-events/",                       scrape_quest),
     ("Liberty Elite",      "https://libertyelite.co.uk/events/list/?tribe-bar-date=" + NOW.strftime('%Y-%m-%d'), scrape_libertyelite),
     ("Purple Mamba",       "https://www.purplemambaclub.com/what-s-on-tickets",                      scrape_purplemamba),
@@ -2403,7 +2404,7 @@ async def scrape_club(browser, club_name, scraper_fn, url):
                 "New Gatehouse", "Bolton", "gatehouse",
                 "https://www.thenewgatehousebolton.co.uk/about-1"
             )
-        elif club_name == 'Townhouse':
+        elif club_name in ('Townhouse', 'Townhouse_old'):
             evs = await scrape_tickettailor(page, url, "Townhouse", "Birkenhead, Wirral", "townhouse")
         elif scraper_fn is not None:
             evs = await scraper_fn(page, url)
@@ -2443,6 +2444,14 @@ async def scrape_all(browser):
             results[club_name] = []
             continue
 
+        # Some clubs always use Claude fallback (e.g. Infusion blocks GHA IPs)
+        if scraper_fn == 'CLAUDE_ONLY':
+            print(f"  -> Claude-only club, skipping Playwright")
+            evs = await claude_fallback(club_name, browser)
+            results[club_name] = evs
+            print(f"  -> {len(evs)} events")
+            continue
+
         # Run Playwright scraper
         evs = await scrape_club(browser, club_name, scraper_fn, url)
         print(f"  -> {len(evs)} events")
@@ -2455,6 +2464,14 @@ async def scrape_all(browser):
                 print(f"  -> fallback got {len(evs)} events")
             else:
                 print(f"  -> fallback also got 0 events")
+
+        # Merge Townhouse_old results into Townhouse
+        if club_name == 'Townhouse_old':
+            if evs and not results.get('Townhouse'):
+                print(f"  -> Townhouse old URL worked, merging into Townhouse")
+                results['Townhouse'] = evs
+            # Don't store as separate key
+            continue
 
         results[club_name] = evs
 
