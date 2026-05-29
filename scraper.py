@@ -888,7 +888,7 @@ async def scrape_clubalchemy(page, url):
                 key = dt.strftime('%Y-%m-%d') + title[:10]
                 if key not in seen:
                     seen.add(key)
-                    e = make_event(dt, 'Club Alchemy', 'UK', 'alchemy', title, full_url)
+                    e = make_event(dt, 'Club Alchemy', 'Northwich', 'alchemy', title, full_url)
                     if e: events.append(e)
             except: pass
     return events
