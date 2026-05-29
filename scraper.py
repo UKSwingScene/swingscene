@@ -2217,27 +2217,70 @@ Do not include any explanation, just the JSON array."""
         headers={
             'x-api-key': api_key,
             'anthropic-version': '2023-06-01',
-            'anthropic-beta': 'interleaved-thinking-2025-05-14',
             'content-type': 'application/json',
         }
     )
 
-    try:
-        with ul.urlopen(req, timeout=60) as r:
-            data = json.loads(r.read())
-    except urllib.error.HTTPError as e:
-        body = e.read().decode('utf-8', errors='replace')
-        print(f"  [fallback] API error {e.code} for {club_name}: {body[:200]}", file=sys.stderr)
-        return []
-    except Exception as e:
-        print(f"  [fallback] Request failed for {club_name}: {e}", file=sys.stderr)
-        return []
-
-    # Extract text from response — may be across multiple content blocks
+    messages = [{"role": "user", "content": user_prompt}]
     raw_text = ''
-    for block in data.get('content', []):
-        if block.get('type') == 'text':
-            raw_text += block.get('text', '')
+
+    # Agentic loop — handle tool use turns (web_search)
+    for turn in range(6):
+        try:
+            payload = json.dumps({
+                "model": "claude-sonnet-4-20250514",
+                "max_tokens": 4000,
+                "tools": [{"type": "web_search_20250305", "name": "web_search"}],
+                "system": system_prompt,
+                "messages": messages
+            }).encode()
+            req = ul.Request(
+                'https://api.anthropic.com/v1/messages',
+                data=payload,
+                method='POST',
+                headers={
+                    'x-api-key': api_key,
+                    'anthropic-version': '2023-06-01',
+                    'content-type': 'application/json',
+                }
+            )
+            with ul.urlopen(req, timeout=60) as r:
+                data = json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            body = e.read().decode('utf-8', errors='replace')
+            print(f"  [fallback] API error {e.code} for {club_name}: {body[:200]}", file=sys.stderr)
+            return []
+        except Exception as e:
+            print(f"  [fallback] Request failed for {club_name}: {e}", file=sys.stderr)
+            return []
+
+        stop_reason = data.get('stop_reason', '')
+
+        # Collect any text from this turn
+        for block in data.get('content', []):
+            if block.get('type') == 'text':
+                raw_text += block.get('text', '')
+
+        # If done, break
+        if stop_reason == 'end_turn':
+            break
+
+        # If tool use, build tool results and continue
+        if stop_reason == 'tool_use':
+            tool_results = []
+            for block in data.get('content', []):
+                if block.get('type') == 'tool_use':
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": block['id'],
+                        "content": block.get('content', '') or ''
+                    })
+            if not tool_results:
+                break
+            messages.append({"role": "assistant", "content": data['content']})
+            messages.append({"role": "user", "content": tool_results})
+        else:
+            break
 
     if not raw_text.strip():
         print(f"  [fallback] Empty response for {club_name}", file=sys.stderr)
