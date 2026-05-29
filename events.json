@@ -8,7 +8,7 @@
     "cls": "no3",
     "event": "Black Friday",
     "url": "https://theno3club.co.uk/",
-    "desc": "Black Friday at The No.3 Club, Chorley. 8:30pmÃÂ¢ÃÂÃÂ1:30am. Guest list applies. Call Mary on 07835 870772."
+    "desc": "Black Friday at The No.3 Club, Chorley. 8:30pm\u00c3\u0083\u00c2\u00a2\u00c3\u0082\u00c2\u0080\u00c3\u0082\u00c2\u00931:30am. Guest list applies. Call Mary on 07835 870772."
   },
   {
     "d": "2026-05-22",
@@ -28,9 +28,9 @@
     "club": "No.3 Club",
     "city": "Chorley, Lancashire",
     "cls": "no3",
-    "event": "15th Anniversary Party ÃÂ¢ÃÂÃÂ Schools Out",
+    "event": "15th Anniversary Party \u00c3\u0083\u00c2\u00a2\u00c3\u0082\u00c2\u0080\u00c3\u0082\u00c2\u0093 Schools Out",
     "url": "https://theno3club.co.uk/",
-    "desc": "The No.3 Club 15th Anniversary Party. Theme: Schools Out. Guest list only ÃÂ¢ÃÂÃÂ must book with Mary direct. 07835 870772."
+    "desc": "The No.3 Club 15th Anniversary Party. Theme: Schools Out. Guest list only \u00c3\u0083\u00c2\u00a2\u00c3\u0082\u00c2\u0080\u00c3\u0082\u00c2\u0094 must book with Mary direct. 07835 870772."
   },
   {
     "d": "2026-05-28",
@@ -44,6 +44,17 @@
     "desc": "IMPACT hosted by Mistress Selina at New Gatehouse, Bolton. 4pm till midnight."
   },
   {
+    "d": "2026-05-28",
+    "m": "may",
+    "day": "Thursday 28 May 2026",
+    "club": "HU9",
+    "city": "Hull",
+    "cls": "hu9",
+    "event": "Greedy Girl Night",
+    "url": "https://hu9swingersclub.co.uk/events",
+    "desc": "Greedy Girl Night at HU9 Swingers Club, Hull. 8pm - 1am."
+  },
+  {
     "d": "2026-05-29",
     "m": "may",
     "day": "Friday 29 May 2026",
@@ -55,6 +66,39 @@
     "desc": "Foot Fetish Event (12pm-6pm) and Multi Domme/Dom Extravaganza Evening (6pm to late) at New Gatehouse, Bolton."
   },
   {
+    "d": "2026-05-29",
+    "m": "may",
+    "day": "Friday 29 May 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "Curvy Cuties Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Couples and singles themed night with shots on arrival. Non-members must contact Hannah on 07469 699874 or message JoDaveQuestSwing on FAB Swingers. Open 8.30pm-2.00am."
+  },
+  {
+    "d": "2026-05-29",
+    "m": "may",
+    "day": "Friday 29 May 2026",
+    "club": "Cupids",
+    "city": "Swinton, Manchester",
+    "cls": "cupids",
+    "event": "Glow All Out",
+    "url": "https://www.cupidsswingersclub.co.uk/events/glow-all-out",
+    "desc": "Glow All Out at Cupids, Swinton, Manchester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-05-29",
+    "m": "may",
+    "day": "Friday 29 May 2026",
+    "club": "Infusion",
+    "city": "Blackpool",
+    "cls": "infusion",
+    "event": "Anything Goes",
+    "url": "https://infusionblackpool.co.uk/8.html",
+    "desc": "Anything Goes at Infusion Blackpool. Freedom, fantasy, and fun in its purest form."
+  },
+  {
     "d": "2026-05-30",
     "m": "may",
     "day": "Saturday 30 May 2026",
@@ -63,7 +107,7 @@
     "cls": "no3",
     "event": "Mixed Swing Night",
     "url": "https://theno3club.co.uk/",
-    "desc": "Mixed Swing Night at The No.3 Club, Chorley. 8:30pmÃÂ¢ÃÂÃÂ1:30am. Call Mary on 07835 870772 for details."
+    "desc": "Mixed Swing Night at The No.3 Club, Chorley. 8:30pm\u00c3\u0083\u00c2\u00a2\u00c3\u0082\u00c2\u0080\u00c3\u0082\u00c2\u00931:30am. Call Mary on 07835 870772 for details."
   },
   {
     "d": "2026-05-30",
@@ -77,6 +121,39 @@
     "desc": "Saturday Night Mayhem with Charlie at New Gatehouse, Bolton. 7pm til late."
   },
   {
+    "d": "2026-05-30",
+    "m": "may",
+    "day": "Saturday 30 May 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Peaky Blinders Night",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance/events-coming-soon/30-05-peaky-blinders",
+    "desc": "Peaky Blinders Night at Decadance, Rochdale. Hosted by Mr & Miss Agadoo."
+  },
+  {
+    "d": "2026-05-30",
+    "m": "may",
+    "day": "Saturday 30 May 2026",
+    "club": "Cupids",
+    "city": "Swinton, Manchester",
+    "cls": "cupids",
+    "event": "Escapades",
+    "url": "https://www.cupidsswingersclub.co.uk/events/escapades",
+    "desc": "Escapades at Cupids, Swinton, Manchester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-05-30",
+    "m": "may",
+    "day": "Saturday 30 May 2026",
+    "club": "Infusion",
+    "city": "Blackpool",
+    "cls": "infusion",
+    "event": "Pure",
+    "url": "https://infusionblackpool.co.uk/8.html",
+    "desc": "Pure at Infusion Blackpool. No gimmicks, just swinging the way it's meant to be."
+  },
+  {
     "d": "2026-05-31",
     "m": "may",
     "day": "Sunday 31 May 2026",
@@ -86,6 +163,358 @@
     "event": "Super Sexy Sunday",
     "url": "https://theno3club.co.uk/",
     "desc": "Super Sexy Sunday at The No.3 Club, Chorley. From 4pm. Call Mary on 07835 870772 for details."
+  },
+  {
+    "d": "2026-05-31",
+    "m": "may",
+    "day": "Sunday 31 May 2026",
+    "club": "Cupids",
+    "city": "Swinton, Manchester",
+    "cls": "cupids",
+    "event": "Passion",
+    "url": "https://www.cupidsswingersclub.co.uk/events/passion",
+    "desc": "Passion at Cupids, Swinton, Manchester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-03",
+    "m": "jun",
+    "day": "Wednesday 3 June 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "Greedy Girls Day",
+    "url": "https://theno3club.co.uk/",
+    "desc": "Greedy Girls Day from 1pm\u00e2\u0080\u00938pm. Free entry for couples. Call Mary on 07835 870772."
+  },
+  {
+    "d": "2026-06-04",
+    "m": "jun",
+    "day": "Thursday 4 June 2026",
+    "club": "HU9",
+    "city": "Hull",
+    "cls": "hu9",
+    "event": "Fetish Night",
+    "url": "https://hu9swingersclub.co.uk/events",
+    "desc": "Fetish Night at HU9 Swingers Club, Hull. 8pm - 1am."
+  },
+  {
+    "d": "2026-06-04",
+    "m": "jun",
+    "day": "Thursday 4 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "Kinky Little M's Sexy Siren Soir\u00c3\u0083\u00c2\u00a9e",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Ladies-only cowboy/hoedown themed night at Quest. Massages by Hannah available (30-45 min, \u00c3\u0082\u00c2\u00a320-\u00c3\u0082\u00c2\u00a330). Contact Hannah on 07469 699874 to book. Open 7.00pm-11.00pm."
+  },
+  {
+    "d": "2026-06-04",
+    "m": "jun",
+    "day": "Thursday 4 June 2026",
+    "club": "Cupids",
+    "city": "Swinton, Manchester",
+    "cls": "cupids",
+    "event": "Newbie Night",
+    "url": "https://www.cupidsswingersclub.co.uk/events/newbie-night",
+    "desc": "Newbie Night at Cupids, Swinton, Manchester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-05",
+    "m": "jun",
+    "day": "Friday 5 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "Red Light Green Light Swing Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Colour-coded wristband event \u00c3\u00a2\u00c2\u0080\u00c2\u0094 pick your band at reception to signal your interests. Free shots, savouries and sweet treats. Non-members contact Hannah on 07469 699874. Open 8.30pm-2.00am."
+  },
+  {
+    "d": "2026-06-05",
+    "m": "jun",
+    "day": "Friday 5 June 2026",
+    "club": "Cupids",
+    "city": "Swinton, Manchester",
+    "cls": "cupids",
+    "event": "Black Magic Interracial Party",
+    "url": "https://www.cupidsswingersclub.co.uk/events/black-magic-interracial-party",
+    "desc": "Black Magic Interracial Party at Cupids, Swinton, Manchester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-05",
+    "m": "jun",
+    "day": "Friday 5 June 2026",
+    "club": "Infusion",
+    "city": "Blackpool",
+    "cls": "infusion",
+    "event": "Fantasy Friday",
+    "url": "https://infusionblackpool.co.uk/11.html",
+    "desc": "Fantasy Friday at Infusion Blackpool. Embody your wildest desire and unleash the naughty role you've always wanted to play."
+  },
+  {
+    "d": "2026-06-06",
+    "m": "jun",
+    "day": "Saturday 6 June 2026",
+    "club": "Cupids",
+    "city": "Swinton, Manchester",
+    "cls": "cupids",
+    "event": "Filthy Fuckhouse",
+    "url": "https://www.cupidsswingersclub.co.uk/events/filthy-fuckhouse",
+    "desc": "Filthy Fuckhouse at Cupids, Swinton, Manchester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-06",
+    "m": "jun",
+    "day": "Saturday 6 June 2026",
+    "club": "Infusion",
+    "city": "Blackpool",
+    "cls": "infusion",
+    "event": "Desire After Dark",
+    "url": "https://infusionblackpool.co.uk/11.html",
+    "desc": "Desire After Dark at Infusion Blackpool. Couples & Single Females Only. An evening of seduction, lust, and freedom."
+  },
+  {
+    "d": "2026-06-07",
+    "m": "jun",
+    "day": "Sunday 7 June 2026",
+    "club": "Cupids",
+    "city": "Swinton, Manchester",
+    "cls": "cupids",
+    "event": "Sunday's Suck",
+    "url": "https://www.cupidsswingersclub.co.uk/events/sunday-s-suck",
+    "desc": "Sunday's Suck at Cupids, Swinton, Manchester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-11",
+    "m": "jun",
+    "day": "Thursday 11 June 2026",
+    "club": "HU9",
+    "city": "Hull",
+    "cls": "hu9",
+    "event": "Hot Tub Party",
+    "url": "https://hu9swingersclub.co.uk/events",
+    "desc": "Hot Tub Party at HU9 Swingers Club, Hull. 8pm - 1am."
+  },
+  {
+    "d": "2026-06-12",
+    "m": "jun",
+    "day": "Friday 12 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "World Cup Seduction Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "World Cup themed couples and singles night. Fancy dress welcome. Non-members contact Hannah on 07469 699874 or JoDaveQuestSwing on FAB Swingers. Open 8.30pm-2.00am."
+  },
+  {
+    "d": "2026-06-12",
+    "m": "jun",
+    "day": "Friday 12 June 2026",
+    "club": "Cupids",
+    "city": "Swinton, Manchester",
+    "cls": "cupids",
+    "event": "Cougars and Hotwives",
+    "url": "https://www.cupidsswingersclub.co.uk/events/cougars-and-hotwives",
+    "desc": "Cougars and Hotwives at Cupids, Swinton, Manchester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-12",
+    "m": "jun",
+    "day": "Friday 12 June 2026",
+    "club": "Infusion",
+    "city": "Blackpool",
+    "cls": "infusion",
+    "event": "MILF Friday",
+    "url": "https://infusionblackpool.co.uk/11.html",
+    "desc": "MILF Friday at Infusion Blackpool. Where experience meets pure seduction."
+  },
+  {
+    "d": "2026-06-13",
+    "m": "jun",
+    "day": "Saturday 13 June 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "Mixed Swing Night",
+    "url": "https://theno3club.co.uk/",
+    "desc": "Mixed Swing Night 8:30pm\u00e2\u0080\u00931:30am. (Club closed 6th June, reopens 13th June.)"
+  },
+  {
+    "d": "2026-06-13",
+    "m": "jun",
+    "day": "Saturday 13 June 2026",
+    "club": "Infusion",
+    "city": "Blackpool",
+    "cls": "infusion",
+    "event": "Nookie's Birthday Movie Night",
+    "url": "https://infusionblackpool.co.uk/11.html",
+    "desc": "Nookie's Birthday Movie Night at Infusion Blackpool. Movie-themed night \u2014 come as a hero, villain, or just yourself."
+  },
+  {
+    "d": "2026-06-14",
+    "m": "jun",
+    "day": "Sunday 14 June 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "Super Sexy Sunday",
+    "url": "https://theno3club.co.uk/",
+    "desc": "Super Sexy Sunday from 4pm. The only way to spend your Sunday!"
+  },
+  {
+    "d": "2026-06-14",
+    "m": "jun",
+    "day": "Sunday 14 June 2026",
+    "club": "Cupids",
+    "city": "Swinton, Manchester",
+    "cls": "cupids",
+    "event": "High Impact",
+    "url": "https://www.cupidsswingersclub.co.uk/events/high-impact",
+    "desc": "High Impact at Cupids, Swinton, Manchester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-17",
+    "m": "jun",
+    "day": "Wednesday 17 June 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "Greedy Girls Day",
+    "url": "https://theno3club.co.uk/",
+    "desc": "Greedy Girls Day from 1pm\u00e2\u0080\u00938pm. Free entry for couples. Call Mary on 07835 870772."
+  },
+  {
+    "d": "2026-06-17",
+    "m": "jun",
+    "day": "Wednesday 17 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "Kinky Little M's Happy Hump Day",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Evening event hosted by Kinky Little M. Contact Kinky Little M on FAB Swingers for guest list. Open 7pm-11pm."
+  },
+  {
+    "d": "2026-06-18",
+    "m": "jun",
+    "day": "Thursday 18 June 2026",
+    "club": "HU9",
+    "city": "Hull",
+    "cls": "hu9",
+    "event": "Hotwife Night",
+    "url": "https://hu9swingersclub.co.uk/events",
+    "desc": "Hotwife Night at HU9 Swingers Club, Hull. 8pm - 1am."
+  },
+  {
+    "d": "2026-06-18",
+    "m": "jun",
+    "day": "Thursday 18 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "MO BDSM Fetish Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Monthly BDSM and fetish night for Doms, Mistresses, fetishists and kinksters. Dress code: fetish wear or smart casual. Open 7.00pm-11.00pm, \u00c3\u0082\u00c2\u00a315 per person."
+  },
+  {
+    "d": "2026-06-18",
+    "m": "jun",
+    "day": "Thursday 18 June 2026",
+    "club": "Cupids",
+    "city": "Swinton, Manchester",
+    "cls": "cupids",
+    "event": "Full Figured Fantasy",
+    "url": "https://www.cupidsswingersclub.co.uk/events/full-figured-fantasy",
+    "desc": "Full Figured Fantasy at Cupids, Swinton, Manchester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-19",
+    "m": "jun",
+    "day": "Friday 19 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "Curvy Cuties Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Couples and singles themed night with shots on arrival. Non-members must contact Hannah on 07469 699874 or message JoDaveQuestSwing on FAB Swingers. Open 8.30pm-2.00am."
+  },
+  {
+    "d": "2026-06-19",
+    "m": "jun",
+    "day": "Friday 19 June 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "Intro Night",
+    "url": "https://theno3club.co.uk/",
+    "desc": "Intro Night from 8:30pm. A great opportunity for a first visit. Call club for details."
+  },
+  {
+    "d": "2026-06-19",
+    "m": "jun",
+    "day": "Friday 19 June 2026",
+    "club": "Cupids",
+    "city": "Swinton, Manchester",
+    "cls": "cupids",
+    "event": "F.U Fuckhouse Unlimited",
+    "url": "https://www.cupidsswingersclub.co.uk/events/f.u-fuckhouse-unlimited",
+    "desc": "F.U Fuckhouse Unlimited at Cupids, Swinton, Manchester. Visit the website for full details and booking."
+  },
+  {
+    "d": "2026-06-19",
+    "m": "jun",
+    "day": "Friday 19 June 2026",
+    "club": "Infusion",
+    "city": "Blackpool",
+    "cls": "infusion",
+    "event": "Hotwives Night",
+    "url": "https://infusionblackpool.co.uk/11.html",
+    "desc": "Hotwives Night at Infusion Blackpool. Wives dress sexy, flirt, and play while husbands watch, share, or join in."
+  },
+  {
+    "d": "2026-06-20",
+    "m": "jun",
+    "day": "Saturday 20 June 2026",
+    "club": "HU9",
+    "city": "Hull",
+    "cls": "hu9",
+    "event": "Emergency Services Night",
+    "url": "https://hu9swingersclub.co.uk/events",
+    "desc": "Emergency Services Night at HU9 Swingers Club, Hull. 9pm - 3am."
+  },
+  {
+    "d": "2026-06-20",
+    "m": "jun",
+    "day": "Saturday 20 June 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "Mixed Swing Night",
+    "url": "https://theno3club.co.uk/",
+    "desc": "Mixed Swing Night 8:30pm\u00e2\u0080\u00931:30am."
+  },
+  {
+    "d": "2026-06-20",
+    "m": "jun",
+    "day": "Saturday 20 June 2026",
+    "club": "Infusion",
+    "city": "Blackpool",
+    "cls": "infusion",
+    "event": "Are You Afraid of the Dark",
+    "url": "https://infusionblackpool.co.uk/11.html",
+    "desc": "Are You Afraid of the Dark at Infusion Blackpool. One year of the infamous pitch-black dark room. No lights, no limits."
+  },
+  {
+    "d": "2026-06-25",
+    "m": "jun",
+    "day": "Thursday 25 June 2026",
+    "club": "HU9",
+    "city": "Hull",
+    "cls": "hu9",
+    "event": "Greedy Girl Night",
+    "url": "https://hu9swingersclub.co.uk/events",
+    "desc": "Greedy Girl Night at HU9 Swingers Club, Hull. 8pm - 1am."
   },
   {
     "d": "2026-06-26",
@@ -110,6 +539,28 @@
     "desc": "Superhero Party at Chameleons, Darlaston."
   },
   {
+    "d": "2026-06-26",
+    "m": "jun",
+    "day": "Friday 26 June 2026",
+    "club": "Quest",
+    "city": "Leeds",
+    "cls": "quest",
+    "event": "Hannah's Birthday \u00c3\u00a2\u00c2\u0080\u00c2\u0093 Barbie & Ken Celebration Night",
+    "url": "https://questswingersclub.co.uk/upcoming-events/",
+    "desc": "Birthday party for Hannah with Barbie & Ken fancy dress theme (optional). Shots, sweet treats and snacks included. Non-members contact Hannah on 07469 699874. Open 8.30pm-2.00am."
+  },
+  {
+    "d": "2026-06-26",
+    "m": "jun",
+    "day": "Friday 26 June 2026",
+    "club": "Infusion",
+    "city": "Blackpool",
+    "cls": "infusion",
+    "event": "Go Commando",
+    "url": "https://infusionblackpool.co.uk/11.html",
+    "desc": "Go Commando at Infusion Blackpool. Less is definitely more. Sexiest outfit, leave the underwear at home."
+  },
+  {
     "d": "2026-06-27",
     "m": "jun",
     "day": "Saturday 27 June 2026",
@@ -130,6 +581,50 @@
     "event": "Superhero Party",
     "url": "https://www.chameleons.cc/darlaston-events/",
     "desc": "Superhero Party at Chameleons, Darlaston."
+  },
+  {
+    "d": "2026-06-27",
+    "m": "jun",
+    "day": "Saturday 27 June 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Mr & Miss Agadoo's Night - Theme TBC",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "Mr & Miss Agadoo's Night at Decadance, Rochdale. Theme to be confirmed."
+  },
+  {
+    "d": "2026-06-27",
+    "m": "jun",
+    "day": "Saturday 27 June 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "Mixed Swing Night",
+    "url": "https://theno3club.co.uk/",
+    "desc": "Mixed Swing Night 8:30pm\u00e2\u0080\u00931:30am."
+  },
+  {
+    "d": "2026-06-27",
+    "m": "jun",
+    "day": "Saturday 27 June 2026",
+    "club": "Infusion",
+    "city": "Blackpool",
+    "cls": "infusion",
+    "event": "Pure",
+    "url": "https://infusionblackpool.co.uk/11.html",
+    "desc": "Pure at Infusion Blackpool. No gimmicks, just swinging the way it's meant to be."
+  },
+  {
+    "d": "2026-06-28",
+    "m": "jun",
+    "day": "Sunday 28 June 2026",
+    "club": "No.3 Club",
+    "city": "Chorley, Lancashire",
+    "cls": "no3",
+    "event": "Super Sexy Sunday",
+    "url": "https://theno3club.co.uk/",
+    "desc": "Super Sexy Sunday from 4pm. The only way to spend your Sunday!"
   },
   {
     "d": "2026-07-18",
@@ -163,6 +658,17 @@
     "event": "Uniform Party",
     "url": "https://www.chameleons.cc/darlaston-events/",
     "desc": "Uniform Party at Chameleons, Darlaston."
+  },
+  {
+    "d": "2026-07-25",
+    "m": "jul",
+    "day": "Saturday 25 July 2026",
+    "club": "Decadance",
+    "city": "Rochdale",
+    "cls": "decadance",
+    "event": "Mr & Miss Agadoo's Night - Theme TBC",
+    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
+    "desc": "Mr & Miss Agadoo's Night at Decadance, Rochdale. Theme to be confirmed."
   },
   {
     "d": "2026-08-14",
@@ -339,401 +845,5 @@
     "event": "New Year's Eve party",
     "url": "https://www.chameleons.cc/darlaston-events/",
     "desc": "New Year's Eve party at Chameleons, Darlaston."
-  },
-  {
-    "d": "2026-05-30",
-    "m": "may",
-    "day": "Saturday 30 May 2026",
-    "club": "Decadance",
-    "city": "Rochdale",
-    "cls": "decadance",
-    "event": "Peaky Blinders Night",
-    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance/events-coming-soon/30-05-peaky-blinders",
-    "desc": "Peaky Blinders Night at Decadance, Rochdale. Hosted by Mr & Miss Agadoo."
-  },
-  {
-    "d": "2026-06-27",
-    "m": "jun",
-    "day": "Saturday 27 June 2026",
-    "club": "Decadance",
-    "city": "Rochdale",
-    "cls": "decadance",
-    "event": "Mr & Miss Agadoo's Night - Theme TBC",
-    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
-    "desc": "Mr & Miss Agadoo's Night at Decadance, Rochdale. Theme to be confirmed."
-  },
-  {
-    "d": "2026-07-25",
-    "m": "jul",
-    "day": "Saturday 25 July 2026",
-    "club": "Decadance",
-    "city": "Rochdale",
-    "cls": "decadance",
-    "event": "Mr & Miss Agadoo's Night - Theme TBC",
-    "url": "https://www.decadanceswingersclub.com/what-s-on-at-decadance",
-    "desc": "Mr & Miss Agadoo's Night at Decadance, Rochdale. Theme to be confirmed."
-  },
-  {
-    "d": "2026-05-28",
-    "m": "may",
-    "day": "Thursday 28 May 2026",
-    "club": "HU9",
-    "city": "Hull",
-    "cls": "hu9",
-    "event": "Greedy Girl Night",
-    "url": "https://hu9swingersclub.co.uk/events",
-    "desc": "Greedy Girl Night at HU9 Swingers Club, Hull. 8pm - 1am."
-  },
-  {
-    "d": "2026-06-04",
-    "m": "jun",
-    "day": "Thursday 4 June 2026",
-    "club": "HU9",
-    "city": "Hull",
-    "cls": "hu9",
-    "event": "Fetish Night",
-    "url": "https://hu9swingersclub.co.uk/events",
-    "desc": "Fetish Night at HU9 Swingers Club, Hull. 8pm - 1am."
-  },
-  {
-    "d": "2026-06-11",
-    "m": "jun",
-    "day": "Thursday 11 June 2026",
-    "club": "HU9",
-    "city": "Hull",
-    "cls": "hu9",
-    "event": "Hot Tub Party",
-    "url": "https://hu9swingersclub.co.uk/events",
-    "desc": "Hot Tub Party at HU9 Swingers Club, Hull. 8pm - 1am."
-  },
-  {
-    "d": "2026-06-18",
-    "m": "jun",
-    "day": "Thursday 18 June 2026",
-    "club": "HU9",
-    "city": "Hull",
-    "cls": "hu9",
-    "event": "Hotwife Night",
-    "url": "https://hu9swingersclub.co.uk/events",
-    "desc": "Hotwife Night at HU9 Swingers Club, Hull. 8pm - 1am."
-  },
-  {
-    "d": "2026-06-20",
-    "m": "jun",
-    "day": "Saturday 20 June 2026",
-    "club": "HU9",
-    "city": "Hull",
-    "cls": "hu9",
-    "event": "Emergency Services Night",
-    "url": "https://hu9swingersclub.co.uk/events",
-    "desc": "Emergency Services Night at HU9 Swingers Club, Hull. 9pm - 3am."
-  },
-  {
-    "d": "2026-06-25",
-    "m": "jun",
-    "day": "Thursday 25 June 2026",
-    "club": "HU9",
-    "city": "Hull",
-    "cls": "hu9",
-    "event": "Greedy Girl Night",
-    "url": "https://hu9swingersclub.co.uk/events",
-    "desc": "Greedy Girl Night at HU9 Swingers Club, Hull. 8pm - 1am."
-  },
-  {
-    "d": "2026-05-29",
-    "m": "may",
-    "day": "Friday 29 May 2026",
-    "club": "Quest",
-    "city": "Leeds",
-    "cls": "quest",
-    "event": "Curvy Cuties Night",
-    "url": "https://questswingersclub.co.uk/upcoming-events/",
-    "desc": "Couples and singles themed night with shots on arrival. Non-members must contact Hannah on 07469 699874 or message JoDaveQuestSwing on FAB Swingers. Open 8.30pm-2.00am."
-  },
-  {
-    "d": "2026-06-04",
-    "m": "jun",
-    "day": "Thursday 4 June 2026",
-    "club": "Quest",
-    "city": "Leeds",
-    "cls": "quest",
-    "event": "Kinky Little M's Sexy Siren SoirÃÂ©e",
-    "url": "https://questswingersclub.co.uk/upcoming-events/",
-    "desc": "Ladies-only cowboy/hoedown themed night at Quest. Massages by Hannah available (30-45 min, ÃÂ£20-ÃÂ£30). Contact Hannah on 07469 699874 to book. Open 7.00pm-11.00pm."
-  },
-  {
-    "d": "2026-06-05",
-    "m": "jun",
-    "day": "Friday 5 June 2026",
-    "club": "Quest",
-    "city": "Leeds",
-    "cls": "quest",
-    "event": "Red Light Green Light Swing Night",
-    "url": "https://questswingersclub.co.uk/upcoming-events/",
-    "desc": "Colour-coded wristband event Ã¢ÂÂ pick your band at reception to signal your interests. Free shots, savouries and sweet treats. Non-members contact Hannah on 07469 699874. Open 8.30pm-2.00am."
-  },
-  {
-    "d": "2026-06-12",
-    "m": "jun",
-    "day": "Friday 12 June 2026",
-    "club": "Quest",
-    "city": "Leeds",
-    "cls": "quest",
-    "event": "World Cup Seduction Night",
-    "url": "https://questswingersclub.co.uk/upcoming-events/",
-    "desc": "World Cup themed couples and singles night. Fancy dress welcome. Non-members contact Hannah on 07469 699874 or JoDaveQuestSwing on FAB Swingers. Open 8.30pm-2.00am."
-  },
-  {
-    "d": "2026-06-18",
-    "m": "jun",
-    "day": "Thursday 18 June 2026",
-    "club": "Quest",
-    "city": "Leeds",
-    "cls": "quest",
-    "event": "MO BDSM Fetish Night",
-    "url": "https://questswingersclub.co.uk/upcoming-events/",
-    "desc": "Monthly BDSM and fetish night for Doms, Mistresses, fetishists and kinksters. Dress code: fetish wear or smart casual. Open 7.00pm-11.00pm, ÃÂ£15 per person."
-  },
-  {
-    "d": "2026-06-19",
-    "m": "jun",
-    "day": "Friday 19 June 2026",
-    "club": "Quest",
-    "city": "Leeds",
-    "cls": "quest",
-    "event": "Curvy Cuties Night",
-    "url": "https://questswingersclub.co.uk/upcoming-events/",
-    "desc": "Couples and singles themed night with shots on arrival. Non-members must contact Hannah on 07469 699874 or message JoDaveQuestSwing on FAB Swingers. Open 8.30pm-2.00am."
-  },
-  {
-    "d": "2026-06-26",
-    "m": "jun",
-    "day": "Friday 26 June 2026",
-    "club": "Quest",
-    "city": "Leeds",
-    "cls": "quest",
-    "event": "Hannah's Birthday Ã¢ÂÂ Barbie & Ken Celebration Night",
-    "url": "https://questswingersclub.co.uk/upcoming-events/",
-    "desc": "Birthday party for Hannah with Barbie & Ken fancy dress theme (optional). Shots, sweet treats and snacks included. Non-members contact Hannah on 07469 699874. Open 8.30pm-2.00am."
-  },
-  {
-    "d": "2026-06-03",
-    "m": "jun",
-    "day": "Wednesday 3 June 2026",
-    "club": "No.3 Club",
-    "city": "Chorley, Lancashire",
-    "cls": "no3",
-    "event": "Greedy Girls Day",
-    "url": "https://theno3club.co.uk/",
-    "desc": "Greedy Girls Day from 1pmâ8pm. Free entry for couples. Call Mary on 07835 870772."
-  },
-  {
-    "d": "2026-06-13",
-    "m": "jun",
-    "day": "Saturday 13 June 2026",
-    "club": "No.3 Club",
-    "city": "Chorley, Lancashire",
-    "cls": "no3",
-    "event": "Mixed Swing Night",
-    "url": "https://theno3club.co.uk/",
-    "desc": "Mixed Swing Night 8:30pmâ1:30am. (Club closed 6th June, reopens 13th June.)"
-  },
-  {
-    "d": "2026-06-14",
-    "m": "jun",
-    "day": "Sunday 14 June 2026",
-    "club": "No.3 Club",
-    "city": "Chorley, Lancashire",
-    "cls": "no3",
-    "event": "Super Sexy Sunday",
-    "url": "https://theno3club.co.uk/",
-    "desc": "Super Sexy Sunday from 4pm. The only way to spend your Sunday!"
-  },
-  {
-    "d": "2026-06-17",
-    "m": "jun",
-    "day": "Wednesday 17 June 2026",
-    "club": "No.3 Club",
-    "city": "Chorley, Lancashire",
-    "cls": "no3",
-    "event": "Greedy Girls Day",
-    "url": "https://theno3club.co.uk/",
-    "desc": "Greedy Girls Day from 1pmâ8pm. Free entry for couples. Call Mary on 07835 870772."
-  },
-  {
-    "d": "2026-06-19",
-    "m": "jun",
-    "day": "Friday 19 June 2026",
-    "club": "No.3 Club",
-    "city": "Chorley, Lancashire",
-    "cls": "no3",
-    "event": "Intro Night",
-    "url": "https://theno3club.co.uk/",
-    "desc": "Intro Night from 8:30pm. A great opportunity for a first visit. Call club for details."
-  },
-  {
-    "d": "2026-06-20",
-    "m": "jun",
-    "day": "Saturday 20 June 2026",
-    "club": "No.3 Club",
-    "city": "Chorley, Lancashire",
-    "cls": "no3",
-    "event": "Mixed Swing Night",
-    "url": "https://theno3club.co.uk/",
-    "desc": "Mixed Swing Night 8:30pmâ1:30am."
-  },
-  {
-    "d": "2026-06-27",
-    "m": "jun",
-    "day": "Saturday 27 June 2026",
-    "club": "No.3 Club",
-    "city": "Chorley, Lancashire",
-    "cls": "no3",
-    "event": "Mixed Swing Night",
-    "url": "https://theno3club.co.uk/",
-    "desc": "Mixed Swing Night 8:30pmâ1:30am."
-  },
-  {
-    "d": "2026-06-28",
-    "m": "jun",
-    "day": "Sunday 28 June 2026",
-    "club": "No.3 Club",
-    "city": "Chorley, Lancashire",
-    "cls": "no3",
-    "event": "Super Sexy Sunday",
-    "url": "https://theno3club.co.uk/",
-    "desc": "Super Sexy Sunday from 4pm. The only way to spend your Sunday!"
-  },
-  {
-    "d": "2026-06-17",
-    "m": "jun",
-    "day": "Wednesday 17 June 2026",
-    "club": "Quest",
-    "city": "Leeds",
-    "cls": "quest",
-    "event": "Kinky Little M's Happy Hump Day",
-    "url": "https://questswingersclub.co.uk/upcoming-events/",
-    "desc": "Evening event hosted by Kinky Little M. Contact Kinky Little M on FAB Swingers for guest list. Open 7pm-11pm."
-  },
-  {
-    "d": "2026-05-29",
-    "m": "may",
-    "day": "Friday 29 May 2026",
-    "club": "Cupids",
-    "city": "Swinton, Manchester",
-    "cls": "cupids",
-    "event": "Glow All Out",
-    "url": "https://www.cupidsswingersclub.co.uk/events/glow-all-out",
-    "desc": "Glow All Out at Cupids, Swinton, Manchester. Visit the website for full details and booking."
-  },
-  {
-    "d": "2026-05-30",
-    "m": "may",
-    "day": "Saturday 30 May 2026",
-    "club": "Cupids",
-    "city": "Swinton, Manchester",
-    "cls": "cupids",
-    "event": "Escapades",
-    "url": "https://www.cupidsswingersclub.co.uk/events/escapades",
-    "desc": "Escapades at Cupids, Swinton, Manchester. Visit the website for full details and booking."
-  },
-  {
-    "d": "2026-05-31",
-    "m": "may",
-    "day": "Sunday 31 May 2026",
-    "club": "Cupids",
-    "city": "Swinton, Manchester",
-    "cls": "cupids",
-    "event": "Passion",
-    "url": "https://www.cupidsswingersclub.co.uk/events/passion",
-    "desc": "Passion at Cupids, Swinton, Manchester. Visit the website for full details and booking."
-  },
-  {
-    "d": "2026-06-04",
-    "m": "jun",
-    "day": "Thursday 4 June 2026",
-    "club": "Cupids",
-    "city": "Swinton, Manchester",
-    "cls": "cupids",
-    "event": "Newbie Night",
-    "url": "https://www.cupidsswingersclub.co.uk/events/newbie-night",
-    "desc": "Newbie Night at Cupids, Swinton, Manchester. Visit the website for full details and booking."
-  },
-  {
-    "d": "2026-06-05",
-    "m": "jun",
-    "day": "Friday 5 June 2026",
-    "club": "Cupids",
-    "city": "Swinton, Manchester",
-    "cls": "cupids",
-    "event": "Black Magic Interracial Party",
-    "url": "https://www.cupidsswingersclub.co.uk/events/black-magic-interracial-party",
-    "desc": "Black Magic Interracial Party at Cupids, Swinton, Manchester. Visit the website for full details and booking."
-  },
-  {
-    "d": "2026-06-06",
-    "m": "jun",
-    "day": "Saturday 6 June 2026",
-    "club": "Cupids",
-    "city": "Swinton, Manchester",
-    "cls": "cupids",
-    "event": "Filthy Fuckhouse",
-    "url": "https://www.cupidsswingersclub.co.uk/events/filthy-fuckhouse",
-    "desc": "Filthy Fuckhouse at Cupids, Swinton, Manchester. Visit the website for full details and booking."
-  },
-  {
-    "d": "2026-06-07",
-    "m": "jun",
-    "day": "Sunday 7 June 2026",
-    "club": "Cupids",
-    "city": "Swinton, Manchester",
-    "cls": "cupids",
-    "event": "Sunday's Suck",
-    "url": "https://www.cupidsswingersclub.co.uk/events/sunday-s-suck",
-    "desc": "Sunday's Suck at Cupids, Swinton, Manchester. Visit the website for full details and booking."
-  },
-  {
-    "d": "2026-06-12",
-    "m": "jun",
-    "day": "Friday 12 June 2026",
-    "club": "Cupids",
-    "city": "Swinton, Manchester",
-    "cls": "cupids",
-    "event": "Cougars and Hotwives",
-    "url": "https://www.cupidsswingersclub.co.uk/events/cougars-and-hotwives",
-    "desc": "Cougars and Hotwives at Cupids, Swinton, Manchester. Visit the website for full details and booking."
-  },
-  {
-    "d": "2026-06-14",
-    "m": "jun",
-    "day": "Sunday 14 June 2026",
-    "club": "Cupids",
-    "city": "Swinton, Manchester",
-    "cls": "cupids",
-    "event": "High Impact",
-    "url": "https://www.cupidsswingersclub.co.uk/events/high-impact",
-    "desc": "High Impact at Cupids, Swinton, Manchester. Visit the website for full details and booking."
-  },
-  {
-    "d": "2026-06-18",
-    "m": "jun",
-    "day": "Thursday 18 June 2026",
-    "club": "Cupids",
-    "city": "Swinton, Manchester",
-    "cls": "cupids",
-    "event": "Full Figured Fantasy",
-    "url": "https://www.cupidsswingersclub.co.uk/events/full-figured-fantasy",
-    "desc": "Full Figured Fantasy at Cupids, Swinton, Manchester. Visit the website for full details and booking."
-  },
-  {
-    "d": "2026-06-19",
-    "m": "jun",
-    "day": "Friday 19 June 2026",
-    "club": "Cupids",
-    "city": "Swinton, Manchester",
-    "cls": "cupids",
-    "event": "F.U Fuckhouse Unlimited",
-    "url": "https://www.cupidsswingersclub.co.uk/events/f.u-fuckhouse-unlimited",
-    "desc": "F.U Fuckhouse Unlimited at Cupids, Swinton, Manchester. Visit the website for full details and booking."
   }
 ]
